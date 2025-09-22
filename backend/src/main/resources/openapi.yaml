@@ -1,0 +1,1408 @@
+openapi: 3.0.4
+info:
+  title: Sistema de gestión de alojamientos
+  description: API para gestionar alojamientos, reservas, usuarios y servicios relacionados.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api
+    description: Servidor local
+
+paths:
+  /usuarios:
+    get:
+      summary: Obtener todos los usuarios
+      tags:
+        - Usuario
+      responses:
+        "200":
+          description: Lista de usuarios obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UsuarioDTO"
+        "400":
+          description: Petición inválida
+        "404":
+          description: No se encontraron usuarios
+    post:
+      summary: Crear un nuevo usuario
+      tags:
+        - Usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsuarioDTO"
+            example:
+              nombre: "David Gómez"
+              email: "david@example.com"
+              rol: "CLIENTE"
+      responses:
+        "200":
+          description: Usuario creado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsuarioDTO"
+        "400":
+          description: Datos inválidos
+        "404":
+          description: Error al crear usuario
+
+  /usuarios/{id}:
+    get:
+      summary: Obtener un usuario por ID
+      tags:
+        - Usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: Usuario encontrado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsuarioDTO"
+              example:
+                id: 1
+                nombre: "Juan Pérez"
+                email: "juan.perez@example.com"
+                rol: "CLIENTE"
+        "400":
+          description: ID inválido
+        "404":
+          description: Usuario no encontrado
+
+    put:
+      summary: Actualizar un usuario por ID
+      tags:
+        - Usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsuarioDTO"
+            example:
+              nombre: "Juan Pérez Actualizado"
+              email: "juan.perez.actualizado@example.com"
+              rol: "ANFITRION"
+      responses:
+        "200":
+          description: Usuario actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsuarioDTO"
+              example:
+                id: 1
+                nombre: "Juan Pérez Actualizado"
+                email: "juan.perez.actualizado@example.com"
+                rol: "ANFITRION"
+        "400":
+          description: Datos inválidos para actualizar usuario
+        "404":
+          description: Usuario no encontrado
+
+    delete:
+      summary: Eliminar un usuario por ID
+      tags:
+        - Usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: Usuario eliminado correctamente
+          content:
+            application/json:
+              example:
+                message: "Usuario eliminado con éxito"
+        "400":
+          description: ID inválido
+        "404":
+          description: Usuario no encontrado
+
+  /alojamientos:
+    get:
+      summary: Obtener todos los alojamientos
+      tags:
+        - Alojamiento
+      responses:
+        "200":
+          description: Lista de alojamientos obtenida con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AlojamientoDTO"
+              example:
+                - id: 1
+                  nombre: "Casa Rural Los Pinos"
+                  descripcion: "Una casa rural acogedora en el campo"
+                  direccion: "Calle Falsa 123, Pueblo, País"
+                  precioPorNoche: 75.50
+                  anfitrionId: 1
+                - id: 2
+                  nombre: "Apartamento en la ciudad"
+                  descripcion: "Apartamento moderno cerca del centro"
+                  direccion: "Av. Principal 456, Ciudad"
+                  precioPorNoche: 120.00
+                  anfitrionId: 2
+        "400":
+          description: Error en la solicitud
+        "404":
+          description: No se encontraron alojamientos
+
+    post:
+      summary: Crear un nuevo alojamiento
+      tags:
+        - Alojamiento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AlojamientoDTO"
+            example:
+              nombre: "Cabaña en el bosque"
+              descripcion: "Cabaña rústica rodeada de naturaleza"
+              direccion: "Km 5, vía al bosque, Pueblo"
+              precioPorNoche: 90.00
+              anfitrionId: 3
+      responses:
+        "201":
+          description: Alojamiento creado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlojamientoDTO"
+              example:
+                id: 10
+                nombre: "Cabaña en el bosque"
+                descripcion: "Cabaña rústica rodeada de naturaleza"
+                direccion: "Km 5, vía al bosque, Pueblo"
+                precioPorNoche: 90.00
+                anfitrionId: 3
+        "400":
+          description: Datos inválidos para crear alojamiento
+        "404":
+          description: No se pudo crear el alojamiento
+
+  /alojamientos/{id}:
+    get:
+      summary: Obtener un alojamiento por ID
+      tags:
+        - Alojamiento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del alojamiento
+      responses:
+        "200":
+          description: Alojamiento obtenido con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlojamientoDTO"
+              example:
+                id: 1
+                nombre: "Casa Rural Los Pinos"
+                descripcion: "Una casa rural acogedora en el campo"
+                direccion: "Calle Falsa 123, Pueblo, País"
+                precioPorNoche: 75.50
+                anfitrionId: 1
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Alojamiento no encontrado
+
+    put:
+      summary: Actualizar un alojamiento por ID
+      tags:
+        - Alojamiento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del alojamiento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AlojamientoDTO"
+            example:
+              nombre: "Casa Rural Los Pinos - Renovada"
+              descripcion: "Casa renovada con piscina y chimenea"
+              direccion: "Calle Falsa 123, Pueblo, País"
+              precioPorNoche: 95.00
+              anfitrionId: 1
+      responses:
+        "200":
+          description: Alojamiento actualizado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlojamientoDTO"
+              example:
+                id: 1
+                nombre: "Casa Rural Los Pinos - Renovada"
+                descripcion: "Casa renovada con piscina y chimenea"
+                direccion: "Calle Falsa 123, Pueblo, País"
+                precioPorNoche: 95.00
+                anfitrionId: 1
+        "400":
+          description: Datos inválidos para actualizar el alojamiento
+        "404":
+          description: Alojamiento no encontrado
+
+    delete:
+      summary: Eliminar un alojamiento por ID
+      tags:
+        - Alojamiento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del alojamiento
+      responses:
+        "204":
+          description: Alojamiento eliminado con éxito (soft delete)
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Alojamiento no encontrado
+
+  /reservas:
+    get:
+      summary: Obtener todas las reservas
+      tags:
+        - Reserva
+      responses:
+        "200":
+          description: Lista de reservas obtenida con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReservaDTO"
+              example:
+                - id: 1
+                  alojamientoId: 1
+                  usuarioId: 2
+                  fechaInicio: "2023-07-01"
+                  fechaFin: "2023-07-07"
+                - id: 2
+                  alojamientoId: 2
+                  usuarioId: 3
+                  fechaInicio: "2023-08-10"
+                  fechaFin: "2023-08-15"
+        "400":
+          description: Error en la solicitud
+        "404":
+          description: No se encontraron reservas
+
+    post:
+      summary: Crear una nueva reserva
+      tags:
+        - Reserva
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReservaDTO"
+            example:
+              alojamientoId: 1
+              usuarioId: 2
+              fechaInicio: "2023-09-01"
+              fechaFin: "2023-09-05"
+      responses:
+        "201":
+          description: Reserva creada con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReservaDTO"
+              example:
+                id: 5
+                alojamientoId: 1
+                usuarioId: 2
+                fechaInicio: "2023-09-01"
+                fechaFin: "2023-09-05"
+        "400":
+          description: Datos inválidos para crear la reserva
+        "404":
+          description: No se pudo crear la reserva
+
+  /reservas/{id}:
+    get:
+      summary: Obtener una reserva por ID
+      tags:
+        - Reserva
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID de la reserva
+      responses:
+        "200":
+          description: Reserva obtenida con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReservaDTO"
+              example:
+                id: 1
+                alojamientoId: 1
+                usuarioId: 2
+                fechaInicio: "2023-07-01"
+                fechaFin: "2023-07-07"
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Reserva no encontrada
+
+    put:
+      summary: Actualizar una reserva por ID
+      tags:
+        - Reserva
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID de la reserva
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReservaDTO"
+            example:
+              alojamientoId: 1
+              usuarioId: 2
+              fechaInicio: "2023-09-02"
+              fechaFin: "2023-09-06"
+      responses:
+        "200":
+          description: Reserva actualizada con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReservaDTO"
+              example:
+                id: 1
+                alojamientoId: 1
+                usuarioId: 2
+                fechaInicio: "2023-09-02"
+                fechaFin: "2023-09-06"
+        "400":
+          description: Datos inválidos para actualizar la reserva
+        "404":
+          description: Reserva no encontrada
+
+    delete:
+      summary: Eliminar una reserva por ID
+      tags:
+        - Reserva
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID de la reserva
+      responses:
+        "204":
+          description: Reserva eliminada con éxito
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Reserva no encontrada
+
+  /pagos:
+    get:
+      summary: Obtener todos los pagos
+      tags:
+        - Pago
+      responses:
+        "200":
+          description: Lista de pagos obtenida con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PagoDTO"
+              example:
+                - id: 1
+                  reservaId: 1
+                  monto: 500000
+                  metodoPago: "Tarjeta de crédito"
+                  fechaPago: "2023-07-01"
+                - id: 2
+                  reservaId: 2
+                  monto: 350000
+                  metodoPago: "Efectivo"
+                  fechaPago: "2023-07-05"
+        "400":
+          description: Error en la solicitud
+        "404":
+          description: No se encontraron pagos
+
+    post:
+      summary: Registrar un nuevo pago
+      tags:
+        - Pago
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PagoDTO"
+            example:
+              reservaId: 1
+              monto: 500000
+              metodoPago: "Tarjeta de crédito"
+              fechaPago: "2023-09-01"
+      responses:
+        "201":
+          description: Pago registrado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagoDTO"
+              example:
+                id: 5
+                reservaId: 1
+                monto: 500000
+                metodoPago: "Tarjeta de crédito"
+                fechaPago: "2023-09-01"
+        "400":
+          description: Datos inválidos para registrar el pago
+        "404":
+          description: Reserva asociada no encontrada
+
+  /pagos/{id}:
+    get:
+      summary: Obtener un pago por ID
+      tags:
+        - Pago
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del pago
+      responses:
+        "200":
+          description: Pago obtenido con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagoDTO"
+              example:
+                id: 1
+                reservaId: 1
+                monto: 500000
+                metodoPago: "Tarjeta de crédito"
+                fechaPago: "2023-07-01"
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Pago no encontrado
+
+    put:
+      summary: Actualizar un pago por ID
+      tags:
+        - Pago
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del pago
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PagoDTO"
+            example:
+              reservaId: 1
+              monto: 550000
+              metodoPago: "Transferencia bancaria"
+              fechaPago: "2023-09-02"
+      responses:
+        "200":
+          description: Pago actualizado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagoDTO"
+              example:
+                id: 1
+                reservaId: 1
+                monto: 550000
+                metodoPago: "Transferencia bancaria"
+                fechaPago: "2023-09-02"
+        "400":
+          description: Datos inválidos para actualizar el pago
+        "404":
+          description: Pago no encontrado
+
+    delete:
+      summary: Eliminar un pago por ID
+      tags:
+        - Pago
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del pago
+      responses:
+        "204":
+          description: Pago eliminado con éxito
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Pago no encontrado
+
+  /comentarios:
+    get:
+      summary: Obtener todos los comentarios
+      tags:
+        - Comentario
+      responses:
+        "200":
+          description: Lista de comentarios obtenida con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ComentarioDTO"
+              example:
+                - id: 1
+                  usuarioId: 3
+                  alojamientoId: 2
+                  reservaId: 5
+                  comentario: "Muy buen lugar, cómodo y limpio."
+                  calificacion: 5
+                  fecha: "2023-07-10"
+                - id: 2
+                  usuarioId: 4
+                  alojamientoId: 1
+                  reservaId: 6
+                  comentario: "El anfitrión fue muy atento."
+                  calificacion: 4
+                  fecha: "2023-07-15"
+        "400":
+          description: Error en la solicitud
+        "404":
+          description: No se encontraron comentarios
+
+    post:
+      summary: Crear un nuevo comentario
+      tags:
+        - Comentario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComentarioDTO"
+            example:
+              usuarioId: 3
+              alojamientoId: 2
+              reservaId: 5
+              comentario: "Excelente ubicación y trato del anfitrión."
+              calificacion: 5
+              fecha: "2023-09-01"
+      responses:
+        "201":
+          description: Comentario creado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComentarioDTO"
+              example:
+                id: 10
+                usuarioId: 3
+                alojamientoId: 2
+                reservaId: 5
+                comentario: "Excelente ubicación y trato del anfitrión."
+                calificacion: 5
+                fecha: "2023-09-01"
+        "400":
+          description: Datos inválidos para crear comentario
+        "404":
+          description: Reserva o usuario asociado no encontrado
+
+  /comentarios/{id}:
+    get:
+      summary: Obtener un comentario por ID
+      tags:
+        - Comentario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del comentario
+      responses:
+        "200":
+          description: Comentario obtenido con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComentarioDTO"
+              example:
+                id: 1
+                usuarioId: 3
+                alojamientoId: 2
+                reservaId: 5
+                comentario: "Muy buen lugar, cómodo y limpio."
+                calificacion: 5
+                fecha: "2023-07-10"
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Comentario no encontrado
+
+    put:
+      summary: Actualizar un comentario por ID
+      tags:
+        - Comentario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del comentario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComentarioDTO"
+            example:
+              comentario: "El lugar estaba bien, pero un poco ruidoso."
+              calificacion: 3
+              fecha: "2023-09-02"
+      responses:
+        "200":
+          description: Comentario actualizado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComentarioDTO"
+              example:
+                id: 1
+                usuarioId: 3
+                alojamientoId: 2
+                reservaId: 5
+                comentario: "El lugar estaba bien, pero un poco ruidoso."
+                calificacion: 3
+                fecha: "2023-09-02"
+        "400":
+          description: Datos inválidos para actualizar el comentario
+        "404":
+          description: Comentario no encontrado
+
+    delete:
+      summary: Eliminar un comentario por ID
+      tags:
+        - Comentario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del comentario
+      responses:
+        "204":
+          description: Comentario eliminado con éxito
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Comentario no encontrado
+
+  /favoritos:
+    get:
+      summary: Obtener todos los favoritos
+      tags:
+        - Favorito
+      responses:
+        "200":
+          description: Lista de favoritos obtenida con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FavoritoDTO"
+              example:
+                - id: 1
+                  usuarioId: 3
+                  alojamientoId: 2
+                  fechaAgregado: "2023-08-15"
+                - id: 2
+                  usuarioId: 3
+                  alojamientoId: 4
+                  fechaAgregado: "2023-08-20"
+        "400":
+          description: Error en la solicitud
+        "404":
+          description: No se encontraron favoritos
+
+    post:
+      summary: Agregar un alojamiento a favoritos
+      tags:
+        - Favorito
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FavoritoDTO"
+            example:
+              usuarioId: 3
+              alojamientoId: 5
+              fechaAgregado: "2023-09-10"
+      responses:
+        "201":
+          description: Favorito creado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FavoritoDTO"
+              example:
+                id: 10
+                usuarioId: 3
+                alojamientoId: 5
+                fechaAgregado: "2023-09-10"
+        "400":
+          description: Datos inválidos para crear favorito
+        "404":
+          description: Usuario o alojamiento no encontrado
+
+  /favoritos/{id}:
+    get:
+      summary: Obtener un favorito por ID
+      tags:
+        - Favorito
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del favorito
+      responses:
+        "200":
+          description: Favorito obtenido con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FavoritoDTO"
+              example:
+                id: 1
+                usuarioId: 3
+                alojamientoId: 2
+                fechaAgregado: "2023-08-15"
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Favorito no encontrado
+
+    delete:
+      summary: Eliminar un favorito por ID
+      tags:
+        - Favorito
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del favorito
+      responses:
+        "204":
+          description: Favorito eliminado con éxito
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Favorito no encontrado
+
+  /imagenes-alojamiento:
+    get:
+      summary: Obtener todas las imágenes de alojamientos
+      tags:
+        - ImagenAlojamiento
+      responses:
+        "200":
+          description: Lista de imágenes obtenida con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ImagenAlojamientoDTO"
+              example:
+                - id: 1
+                  alojamientoId: 2
+                  url: "https://miapp.com/images/alojamiento2_1.jpg"
+                  descripcion: "Fachada principal del alojamiento"
+                - id: 2
+                  alojamientoId: 2
+                  url: "https://miapp.com/images/alojamiento2_2.jpg"
+                  descripcion: "Habitación principal con vista"
+        "400":
+          description: Error en la solicitud
+        "404":
+          description: No se encontraron imágenes
+
+    post:
+      summary: Subir una nueva imagen para un alojamiento
+      tags:
+        - ImagenAlojamiento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImagenAlojamientoDTO"
+            example:
+              alojamientoId: 3
+              url: "https://miapp.com/images/alojamiento3_1.jpg"
+              descripcion: "Piscina privada con vista panorámica"
+      responses:
+        "201":
+          description: Imagen agregada con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImagenAlojamientoDTO"
+              example:
+                id: 15
+                alojamientoId: 3
+                url: "https://miapp.com/images/alojamiento3_1.jpg"
+                descripcion: "Piscina privada con vista panorámica"
+        "400":
+          description: Datos inválidos para crear imagen
+        "404":
+          description: Alojamiento no encontrado
+
+  /imagenes-alojamiento/{id}:
+    get:
+      summary: Obtener una imagen de alojamiento por ID
+      tags:
+        - ImagenAlojamiento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID de la imagen
+      responses:
+        "200":
+          description: Imagen obtenida con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImagenAlojamientoDTO"
+              example:
+                id: 1
+                alojamientoId: 2
+                url: "https://miapp.com/images/alojamiento2_1.jpg"
+                descripcion: "Fachada principal del alojamiento"
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Imagen no encontrada
+
+    delete:
+      summary: Eliminar una imagen de alojamiento por ID
+      tags:
+        - ImagenAlojamiento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID de la imagen
+      responses:
+        "204":
+          description: Imagen eliminada con éxito
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Imagen no encontrada
+
+  /servicios:
+    get:
+      summary: Obtener todos los servicios disponibles
+      tags:
+        - Servicio
+      responses:
+        "200":
+          description: Lista de servicios obtenida con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ServicioDTO"
+              example:
+                - id: 1
+                  nombre: "WiFi"
+                  descripcion: "Internet inalámbrico de alta velocidad"
+                - id: 2
+                  nombre: "Piscina"
+                  descripcion: "Piscina al aire libre con agua climatizada"
+        "400":
+          description: Error en la solicitud
+        "404":
+          description: No se encontraron servicios
+
+    post:
+      summary: Crear un nuevo servicio
+      tags:
+        - Servicio
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServicioDTO"
+            example:
+              nombre: "Desayuno incluido"
+              descripcion: "Desayuno buffet disponible todas las mañanas"
+      responses:
+        "201":
+          description: Servicio creado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServicioDTO"
+              example:
+                id: 5
+                nombre: "Desayuno incluido"
+                descripcion: "Desayuno buffet disponible todas las mañanas"
+        "400":
+          description: Datos inválidos para crear servicio
+        "409":
+          description: Ya existe un servicio con el mismo nombre
+
+  /servicios/{id}:
+    get:
+      summary: Obtener un servicio por ID
+      tags:
+        - Servicio
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del servicio
+      responses:
+        "200":
+          description: Servicio obtenido con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServicioDTO"
+              example:
+                id: 2
+                nombre: "Piscina"
+                descripcion: "Piscina al aire libre con agua climatizada"
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Servicio no encontrado
+
+    put:
+      summary: Actualizar un servicio por ID
+      tags:
+        - Servicio
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del servicio
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServicioDTO"
+            example:
+              nombre: "Parqueadero"
+              descripcion: "Parqueadero gratuito disponible en el alojamiento"
+      responses:
+        "200":
+          description: Servicio actualizado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServicioDTO"
+              example:
+                id: 3
+                nombre: "Parqueadero"
+                descripcion: "Parqueadero gratuito disponible en el alojamiento"
+        "400":
+          description: Datos inválidos para actualizar servicio
+        "404":
+          description: Servicio no encontrado
+
+    delete:
+      summary: Eliminar un servicio por ID
+      tags:
+        - Servicio
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del servicio
+      responses:
+        "204":
+          description: Servicio eliminado con éxito
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Servicio no encontrado
+
+  /alojamientos-servicios:
+    get:
+      summary: Obtener todas las relaciones alojamiento-servicio
+      tags:
+        - AlojamientoServicio
+      responses:
+        "200":
+          description: Lista de relaciones obtenida con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AlojamientoServicioDTO"
+              example:
+                - id: 1
+                  alojamientoId: 2
+                  servicioId: 5
+                - id: 2
+                  alojamientoId: 3
+                  servicioId: 1
+        "400":
+          description: Error en la solicitud
+        "404":
+          description: No se encontraron relaciones
+
+    post:
+      summary: Asignar un servicio a un alojamiento
+      tags:
+        - AlojamientoServicio
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AlojamientoServicioDTO"
+            example:
+              alojamientoId: 2
+              servicioId: 5
+      responses:
+        "201":
+          description: Relación creada con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlojamientoServicioDTO"
+              example:
+                id: 3
+                alojamientoId: 2
+                servicioId: 5
+        "400":
+          description: Datos inválidos para crear relación
+        "409":
+          description: Relación ya existente entre alojamiento y servicio
+
+  /alojamientos-servicios/{id}:
+    get:
+      summary: Obtener una relación alojamiento-servicio por ID
+      tags:
+        - AlojamientoServicio
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID de la relación
+      responses:
+        "200":
+          description: Relación obtenida con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlojamientoServicioDTO"
+              example:
+                id: 1
+                alojamientoId: 2
+                servicioId: 5
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Relación no encontrada
+
+    delete:
+      summary: Eliminar una relación alojamiento-servicio por ID
+      tags:
+        - AlojamientoServicio
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID de la relación
+      responses:
+        "204":
+          description: Relación eliminada con éxito
+        "400":
+          description: ID inválido proporcionado
+        "404":
+          description: Relación no encontrada
+
+
+
+  # ======================
+  # Aquí se repite la misma estructura CRUD para:
+  # Notificacion, Reserva, Pago, Comentario, Favorito,
+  # ImagenAlojamiento, Servicio y AlojamientoServicio
+  # ======================
+
+components:
+  schemas:
+    UsuarioDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nombre:
+          type: string
+          example: David Gómez
+        email:
+          type: string
+          example: david@example.com
+        rol:
+          type: string
+          example: CLIENTE
+
+    AlojamientoDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        nombre:
+          type: string
+          example: Casa rural
+        descripcion:
+          type: string
+          example: Acogedora casa en el campo con chimenea
+        direccion:
+          type: string
+          example: Calle 123, Salento
+        precioPorNoche:
+          type: number
+          format: double
+          example: 75.5
+        anfitrionId:
+          type: integer
+          example: 1
+
+    NotificacionDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        usuarioId:
+          type: integer
+          example: 1
+        mensaje:
+          type: string
+          example: Tu reserva ha sido confirmada
+        estado:
+          type: string
+          example: LEIDA
+
+    ReservaDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+        usuarioId:
+          type: integer
+          example: 1
+        alojamientoId:
+          type: integer
+          example: 2
+        fechaInicio:
+          type: string
+          format: date
+          example: 2025-09-15
+        fechaFin:
+          type: string
+          format: date
+          example: 2025-09-20
+        estado:
+          type: string
+          example: CONFIRMADA
+
+    PagoDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 20
+        reservaId:
+          type: integer
+          example: 5
+        monto:
+          type: number
+          format: double
+          example: 250.75
+        metodoPago:
+          type: string
+          example: TARJETA_CREDITO
+        fechaPago:
+          type: string
+          format: date
+          example: 2025-09-10
+
+    ComentarioDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 12
+        usuarioId:
+          type: integer
+          example: 1
+        alojamientoId:
+          type: integer
+          example: 2
+        texto:
+          type: string
+          example: Muy buen alojamiento, cómodo y limpio
+        calificacion:
+          type: integer
+          example: 5
+
+    FavoritoDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 8
+        usuarioId:
+          type: integer
+          example: 1
+        alojamientoId:
+          type: integer
+          example: 2
+
+    ImagenAlojamientoDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 15
+        alojamientoId:
+          type: integer
+          example: 2
+        url:
+          type: string
+          example: http://imagenes.com/casa1.jpg
+
+    ServicioDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 3
+        nombre:
+          type: string
+          example: Piscina
+        descripcion:
+          type: string
+          example: Piscina climatizada disponible todo el año
+
+    AlojamientoServicioDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 7
+        alojamientoId:
+          type: integer
+          example: 2
+        servicioId:
+          type: integer
+          example: 3
+      required:
+        - alojamientoId
+        - servicioId
