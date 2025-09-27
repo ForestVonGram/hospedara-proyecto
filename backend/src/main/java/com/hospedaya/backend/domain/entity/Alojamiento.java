@@ -1,4 +1,54 @@
 package com.hospedaya.backend.domain.entity;
 
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "alojamientos")
 public class Alojamiento {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, length = 100)
+    private String nombre;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String descripcion;
+
+    @Column(nullable = false)
+    private String direccion;
+
+    @Column(nullable = false)
+    private Double precioPorNoche;
+
+    @Enumerated(EnumType.STRING)
+    private EstadoAlojamiento estado = EstadoAlojamiento.ACTIVO;
+
+    @ManyToOne
+    @JoinColumn(name = "anfitrion_id", nullable = false)
+    private Usuario anfitrion; // El usuario con rol ANFITRION
+
+    @OneToMany(mappedBy = "alojamiento", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reserva> reservas = new ArrayList<>();
+
+    @OneToMany(mappedBy = "alojamiento", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comentario> comentarios = new ArrayList<>();
+
+    @OneToMany(mappedBy = "alojamiento", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ImagenAlojamiento> imagenes = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "alojamiento_servicios",
+            joinColumns = @JoinColumn(name = "alojamiento_id"),
+            inverseJoinColumns = @JoinColumn(name = "servicio_id")
+    )
+    private List<Servicio> servicios = new ArrayList<>();
+
+    private LocalDateTime fechaCreacion = LocalDateTime.now();
 }
