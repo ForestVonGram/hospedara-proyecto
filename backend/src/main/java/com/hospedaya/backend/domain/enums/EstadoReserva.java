@@ -1,4 +1,4 @@
-package com.hospedaya.backend.domain.entity;
+package com.hospedaya.backend.domain.enums;
 
 public enum EstadoReserva {
     PENDIENTE,

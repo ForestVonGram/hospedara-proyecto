@@ -1,4 +1,4 @@
-package com.hospedaya.backend.domain.exception;
+package com.hospedaya.backend.exception;
 
 public class OperacionNoPermitidaException {
 }

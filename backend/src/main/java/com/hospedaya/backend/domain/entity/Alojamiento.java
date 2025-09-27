@@ -1,5 +1,6 @@
 package com.hospedaya.backend.domain.entity;
 
+import com.hospedaya.backend.domain.enums.EstadoAlojamiento;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

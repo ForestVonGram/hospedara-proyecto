@@ -1,5 +1,6 @@
 package com.hospedaya.backend.domain.entity;
 
+import com.hospedaya.backend.domain.enums.Rol;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

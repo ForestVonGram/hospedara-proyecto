@@ -7,30 +7,30 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "pagos")
-public class Pago {
+@Table(name = "transaccionesPago")
+public class TransaccionPago {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "reserva_id")
-    private Reserva reserva;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "pago_id")
+    private Pago pago;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String referenciaExterna;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EstadoPago estado;
+    private EstadoPago estadoPago;
 
     @Column(nullable = false)
     private BigDecimal monto;
 
     @Column(nullable = false)
-    private LocalDateTime fechaCreacion = LocalDateTime.now();
+    private LocalDateTime fechaRegistro = LocalDateTime.now();
 
-    private LocalDateTime fechaConfirmacion;
-
+    @Column(length = 500)
+    private String detalle;
 }
