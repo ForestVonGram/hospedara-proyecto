@@ -2,10 +2,14 @@ package com.hospedaya.backend.domain.entity;
 
 import com.hospedaya.backend.domain.enums.EstadoReserva;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "reservas")
 public class Reserva {

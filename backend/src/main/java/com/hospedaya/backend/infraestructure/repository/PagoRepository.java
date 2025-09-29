@@ -16,7 +16,7 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
 
     Optional<Pago> findByReferenciaExterna(String referenciaExterna);
 
-    List<Pago> findByEstadoPago(EstadoPago estadoPago);
+    List<Pago> findByEstado(EstadoPago estado);
 
     List<Pago> findByFechaCreacionBetween(LocalDateTime fechaInicio, LocalDateTime fechaFin);
 

@@ -11,7 +11,7 @@ public interface ImagenAlojamientoRepository extends JpaRepository<ImagenAlojami
 
     List<ImagenAlojamiento> findByAlojamientoId(Long alojamientoId);
 
-    boolean exsistsByUrlAndAlojamientoId(String url, Long alojamientoId);
+    boolean existsByUrlAndAlojamientoId(String url, Long alojamientoId);
 
     void deleteByAlojamientoId(Long alojamientoId);
 

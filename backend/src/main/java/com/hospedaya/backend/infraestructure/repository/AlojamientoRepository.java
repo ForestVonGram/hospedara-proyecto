@@ -1,17 +1,13 @@
 package com.hospedaya.backend.infraestructure.repository;
 
 import com.hospedaya.backend.domain.entity.Alojamiento;
-import com.hospedaya.backend.domain.entity.AlojamientoServicio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface AlojamientoRepository extends JpaRepository<Alojamiento, Long> {
-
-    Optional<Alojamiento> findByAlojamientoId(Long id);
 
     List<Alojamiento> findByPrecioPorNocheBetween(Double min, Double max);
 

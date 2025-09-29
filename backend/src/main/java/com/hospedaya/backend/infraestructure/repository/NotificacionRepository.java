@@ -1,6 +1,5 @@
 package com.hospedaya.backend.infraestructure.repository;
 
-import com.hospedaya.backend.domain.entity.Favorito;
 import com.hospedaya.backend.domain.entity.Notificacion;
 import com.hospedaya.backend.domain.entity.Usuario;
 import com.hospedaya.backend.domain.enums.TipoNotificacion;
@@ -15,9 +14,9 @@ public interface NotificacionRepository extends JpaRepository<Notificacion, Long
 
     List<Notificacion> findAllByUsuario(Usuario usuario);
 
-    List<Notificacion> findByTipoNotificacion(TipoNotificacion tipoNotificacion);
+    List<Notificacion> findByTipo(TipoNotificacion tipo);
 
-    List<Notificacion> finByLeida(boolean leida);
+    List<Notificacion> findByLeida(boolean leida);
 
     List<Notificacion> findByFechaCreacion(LocalDateTime fechaCreacion);
 }

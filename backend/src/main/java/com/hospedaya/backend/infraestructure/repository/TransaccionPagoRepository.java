@@ -17,5 +17,5 @@ public interface TransaccionPagoRepository extends JpaRepository<TransaccionPago
 
     boolean existsByReferenciaExterna(String referenciaExterna);
 
-    List<TransaccionPago> findByEstado(EstadoPago estado);
+    List<TransaccionPago> findByEstadoPago(EstadoPago estadoPago);
 }

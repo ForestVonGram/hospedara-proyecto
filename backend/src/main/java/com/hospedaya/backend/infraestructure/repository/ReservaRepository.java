@@ -16,7 +16,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     Optional<Reserva> findByAlojamientoId(Long alojamientoId);
 
-    List<Reserva> findByEstadoReserva(EstadoReserva estado);
+    List<Reserva> findByEstado(EstadoReserva estado);
 
     List<Reserva> findByFechaInicioBetween(LocalDateTime fechaInicio, LocalDateTime fechaFin);
 }

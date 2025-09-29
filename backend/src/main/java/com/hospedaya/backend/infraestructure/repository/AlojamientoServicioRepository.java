@@ -15,5 +15,5 @@ public interface AlojamientoServicioRepository extends JpaRepository<Alojamiento
 
     List<AlojamientoServicio> findByServicio(Servicio servicio);
 
-    boolean existByAlojamientoAndServicioId(Long alojamientoId, Long servicioId);
+    boolean existsByAlojamientoIdAndServicioId(Long alojamientoId, Long servicioId);
 }
