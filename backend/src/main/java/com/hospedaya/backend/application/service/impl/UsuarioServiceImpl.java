@@ -1,5 +1,6 @@
 package com.hospedaya.backend.application.service.impl;
 
+import com.hospedaya.backend.application.mapper.UsuarioMapper;
 import com.hospedaya.backend.application.service.base.UsuarioService;
 import com.hospedaya.backend.domain.entity.Usuario;
 import com.hospedaya.backend.domain.enums.Rol;
@@ -15,9 +16,11 @@ import java.util.List;
 public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioMapper usuarioMapper;
 
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper) {
         this.usuarioRepository = usuarioRepository;
+        this.usuarioMapper = usuarioMapper;
     }
 
     @Override
