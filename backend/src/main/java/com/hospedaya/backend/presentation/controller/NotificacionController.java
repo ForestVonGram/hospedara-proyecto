@@ -36,7 +36,7 @@ public class NotificacionController {
             required = true,
             content = @Content(mediaType = "application/json",
                     examples = @ExampleObject(
-                            value = "{ \"usuarioId\": 1, \"mensaje\": \"Su reserva fue confirmada\" }"
+                            value = "{ \"usuarioId\": 1, \"mensaje\": \"Su reserva fue confirmada\", \"tipo\": \"RESERVA\" }"
                     )
             )
     )
