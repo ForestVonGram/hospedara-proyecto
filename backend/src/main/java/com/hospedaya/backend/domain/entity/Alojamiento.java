@@ -2,6 +2,8 @@ package com.hospedaya.backend.domain.entity;
 
 import com.hospedaya.backend.domain.enums.EstadoAlojamiento;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,6 +11,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "alojamientos")
+@Getter
+@Setter
 public class Alojamiento {
 
     @Id

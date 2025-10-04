@@ -4,8 +4,15 @@ import com.hospedaya.backend.application.dto.alojamiento.AlojamientoRequestDTO;
 import com.hospedaya.backend.application.dto.alojamiento.AlojamientoResponseDTO;
 import com.hospedaya.backend.application.dto.alojamiento.AlojamientoUpdateDTO;
 import com.hospedaya.backend.domain.entity.Alojamiento;
+import com.hospedaya.backend.domain.entity.ImagenAlojamiento;
+import com.hospedaya.backend.domain.entity.Servicio;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface AlojamientoMapper {
@@ -14,7 +21,31 @@ public interface AlojamientoMapper {
 
     Alojamiento toEntity(AlojamientoRequestDTO dto);
 
+    @Mapping(source = "nombre", target = "titulo")
+    @Mapping(source = "anfitrion.id", target = "anfitrionId")
+    @Mapping(source = "imagenes", target = "imagenes", qualifiedByName = "imagenesToUrls")
+    @Mapping(source = "servicios", target = "servicios", qualifiedByName = "serviciosToNombres")
     AlojamientoResponseDTO toResponse(Alojamiento entity);
 
     void updateEntityFromDto(AlojamientoUpdateDTO dto, @org.mapstruct.MappingTarget Alojamiento entity);
+
+    @Named("imagenesToUrls")
+    default List<String> imagenesToUrls(List<ImagenAlojamiento> imagenes) {
+        if (imagenes == null) {
+            return null;
+        }
+        return imagenes.stream()
+                .map(ImagenAlojamiento::getUrl)
+                .collect(Collectors.toList());
+    }
+
+    @Named("serviciosToNombres")
+    default List<String> serviciosToNombres(List<Servicio> servicios) {
+        if (servicios == null) {
+            return null;
+        }
+        return servicios.stream()
+                .map(Servicio::getNombre)
+                .collect(Collectors.toList());
+    }
 }
