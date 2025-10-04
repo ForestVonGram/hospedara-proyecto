@@ -24,7 +24,7 @@ public class Usuario {
 
     private String telefono;
 
-    @Column(nullable = false)
+    @Column(name = "\"password\"", nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
