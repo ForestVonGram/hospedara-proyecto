@@ -1,5 +1,8 @@
 package com.hospedaya.backend.application.service.impl;
 
+import com.hospedaya.backend.application.dto.usuario.UsuarioRequestDTO;
+import com.hospedaya.backend.application.dto.usuario.UsuarioResponseDTO;
+import com.hospedaya.backend.application.dto.usuario.UsuarioUpdateDTO;
 import com.hospedaya.backend.application.mapper.UsuarioMapper;
 import com.hospedaya.backend.application.service.base.UsuarioService;
 import com.hospedaya.backend.domain.entity.Usuario;
@@ -10,6 +13,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,6 +26,33 @@ public class UsuarioServiceImpl implements UsuarioService {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
     }
+
+//    public UsuarioResponseDTO crearUsuarioDesdeDTO(UsuarioRequestDTO requestDTO) {
+//        Usuario usuario = usuarioMapper.toEntity(requestDTO);
+//        Usuario guardado = usuarioRepository.save(usuario);
+//        return usuarioMapper.toResponse(guardado);
+//    }
+//
+//    public UsuarioResponseDTO actualizarUsuarioDesdeDTO(Long id, UsuarioUpdateDTO updateDTO) {
+//        Usuario existente = usuarioRepository.findById(id)
+//                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con ID: " + id));
+//
+//        usuarioMapper.updateEntityFromDto(updateDTO, existente);
+//        Usuario actualizado = usuarioRepository.save(existente);
+//        return usuarioMapper.toResponse(actualizado);
+//    }
+//
+//    public UsuarioResponseDTO obtenerUsuarioPorIdDTO(Long id) {
+//        Usuario usuario = usuarioRepository.findById(id)
+//                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con ID: " + id));
+//        return usuarioMapper.toResponse(usuario);
+//    }
+//
+//    public List<UsuarioResponseDTO> listarUsuariosDTO() {
+//        return usuarioRepository.findAll().stream()
+//                .map(usuarioMapper::toResponse)
+//                .collect(Collectors.toList());
+//    }
 
     @Override
     public Usuario crearUsuario(Usuario usuario) {
