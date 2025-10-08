@@ -5,11 +5,12 @@ import com.hospedaya.backend.application.dto.alojamiento.AlojamientoResponseDTO;
 import com.hospedaya.backend.application.dto.alojamiento.AlojamientoUpdateDTO;
 import com.hospedaya.backend.application.mapper.AlojamientoMapper;
 import com.hospedaya.backend.application.service.base.AlojamientoService;
+import com.hospedaya.backend.application.service.base.UsuarioService;
 import com.hospedaya.backend.domain.entity.Alojamiento;
+import com.hospedaya.backend.domain.entity.Usuario;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,19 +27,15 @@ import java.util.stream.Collectors;
 public class AlojamientoController {
 
     private final AlojamientoService alojamientoService;
+    private final UsuarioService usuarioService;
     private final AlojamientoMapper alojamientoMapper;
 
-    public AlojamientoController(AlojamientoService alojamientoService, AlojamientoMapper alojamientoMapper) {
+    public AlojamientoController(AlojamientoService alojamientoService, UsuarioService usuarioService, AlojamientoMapper alojamientoMapper) {
         this.alojamientoService = alojamientoService;
+        this.usuarioService = usuarioService;
         this.alojamientoMapper = alojamientoMapper;
     }
 
-    @Operation(summary = "Listar alojamientos")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Alojamientos obtenidos"),
-            @ApiResponse(responseCode = "400", description = "Petición inválida"),
-            @ApiResponse(responseCode = "404", description = "No se encontraron alojamientos")
-    })
     @GetMapping
     public ResponseEntity<List<AlojamientoResponseDTO>> listarAlojamientos() {
         List<Alojamiento> alojamientos = alojamientoService.listarAlojamientos();
@@ -48,11 +45,6 @@ public class AlojamientoController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Obtener alojamiento por ID")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Alojamiento obtenido"),
-            @ApiResponse(responseCode = "404", description = "Alojamiento no encontrado")
-    })
     @GetMapping("/{id}")
     public ResponseEntity<AlojamientoResponseDTO> obtenerAlojamientoPorId(@PathVariable Long id) {
         Alojamiento alojamiento = alojamientoService.obtenerAlojamientoPorId(id);
@@ -60,35 +52,44 @@ public class AlojamientoController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Crear alojamiento")
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            description = "Datos del alojamiento",
-            required = true,
-            content = @Content(mediaType = "application/json",
-                    examples = @ExampleObject(
-                            value = "{ \"titulo\": \"Casa rural\", \"descripcion\": \"Acogedora casa en el campo\", \"direccion\": \"Calle 123\", \"precioPorNoche\": 75.5, \"anfitrionId\": 1 }"
-                    )
-            )
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Alojamiento creado"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
-            @ApiResponse(responseCode = "404", description = "Anfitrión no encontrado")
-    })
     @PostMapping
-    public ResponseEntity<AlojamientoResponseDTO> crearAlojamiento(@RequestBody AlojamientoRequestDTO requestDTO) {
+    public ResponseEntity<?> crearAlojamiento(@RequestBody AlojamientoRequestDTO requestDTO) {
+        //DEBUG: Imprimir el contenido del requestDTO
+        System.out.println("Datos recibidos en el controlador -> " + requestDTO);
+        System.out.println("------- DATOS RECIBIDOS EN EL REQUEST -------");
+        System.out.println("Nombre: " + requestDTO.getNombre());
+        System.out.println("Descripcion: " + requestDTO.getDescripcion());
+        System.out.println("Direccion: " + requestDTO.getDireccion());
+        System.out.println("Precio por noche: " + requestDTO.getPrecioPorNoche());
+        System.out.println("Anfitrion ID: " + requestDTO.getAnfitrionId());
+        System.out.println("---------------------------------------------");
+
+        if (requestDTO.getAnfitrionId() == null) {
+            throw new IllegalArgumentException("El id del anfitrión no puede ser nulo");
+        }
+
+        Usuario anfitrion = usuarioService.findById(requestDTO.getAnfitrionId());
+        System.out.println("🔍 DEBUG 2: Resultado de usuarioService.findById() = " + anfitrion);
+
+        if (anfitrion == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Anfitrión no encontrado");
+        }
+
+        if (anfitrion.getRol() != null && !anfitrion.getRol().name().equals("ANFITRION")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("El usuario no tiene permisos para crear alojamientos");
+        }
+
         Alojamiento alojamiento = alojamientoMapper.toEntity(requestDTO);
+        alojamiento.setAnfitrion(anfitrion);
+
+        System.out.println("🔍 DEBUG 3: Entidad Alojamiento creada desde DTO -> " + alojamiento);
+
         Alojamiento alojamientoCreado = alojamientoService.crearAlojamiento(alojamiento);
         AlojamientoResponseDTO response = alojamientoMapper.toResponse(alojamientoCreado);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @Operation(summary = "Actualizar alojamiento")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Alojamiento actualizado"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
-            @ApiResponse(responseCode = "404", description = "Alojamiento no encontrado")
-    })
     @PutMapping("/{id}")
     public ResponseEntity<AlojamientoResponseDTO> actualizarAlojamiento(
             @PathVariable Long id,
@@ -100,11 +101,6 @@ public class AlojamientoController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Eliminar alojamiento")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Alojamiento eliminado"),
-            @ApiResponse(responseCode = "404", description = "Alojamiento no encontrado")
-    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarAlojamiento(@PathVariable Long id) {
         alojamientoService.eliminarAlojamiento(id);

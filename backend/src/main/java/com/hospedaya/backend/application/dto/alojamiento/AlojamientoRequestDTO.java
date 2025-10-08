@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 @Data
 public class AlojamientoRequestDTO {
 
-    private String titulo;
+    private String nombre;
     private String descripcion;
     private String direccion;
     private BigDecimal precioPorNoche;
