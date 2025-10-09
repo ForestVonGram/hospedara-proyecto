@@ -36,7 +36,7 @@ public class AlojamientoController {
         this.alojamientoMapper = alojamientoMapper;
     }
 
-    @GetMapping
+    @GetMapping 
     public ResponseEntity<List<AlojamientoResponseDTO>> listarAlojamientos() {
         List<Alojamiento> alojamientos = alojamientoService.listarAlojamientos();
         List<AlojamientoResponseDTO> response = alojamientos.stream()
@@ -101,9 +101,27 @@ public class AlojamientoController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Eliminar alojamiento por ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Alojamiento eliminado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Alojamiento no encontrado")
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarAlojamiento(@PathVariable Long id) {
-        alojamientoService.eliminarAlojamiento(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> eliminarAlojamiento(@PathVariable Long id) {
+        System.out.println("🔹 Solicitando eliminación del alojamiento con id = " + id);
+
+        try {
+            alojamientoService.eliminarAlojamiento(id);
+            System.out.println("Alojamiento eliminado correctamente con id = " + id);
+            return ResponseEntity.ok("Alojamiento eliminado correctamente");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error inesperado al eliminar alojamiento: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error interno del servidor al eliminar alojamiento");
+        }
     }
+
 }
