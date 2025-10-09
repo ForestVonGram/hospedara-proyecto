@@ -54,7 +54,7 @@ public class AlojamientoController {
 
     @PostMapping
     public ResponseEntity<?> crearAlojamiento(@RequestBody AlojamientoRequestDTO requestDTO) {
-        //DEBUG: Imprimir el contenido del requestDTO
+        //DEBUG 1: Imprimir el contenido del requestDTO
         System.out.println("Datos recibidos en el controlador -> " + requestDTO);
         System.out.println("------- DATOS RECIBIDOS EN EL REQUEST -------");
         System.out.println("Nombre: " + requestDTO.getNombre());
@@ -69,7 +69,7 @@ public class AlojamientoController {
         }
 
         Usuario anfitrion = usuarioService.findById(requestDTO.getAnfitrionId());
-        System.out.println("🔍 DEBUG 2: Resultado de usuarioService.findById() = " + anfitrion);
+        System.out.println("DEBUG 2: Resultado de usuarioService.findById() = " + anfitrion);
 
         if (anfitrion == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Anfitrión no encontrado");
@@ -83,7 +83,7 @@ public class AlojamientoController {
         Alojamiento alojamiento = alojamientoMapper.toEntity(requestDTO);
         alojamiento.setAnfitrion(anfitrion);
 
-        System.out.println("🔍 DEBUG 3: Entidad Alojamiento creada desde DTO -> " + alojamiento);
+        System.out.println("DEBUG 3: Entidad Alojamiento creada desde DTO -> " + alojamiento);
 
         Alojamiento alojamientoCreado = alojamientoService.crearAlojamiento(alojamiento);
         AlojamientoResponseDTO response = alojamientoMapper.toResponse(alojamientoCreado);
