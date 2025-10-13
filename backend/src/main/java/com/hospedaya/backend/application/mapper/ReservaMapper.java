@@ -4,6 +4,7 @@ import com.hospedaya.backend.application.dto.reserva.ReservaRequestDTO;
 import com.hospedaya.backend.application.dto.reserva.ReservaResponseDTO;
 import com.hospedaya.backend.domain.entity.Reserva;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
@@ -11,6 +12,10 @@ public interface ReservaMapper {
 
     ReservaMapper INSTANCE = Mappers.getMapper(ReservaMapper.class);
 
+    // Indicamos a MapStruct que ignore los campos de entidad complejos (usuario, alojamiento),
+    // ya que serán cargados y asignados en el servicio usando los IDs.
+    @Mapping(target = "usuario", ignore = true)
+    @Mapping(target = "alojamiento", ignore = true)
     Reserva toEntity(ReservaRequestDTO dto);
 
     ReservaResponseDTO toResponse(Reserva entity);
