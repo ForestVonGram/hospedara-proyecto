@@ -173,4 +173,86 @@ public class UsuarioServiceImplTest {
         verify(usuarioRepository, times(1)).findById(999L);
         verify(usuarioRepository, never()).save(any(Usuario.class));
     }
+
+    @Test
+    void whenCrearUsuario_repositoryThrows_thenPropagate() {
+        RuntimeException boom = new RuntimeException("DB error");
+        when(usuarioRepository.save(any(Usuario.class))).thenThrow(boom);
+        assertThrows(RuntimeException.class, () -> usuarioService.crearUsuario(usuario));
+        verify(usuarioRepository, times(1)).save(any(Usuario.class));
+    }
+
+    @Test
+    void whenCrearUsuario_withNullEntity_thenRepositoryBehaviorPropagates() {
+        when(usuarioRepository.save(null)).thenThrow(new NullPointerException("null usuario"));
+        assertThrows(NullPointerException.class, () -> usuarioService.crearUsuario(null));
+        verify(usuarioRepository, times(1)).save(null);
+    }
+
+    @Test
+    void whenActualizarUsuario_shouldUpdateAllFieldsBeforeSave() {
+        Usuario update = new Usuario();
+        update.setNombre("Nuevo Nombre");
+        update.setEmail("nuevo@example.com");
+        update.setPassword("pass");
+        update.setTelefono("111");
+        update.setRol(Rol.ANFITRION);
+
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
+
+        usuarioService.actualizarUsuario(1L, update);
+
+        verify(usuarioRepository).save(org.mockito.ArgumentMatchers.argThat(u ->
+                u.getNombre().equals("Nuevo Nombre") &&
+                        u.getEmail().equals("nuevo@example.com") &&
+                        u.getPassword().equals("pass") &&
+                        u.getTelefono().equals("111") &&
+                        u.getRol() == Rol.ANFITRION
+        ));
+    }
+
+    @Test
+    void whenEliminarUsuario_deleteFails_thenPropagate() {
+        when(usuarioRepository.existsById(1L)).thenReturn(true);
+        doThrow(new RuntimeException("delete fail")).when(usuarioRepository).deleteById(1L);
+        assertThrows(RuntimeException.class, () -> usuarioService.eliminarUsuario(1L));
+        verify(usuarioRepository).existsById(1L);
+        verify(usuarioRepository).deleteById(1L);
+    }
+
+    @Test
+    void whenFindById_withNullId_thenThrowNPE() {
+        // Mockito por defecto retorna Optional.empty() para métodos que devuelven Optional,
+        // por lo que el servicio lanzará ResourceNotFoundException.
+        assertThrows(ResourceNotFoundException.class, () -> usuarioService.findById(null));
+    }
+
+    @Test
+    void whenListarUsuarios_empty_thenReturnEmptyList() {
+        when(usuarioRepository.findAll()).thenReturn(List.of());
+        List<Usuario> result = usuarioService.listarUsuarios();
+        assertThat(result).isNotNull();
+        assertThat(result).isEmpty();
+        verify(usuarioRepository).findAll();
+    }
+
+    @Test
+    void whenListarUsuarios_single_thenReturnOne() {
+        when(usuarioRepository.findAll()).thenReturn(List.of(usuario));
+        List<Usuario> result = usuarioService.listarUsuarios();
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(1);
+        verify(usuarioRepository).findAll();
+    }
+
+    @Test
+    void whenAsignarRol_shouldSaveWithNewRol() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
+
+        usuarioService.asignarRol(1L, Rol.ANFITRION);
+
+        verify(usuarioRepository).save(org.mockito.ArgumentMatchers.argThat(u -> u.getRol() == Rol.ANFITRION));
+    }
 }
