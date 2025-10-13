@@ -9,5 +9,6 @@ public interface ReservaService {
     Reserva crearReserva(Reserva reserva);
     Reserva obtenerReservaPorId(Long id);
     List<Reserva> listarReservas();
+    List<Reserva> listarReservasPorUsuario(Long usuarioId);
     void cancelarReserva(Long id);
 }

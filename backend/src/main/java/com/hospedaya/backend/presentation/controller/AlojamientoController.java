@@ -45,6 +45,20 @@ public class AlojamientoController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Listar alojamientos por anfitrión")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Alojamientos del anfitrión obtenidos"),
+            @ApiResponse(responseCode = "404", description = "Anfitrión o alojamientos no encontrados")
+    })
+    @GetMapping("/anfitrion/{anfitrionId}")
+    public ResponseEntity<List<AlojamientoResponseDTO>> listarAlojamientosPorAnfitrion(@PathVariable Long anfitrionId) {
+        List<Alojamiento> alojamientos = alojamientoService.listarAlojamientosPorAnfitrion(anfitrionId);
+        List<AlojamientoResponseDTO> response = alojamientos.stream()
+                .map(alojamientoMapper::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<AlojamientoResponseDTO> obtenerAlojamientoPorId(@PathVariable Long id) {
         Alojamiento alojamiento = alojamientoService.obtenerAlojamientoPorId(id);

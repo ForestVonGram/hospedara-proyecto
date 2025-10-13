@@ -37,6 +37,11 @@ public class ReservaServiceImpl implements ReservaService {
     }
 
     @Override
+    public List<Reserva> listarReservasPorUsuario(Long usuarioId) {
+        return reservaRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Override
     public void cancelarReserva(Long id) {
         Reserva reserva = reservaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada con ID: " + id));

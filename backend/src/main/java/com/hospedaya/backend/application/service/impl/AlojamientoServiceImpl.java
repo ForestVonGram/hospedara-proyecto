@@ -36,6 +36,11 @@ public class AlojamientoServiceImpl implements AlojamientoService {
     }
 
     @Override
+    public List<Alojamiento> listarAlojamientosPorAnfitrion(Long anfitrionId) {
+        return alojamientoRepository.findByAnfitrionId(anfitrionId);
+    }
+
+    @Override
     public void eliminarAlojamiento(Long id) {
         if (!alojamientoRepository.existsById(id)) {
             throw new ResourceNotFoundException("Alojamiento no encontrado con ID: " + id);

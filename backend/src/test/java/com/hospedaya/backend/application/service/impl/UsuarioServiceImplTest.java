@@ -183,10 +183,9 @@ public class UsuarioServiceImplTest {
     }
 
     @Test
-    void whenCrearUsuario_withNullEntity_thenRepositoryBehaviorPropagates() {
-        when(usuarioRepository.save(null)).thenThrow(new NullPointerException("null usuario"));
-        assertThrows(NullPointerException.class, () -> usuarioService.crearUsuario(null));
-        verify(usuarioRepository, times(1)).save(null);
+    void whenCrearUsuario_withNullEntity_thenThrowValidationException() {
+        assertThrows(com.hospedaya.backend.exception.ValidationException.class, () -> usuarioService.crearUsuario(null));
+        verify(usuarioRepository, never()).save(any());
     }
 
     @Test

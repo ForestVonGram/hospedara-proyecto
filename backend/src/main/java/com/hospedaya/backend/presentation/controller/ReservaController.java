@@ -45,14 +45,26 @@ public class ReservaController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Obtener reserva por ID")
+    @Operation(summary = "Listar reservas por usuario")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Reservas del usuario obtenidas"),
+            @ApiResponse(responseCode = "404", description = "Usuario o reservas no encontradas")
+    })
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<ReservaResponseDTO>> listarReservasPorUsuario(@PathVariable Long usuarioId) {
+        List<Reserva> reservas = reservaService.listarReservasPorUsuario(usuarioId);
+        List<ReservaResponseDTO> response = reservas.stream().map(reservaMapper::toResponse).collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Obtener reserva por ID de reserva")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Reserva obtenida"),
             @ApiResponse(responseCode = "404", description = "Reserva no encontrada")
     })
-    @GetMapping("/{id}")
-    public ResponseEntity<ReservaResponseDTO> obtenerReservaPorId(@PathVariable Long id) {
-        Reserva reserva = reservaService.obtenerReservaPorId(id);
+    @GetMapping("/{reservaId}")
+    public ResponseEntity<ReservaResponseDTO> obtenerReservaPorId(@PathVariable Long reservaId) {
+        Reserva reserva = reservaService.obtenerReservaPorId(reservaId);
         return ResponseEntity.ok(reservaMapper.toResponse(reserva));
     }
 
