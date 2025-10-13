@@ -56,6 +56,52 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public Usuario crearUsuario(Usuario usuario) {
+        if (usuario == null) {
+            throw new com.hospedaya.backend.exception.ValidationException("El usuario no puede ser nulo");
+        }
+        String nombre = usuario.getNombre() != null ? usuario.getNombre().trim() : null;
+        String email = usuario.getEmail() != null ? usuario.getEmail().trim().toLowerCase() : null;
+        String password = usuario.getPassword() != null ? usuario.getPassword().trim() : null;
+
+        java.util.List<String> errores = new java.util.ArrayList<>();
+        if (nombre == null || nombre.isEmpty()) {
+            errores.add("El nombre es obligatorio");
+        }
+        if (email == null || email.isEmpty()) {
+            errores.add("El email es obligatorio");
+        } else {
+            // Validación simple de email
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+            if (!pattern.matcher(email).matches()) {
+                errores.add("El email no tiene un formato válido");
+            }
+        }
+        if (password == null || password.isEmpty()) {
+            errores.add("La contraseña es obligatoria");
+        } else if (password.length() < 6) {
+            errores.add("La contraseña debe tener al menos 6 caracteres");
+        }
+
+        if (!errores.isEmpty()) {
+            throw new com.hospedaya.backend.exception.ValidationException("Datos de usuario inválidos", errores);
+        }
+
+        // Chequear duplicados por email
+        if (usuarioRepository.existsByEmail(email)) {
+            throw new com.hospedaya.backend.exception.DuplicateResourceException("Ya existe un usuario con el email: " + email);
+        }
+
+        // Normalizar valores y defaults
+        usuario.setNombre(nombre);
+        usuario.setEmail(email);
+        usuario.setPassword(password);
+        if (usuario.getFechaRegistro() == null) {
+            usuario.setFechaRegistro(java.time.LocalDate.now());
+        }
+        if (usuario.getActivo() == null) {
+            usuario.setActivo(true);
+        }
+
         return usuarioRepository.save(usuario);
     }
 

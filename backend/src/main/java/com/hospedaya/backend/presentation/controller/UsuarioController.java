@@ -61,9 +61,7 @@ public class UsuarioController {
     })
     @PostMapping
     public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario) {
-        usuario.setFechaRegistro(LocalDate.now());
-        usuario.setActivo(true);
-        Usuario guardado = usuarioRepository.save(usuario);
+        Usuario guardado = usuarioService.crearUsuario(usuario);
         return ResponseEntity.status(HttpStatus.CREATED).body(guardado);
     }
 
