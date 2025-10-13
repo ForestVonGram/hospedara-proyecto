@@ -1,6 +1,7 @@
 package com.hospedaya.backend.presentation.controller;
 
 import com.hospedaya.backend.application.dto.login.LoginRequest;
+import com.hospedaya.backend.application.service.impl.UsuarioServiceImpl;
 import com.hospedaya.backend.domain.entity.Usuario;
 import com.hospedaya.backend.infraestructure.repository.UsuarioRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,6 +26,7 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+    private UsuarioServiceImpl usuarioService;
 
     @Operation(summary = "Listar usuarios")
     @ApiResponses({
@@ -85,5 +87,19 @@ public class UsuarioController {
         }
 
         return ResponseEntity.ok("Inicio de sesión exitoso");
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> eliminarUsuario(@PathVariable Long id) {
+        try {
+            usuarioService.eliminarUsuario(id);
+            return ResponseEntity.ok("Usuario eliminado correctamente");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Usuario no encontrado con ID: " + id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar el usuario: " + e.getMessage());
+        }
     }
 }

@@ -106,9 +106,10 @@ public class AlojamientoController {
             @ApiResponse(responseCode = "200", description = "Alojamiento eliminado correctamente"),
             @ApiResponse(responseCode = "404", description = "Alojamiento no encontrado")
     })
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarAlojamiento(@PathVariable Long id) {
-        System.out.println("🔹 Solicitando eliminación del alojamiento con id = " + id);
+        System.out.println("Solicitando eliminación del alojamiento con id = " + id);
 
         try {
             alojamientoService.eliminarAlojamiento(id);
