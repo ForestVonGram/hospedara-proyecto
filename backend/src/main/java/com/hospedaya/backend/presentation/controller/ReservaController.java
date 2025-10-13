@@ -1,5 +1,10 @@
 package com.hospedaya.backend.presentation.controller;
 
+import com.hospedaya.backend.application.dto.reserva.ReservaRequestDTO;
+import com.hospedaya.backend.application.dto.reserva.ReservaResponseDTO;
+import com.hospedaya.backend.application.mapper.ReservaMapper;
+import com.hospedaya.backend.application.service.base.ReservaService;
+import com.hospedaya.backend.domain.entity.Reserva;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -9,15 +14,23 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/reservas")
 @Tag(name = "Reservas", description = "Gestión de reservas")
 public class ReservaController {
+
+    private final ReservaService reservaService;
+    private final ReservaMapper reservaMapper;
+
+    public ReservaController(ReservaService reservaService, ReservaMapper reservaMapper) {
+        this.reservaService = reservaService;
+        this.reservaMapper = reservaMapper;
+    }
 
     @Operation(summary = "Listar reservas")
     @ApiResponses({
@@ -26,8 +39,21 @@ public class ReservaController {
             @ApiResponse(responseCode = "404", description = "Reservas no encontradas")
     })
     @GetMapping
-    public ResponseEntity<?> listarReservas() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<ReservaResponseDTO>> listarReservas() {
+        List<Reserva> reservas = reservaService.listarReservas();
+        List<ReservaResponseDTO> response = reservas.stream().map(reservaMapper::toResponse).collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Obtener reserva por ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Reserva obtenida"),
+            @ApiResponse(responseCode = "404", description = "Reserva no encontrada")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<ReservaResponseDTO> obtenerReservaPorId(@PathVariable Long id) {
+        Reserva reserva = reservaService.obtenerReservaPorId(id);
+        return ResponseEntity.ok(reservaMapper.toResponse(reserva));
     }
 
     @Operation(summary = "Crear reserva")
@@ -46,8 +72,22 @@ public class ReservaController {
             @ApiResponse(responseCode = "404", description = "Usuario o alojamiento no encontrado")
     })
     @PostMapping
-    public ResponseEntity<?> crearReserva() {
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<ReservaResponseDTO> crearReserva(@RequestBody ReservaRequestDTO requestDTO) {
+        Reserva reserva = reservaMapper.toEntity(requestDTO);
+        Reserva creada = reservaService.crearReserva(reserva);
+        ReservaResponseDTO response = reservaMapper.toResponse(creada);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Operation(summary = "Cancelar reserva")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Reserva cancelada"),
+            @ApiResponse(responseCode = "404", description = "Reserva no encontrada")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancelarReserva(@PathVariable Long id) {
+        reservaService.cancelarReserva(id);
+        return ResponseEntity.noContent().build();
     }
 }
 

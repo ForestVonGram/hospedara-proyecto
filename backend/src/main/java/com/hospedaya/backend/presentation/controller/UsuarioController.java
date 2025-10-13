@@ -1,7 +1,7 @@
 package com.hospedaya.backend.presentation.controller;
 
 import com.hospedaya.backend.application.dto.login.LoginRequest;
-import com.hospedaya.backend.application.service.impl.UsuarioServiceImpl;
+import com.hospedaya.backend.application.service.base.UsuarioService;
 import com.hospedaya.backend.domain.entity.Usuario;
 import com.hospedaya.backend.infraestructure.repository.UsuarioRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +26,8 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-    private UsuarioServiceImpl usuarioService;
+    @Autowired
+    private UsuarioService usuarioService;
 
     @Operation(summary = "Listar usuarios")
     @ApiResponses({
