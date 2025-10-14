@@ -95,7 +95,7 @@ public class ReservaController {
             @ApiResponse(responseCode = "404", description = "Usuario o alojamiento no encontrado")
     })
     @PostMapping
-    public ResponseEntity<ReservaResponseDTO> crearReserva(@RequestBody ReservaRequestDTO requestDTO) {
+    public ResponseEntity<ReservaResponseDTO> crearReserva(@jakarta.validation.Valid @RequestBody ReservaRequestDTO requestDTO) {
         // Validaciones básicas para evitar guardar valores nulos en DB
         if (requestDTO.getUsuarioId() == null) {
             throw new BadRequestException("El usuarioId es obligatorio");
