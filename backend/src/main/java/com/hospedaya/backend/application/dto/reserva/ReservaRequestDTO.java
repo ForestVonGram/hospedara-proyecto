@@ -1,6 +1,7 @@
 package com.hospedaya.backend.application.dto.reserva;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import jakarta.validation.constraints.NotNull;
@@ -18,8 +19,10 @@ public class ReservaRequestDTO {
     private Long alojamientoId;
 
     @NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaInicio;
 
     @NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaFin;
 }
