@@ -14,7 +14,7 @@ import org.mapstruct.factory.Mappers;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = org.mapstruct.NullValuePropertyMappingStrategy.IGNORE)
 public interface AlojamientoMapper {
 
     AlojamientoMapper INSTANCE = Mappers.getMapper(AlojamientoMapper.class);

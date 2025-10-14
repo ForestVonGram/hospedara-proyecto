@@ -88,6 +88,24 @@ public class UsuarioController {
         return ResponseEntity.ok("Inicio de sesión exitoso");
     }
 
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualizar un usuario")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Usuario actualizado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos")
+    })
+    public ResponseEntity<?> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+        try {
+            Usuario actualizado = usuarioService.actualizarUsuario(id, usuario);
+            return ResponseEntity.ok(actualizado);
+        } catch (com.hospedaya.backend.exception.ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarUsuario(@PathVariable Long id) {
         try {
