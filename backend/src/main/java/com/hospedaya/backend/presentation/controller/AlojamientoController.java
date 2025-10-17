@@ -52,6 +52,13 @@ public class AlojamientoController {
     })
     @GetMapping("/anfitrion/{anfitrionId}")
     public ResponseEntity<List<AlojamientoResponseDTO>> listarAlojamientosPorAnfitrion(@PathVariable Long anfitrionId) {
+        try {
+            // Verificar existencia del anfitrión; si no existe, el servicio lanzará ResourceNotFoundException
+            usuarioService.findById(anfitrionId);
+        } catch (com.hospedaya.backend.exception.ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
         List<Alojamiento> alojamientos = alojamientoService.listarAlojamientosPorAnfitrion(anfitrionId);
         List<AlojamientoResponseDTO> response = alojamientos.stream()
                 .map(alojamientoMapper::toResponse)
