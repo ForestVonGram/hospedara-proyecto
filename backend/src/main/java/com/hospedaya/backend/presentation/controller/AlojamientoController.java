@@ -48,18 +48,27 @@ public class AlojamientoController {
     @Operation(summary = "Listar alojamientos por anfitrión")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Alojamientos del anfitrión obtenidos"),
+            @ApiResponse(responseCode = "400", description = "El ID proporcionado no corresponde a un anfitrión"),
             @ApiResponse(responseCode = "404", description = "Anfitrión o alojamientos no encontrados")
     })
     @GetMapping("/anfitrion/{anfitrionId}")
-    public ResponseEntity<List<AlojamientoResponseDTO>> listarAlojamientosPorAnfitrion(@PathVariable Long anfitrionId) {
+    public ResponseEntity<?> listarAlojamientosPorAnfitrion(@PathVariable Long anfitrionId) {
         try {
-            // Verificar existencia del anfitrión; si no existe, el servicio lanzará ResourceNotFoundException
-            usuarioService.findById(anfitrionId);
+            Usuario anfitrion = usuarioService.findById(anfitrionId);
+            // Verificar que el usuario tenga rol ANFITRION
+            if (anfitrion.getRol() == null || !anfitrion.getRol().name().equals("ANFITRION")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("El ID proporcionado no corresponde a un anfitrión");
+            }
         } catch (com.hospedaya.backend.exception.ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Anfitrión no encontrado con ID: " + anfitrionId);
         }
 
         List<Alojamiento> alojamientos = alojamientoService.listarAlojamientosPorAnfitrion(anfitrionId);
+        if (alojamientos == null || alojamientos.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No se encontraron alojamientos para el anfitrión con ID: " + anfitrionId);
+        }
         List<AlojamientoResponseDTO> response = alojamientos.stream()
                 .map(alojamientoMapper::toResponse)
                 .collect(Collectors.toList());

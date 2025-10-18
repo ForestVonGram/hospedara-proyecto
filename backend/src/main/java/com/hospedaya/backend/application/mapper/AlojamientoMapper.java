@@ -11,6 +11,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,8 @@ public interface AlojamientoMapper {
     @Mapping(source = "servicios", target = "servicios", qualifiedByName = "serviciosToNombres")
     AlojamientoResponseDTO toResponse(Alojamiento entity);
 
+    @Mapping(source = "titulo", target = "nombre")
+    @Mapping(source = "precioPorNoche", target = "precioPorNoche", qualifiedByName = "bigDecimalToDouble")
     void updateEntityFromDto(AlojamientoUpdateDTO dto, @org.mapstruct.MappingTarget Alojamiento entity);
 
     @Named("imagenesToUrls")
@@ -47,5 +50,10 @@ public interface AlojamientoMapper {
         return servicios.stream()
                 .map(Servicio::getNombre)
                 .collect(Collectors.toList());
+    }
+
+    @Named("bigDecimalToDouble")
+    default Double bigDecimalToDouble(BigDecimal value) {
+        return value == null ? null : value.doubleValue();
     }
 }
