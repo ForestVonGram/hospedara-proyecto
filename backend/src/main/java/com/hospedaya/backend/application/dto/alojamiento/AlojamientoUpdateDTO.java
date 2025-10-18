@@ -14,5 +14,6 @@ import java.math.BigDecimal;
 public class AlojamientoUpdateDTO {
     private String titulo;
     private String descripcion;
+    private String direccion;
     private BigDecimal precioPorNoche;
 }

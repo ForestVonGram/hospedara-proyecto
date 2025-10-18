@@ -20,6 +20,7 @@ public interface AlojamientoMapper {
 
     AlojamientoMapper INSTANCE = Mappers.getMapper(AlojamientoMapper.class);
 
+    @Mapping(source = "precioPorNoche", target = "precioPorNoche", qualifiedByName = "bigDecimalToDouble")
     Alojamiento toEntity(AlojamientoRequestDTO dto);
 
     @Mapping(source = "nombre", target = "titulo")
@@ -29,6 +30,7 @@ public interface AlojamientoMapper {
     AlojamientoResponseDTO toResponse(Alojamiento entity);
 
     @Mapping(source = "titulo", target = "nombre")
+    @Mapping(source = "direccion", target = "direccion")
     @Mapping(source = "precioPorNoche", target = "precioPorNoche", qualifiedByName = "bigDecimalToDouble")
     void updateEntityFromDto(AlojamientoUpdateDTO dto, @org.mapstruct.MappingTarget Alojamiento entity);
 

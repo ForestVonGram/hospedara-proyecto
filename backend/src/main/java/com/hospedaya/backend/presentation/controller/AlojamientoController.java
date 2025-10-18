@@ -39,7 +39,9 @@ public class AlojamientoController {
     @GetMapping 
     public ResponseEntity<List<AlojamientoResponseDTO>> listarAlojamientos() {
         List<Alojamiento> alojamientos = alojamientoService.listarAlojamientos();
+        // Control de datos al listar: excluir registros inválidos
         List<AlojamientoResponseDTO> response = alojamientos.stream()
+                .filter(this::esValidoParaListado)
                 .map(alojamientoMapper::toResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
@@ -70,6 +72,7 @@ public class AlojamientoController {
                     .body("No se encontraron alojamientos para el anfitrión con ID: " + anfitrionId);
         }
         List<AlojamientoResponseDTO> response = alojamientos.stream()
+                .filter(this::esValidoParaListado)
                 .map(alojamientoMapper::toResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
@@ -94,8 +97,24 @@ public class AlojamientoController {
         System.out.println("Anfitrion ID: " + requestDTO.getAnfitrionId());
         System.out.println("---------------------------------------------");
 
+        // Validaciones de datos de entrada
+        if (requestDTO.getNombre() == null || requestDTO.getNombre().trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre no puede ser nulo ni vacío");
+        }
+        if (requestDTO.getDescripcion() == null || requestDTO.getDescripcion().trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La descripción no puede ser nula ni vacía");
+        }
+        if (requestDTO.getDireccion() == null || requestDTO.getDireccion().trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La dirección no puede ser nula ni vacía");
+        }
+        if (requestDTO.getPrecioPorNoche() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El precio por noche no puede ser nulo");
+        }
+        if (requestDTO.getPrecioPorNoche().doubleValue() < 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El precio por noche no puede ser negativo");
+        }
         if (requestDTO.getAnfitrionId() == null) {
-            throw new IllegalArgumentException("El id del anfitrión no puede ser nulo");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El id del anfitrión no puede ser nulo");
         }
 
         Usuario anfitrion = usuarioService.findById(requestDTO.getAnfitrionId());
@@ -121,12 +140,14 @@ public class AlojamientoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AlojamientoResponseDTO> actualizarAlojamiento( //CORREGIR método
+    public ResponseEntity<AlojamientoResponseDTO> actualizarAlojamiento( // método corregido
             @PathVariable Long id,
             @RequestBody AlojamientoUpdateDTO updateDTO) {
         Alojamiento alojamiento = alojamientoService.obtenerAlojamientoPorId(id);
+        // Aplica solo los campos provistos (no nulos) del DTO al alojamiento existente
         alojamientoMapper.updateEntityFromDto(updateDTO, alojamiento);
-        Alojamiento alojamientoActualizado = alojamientoService.crearAlojamiento(alojamiento);
+        // Guardar usando el método de actualización para validar y persistir cambios
+        Alojamiento alojamientoActualizado = alojamientoService.actualizarAlojamiento(alojamiento);
         AlojamientoResponseDTO response = alojamientoMapper.toResponse(alojamientoActualizado);
         return ResponseEntity.ok(response);
     }
@@ -136,11 +157,9 @@ public class AlojamientoController {
             @ApiResponse(responseCode = "200", description = "Alojamiento eliminado correctamente"),
             @ApiResponse(responseCode = "404", description = "Alojamiento no encontrado")
     })
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarAlojamiento(@PathVariable Long id) { //Método correcto
         System.out.println("Solicitando eliminación del alojamiento con id = " + id);
-
         try {
             alojamientoService.eliminarAlojamiento(id);
             System.out.println("Alojamiento eliminado correctamente con id = " + id);
@@ -155,4 +174,19 @@ public class AlojamientoController {
         }
     }
 
+    // Helpers de validación para control de datos al listar
+    private boolean esValidoParaListado(Alojamiento a) {
+        if (a == null) return false;
+        if (estaVacia(a.getNombre())) return false;
+        if (estaVacia(a.getDescripcion())) return false;
+        if (estaVacia(a.getDireccion())) return false;
+        if (a.getPrecioPorNoche() == null || a.getPrecioPorNoche() < 0) return false;
+        Usuario anfitrion = a.getAnfitrion();
+        if (anfitrion == null || anfitrion.getRol() == null) return false;
+        return "ANFITRION".equals(anfitrion.getRol().name());
+    }
+
+    private boolean estaVacia(String s) {
+        return s == null || s.trim().isEmpty();
+    }
 }

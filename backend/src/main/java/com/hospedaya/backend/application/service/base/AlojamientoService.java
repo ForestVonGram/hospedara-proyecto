@@ -9,5 +9,6 @@ public interface AlojamientoService {
     Alojamiento obtenerAlojamientoPorId(Long id);
     List<Alojamiento> listarAlojamientos();
     List<Alojamiento> listarAlojamientosPorAnfitrion(Long anfitrionId);
+    Alojamiento actualizarAlojamiento(Alojamiento alojamiento);
     void eliminarAlojamiento(Long id);
 }
