@@ -52,7 +52,7 @@ public class AlojamientoController {
             @ApiResponse(responseCode = "404", description = "Anfitrión o alojamientos no encontrados")
     })
     @GetMapping("/anfitrion/{anfitrionId}")
-    public ResponseEntity<?> listarAlojamientosPorAnfitrion(@PathVariable Long anfitrionId) {
+    public ResponseEntity<?> listarAlojamientosPorAnfitrion(@PathVariable Long anfitrionId) { //Método correcto
         try {
             Usuario anfitrion = usuarioService.findById(anfitrionId);
             // Verificar que el usuario tenga rol ANFITRION
@@ -76,14 +76,14 @@ public class AlojamientoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AlojamientoResponseDTO> obtenerAlojamientoPorId(@PathVariable Long id) {
+    public ResponseEntity<AlojamientoResponseDTO> obtenerAlojamientoPorId(@PathVariable Long id) { //Método correcto
         Alojamiento alojamiento = alojamientoService.obtenerAlojamientoPorId(id);
         AlojamientoResponseDTO response = alojamientoMapper.toResponse(alojamiento);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<?> crearAlojamiento(@RequestBody AlojamientoRequestDTO requestDTO) {
+    public ResponseEntity<?> crearAlojamiento(@RequestBody AlojamientoRequestDTO requestDTO) { //Método correcto
         //DEBUG 1: Imprimir el contenido del requestDTO
         System.out.println("Datos recibidos en el controlador -> " + requestDTO);
         System.out.println("------- DATOS RECIBIDOS EN EL REQUEST -------");
@@ -121,7 +121,7 @@ public class AlojamientoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AlojamientoResponseDTO> actualizarAlojamiento(
+    public ResponseEntity<AlojamientoResponseDTO> actualizarAlojamiento( //CORREGIR método
             @PathVariable Long id,
             @RequestBody AlojamientoUpdateDTO updateDTO) {
         Alojamiento alojamiento = alojamientoService.obtenerAlojamientoPorId(id);
@@ -138,7 +138,7 @@ public class AlojamientoController {
     })
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarAlojamiento(@PathVariable Long id) {
+    public ResponseEntity<?> eliminarAlojamiento(@PathVariable Long id) { //Método correcto
         System.out.println("Solicitando eliminación del alojamiento con id = " + id);
 
         try {
