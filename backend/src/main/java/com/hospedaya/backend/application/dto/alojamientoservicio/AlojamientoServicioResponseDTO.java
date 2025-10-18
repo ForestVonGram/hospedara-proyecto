@@ -5,7 +5,8 @@ import lombok.Data;
 @Data
 public class AlojamientoServicioResponseDTO {
 
-    private Long id;
-    private Long alojamientoId;
-    private Long servicioId;
+    // Datos del servicio asociado que se espera en la respuesta
+    private Long id; // id del servicio
+    private String nombre;
+    private String descripcion;
 }
