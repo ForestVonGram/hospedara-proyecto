@@ -11,9 +11,11 @@ import java.util.Optional;
 @Repository
 public interface AlojamientoServicioRepository extends JpaRepository<AlojamientoServicio, Long> {
 
-    Optional<AlojamientoServicio> findByAlojamientoId(Long alojamientoId);
+    // Puede haber múltiples servicios por alojamiento, devolver lista
+    List<AlojamientoServicio> findByAlojamiento_Id(Long alojamientoId);
 
     List<AlojamientoServicio> findByServicio(Servicio servicio);
 
-    boolean existsByAlojamientoIdAndServicioId(Long alojamientoId, Long servicioId);
+    // Usar la travesía de propiedades con guion bajo para evitar ambigüedad
+    boolean existsByAlojamiento_IdAndServicio_Id(Long alojamientoId, Long servicioId);
 }

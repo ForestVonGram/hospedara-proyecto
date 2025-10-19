@@ -48,7 +48,7 @@ public class AlojamientoServicioServiceImpl implements AlojamientoServicioServic
                 .orElseThrow(() -> new ResourceNotFoundException("Servicio no encontrado con id: " + servicioId));
 
         // Evitar duplicados
-        if (alojamientoServicioRepository.existsByAlojamientoIdAndServicioId(alojamientoId, servicioId)) {
+        if (alojamientoServicioRepository.existsByAlojamiento_IdAndServicio_Id(alojamientoId, servicioId)) {
             throw new DuplicateResourceException("El servicio ya está asignado a este alojamiento.");
         }
 
