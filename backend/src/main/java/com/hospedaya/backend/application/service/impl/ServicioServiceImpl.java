@@ -21,6 +21,25 @@ public class ServicioServiceImpl implements ServicioService {
 
     @Override
     public Servicio crearServicio(Servicio servicio) {
+        // Validaciones para evitar crear servicios vacíos o inválidos
+        if (servicio == null) {
+            throw new com.hospedaya.backend.exception.ValidationException("El servicio no puede ser nulo");
+        }
+        String nombre = servicio.getNombre();
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new com.hospedaya.backend.exception.ValidationException("El nombre del servicio es obligatorio");
+        }
+        nombre = nombre.trim();
+        if (nombre.length() > 100) {
+            throw new com.hospedaya.backend.exception.ValidationException("El nombre del servicio no puede superar 100 caracteres");
+        }
+        servicio.setNombre(nombre);
+
+        String descripcion = servicio.getDescripcion();
+        if (descripcion != null) {
+            servicio.setDescripcion(descripcion.trim());
+        }
+
         return servicioRepository.save(servicio);
     }
 

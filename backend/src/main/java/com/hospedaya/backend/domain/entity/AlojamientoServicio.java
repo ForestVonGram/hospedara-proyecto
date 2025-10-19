@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "alojamientosServicios")
+@Table(name = "alojamiento_servicios")
 @Getter
 @Setter
 public class AlojamientoServicio {
@@ -18,7 +18,8 @@ public class AlojamientoServicio {
     @JoinColumn(name = "alojamiento_id", nullable = false)
     private Alojamiento alojamiento;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    // EAGER para evitar LazyInitializationException al mapear la respuesta (se accede a nombre/descripcion)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "servicio_id", nullable = false)
     private Servicio servicio;
 

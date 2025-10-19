@@ -29,7 +29,7 @@ public interface AlojamientoMapper {
     @Mapping(source = "servicios", target = "servicios", qualifiedByName = "serviciosToNombres")
     AlojamientoResponseDTO toResponse(Alojamiento entity);
 
-    @Mapping(source = "titulo", target = "nombre")
+    @Mapping(source = "nombre", target = "nombre")
     @Mapping(source = "direccion", target = "direccion")
     @Mapping(source = "precioPorNoche", target = "precioPorNoche", qualifiedByName = "bigDecimalToDouble")
     void updateEntityFromDto(AlojamientoUpdateDTO dto, @org.mapstruct.MappingTarget Alojamiento entity);

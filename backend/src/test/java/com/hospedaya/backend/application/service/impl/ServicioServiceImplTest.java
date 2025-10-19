@@ -51,6 +51,15 @@ public class ServicioServiceImplTest {
     }
 
     @Test
+    void crearServicio_conNombreVacio_debeLanzarValidationException() {
+        Servicio s = new Servicio();
+        s.setNombre("   ");
+        s.setDescripcion("Desc");
+        assertThrows(com.hospedaya.backend.exception.ValidationException.class, () -> servicioService.crearServicio(s));
+        verify(servicioRepository, never()).save(any());
+    }
+
+    @Test
     void actualizarServicio_debeActualizarCampos() {
         Servicio update = new Servicio();
         update.setId(1L);
@@ -129,10 +138,9 @@ public class ServicioServiceImplTest {
 
     // Extras to reach 3 tests per method
     @Test
-    void crearServicio_conNull_debeLanzarNPE() {
-        when(servicioRepository.save(null)).thenThrow(new NullPointerException("null servicio"));
-        assertThrows(NullPointerException.class, () -> servicioService.crearServicio(null));
-        verify(servicioRepository).save(null);
+    void crearServicio_conNull_debeLanzarValidationException() {
+        assertThrows(com.hospedaya.backend.exception.ValidationException.class, () -> servicioService.crearServicio(null));
+        verify(servicioRepository, never()).save(any());
     }
 
     @Test

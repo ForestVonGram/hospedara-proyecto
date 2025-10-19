@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AlojamientoUpdateDTO {
-    private String titulo;
+    private String nombre;
     private String descripcion;
     private String direccion;
     private BigDecimal precioPorNoche;
