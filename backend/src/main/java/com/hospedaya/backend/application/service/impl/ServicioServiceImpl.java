@@ -3,6 +3,7 @@ package com.hospedaya.backend.application.service.impl;
 import com.hospedaya.backend.application.service.base.ServicioService;
 import com.hospedaya.backend.domain.entity.Servicio;
 import com.hospedaya.backend.exception.ResourceNotFoundException;
+import com.hospedaya.backend.infraestructure.repository.AlojamientoServicioRepository;
 import com.hospedaya.backend.infraestructure.repository.ServicioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -14,9 +15,12 @@ import java.util.List;
 public class ServicioServiceImpl implements ServicioService {
 
     private final ServicioRepository servicioRepository;
+    private final AlojamientoServicioRepository alojamientoServicioRepository;
 
-    public ServicioServiceImpl(ServicioRepository servicioRepository) {
+    public ServicioServiceImpl(ServicioRepository servicioRepository,
+                               AlojamientoServicioRepository alojamientoServicioRepository) {
         this.servicioRepository = servicioRepository;
+        this.alojamientoServicioRepository = alojamientoServicioRepository;
     }
 
     @Override
@@ -70,9 +74,14 @@ public class ServicioServiceImpl implements ServicioService {
 
     @Override
     public void eliminarServicio(Long id) {
-        if (!servicioRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Servicio no encontrado con id: " + id);
-        }
+        // Asegurar que el servicio exista y obtenerlo (aunque no lo usemos luego)
+        servicioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Servicio no encontrado con id: " + id));
+
+        // Eliminar relaciones en la tabla intermedia para evitar violaciones de integridad referencial
+        alojamientoServicioRepository.deleteByServicio_Id(id);
+
+        // Eliminar el servicio
         servicioRepository.deleteById(id);
     }
 }

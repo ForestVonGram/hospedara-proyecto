@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface AlojamientoServicioRepository extends JpaRepository<AlojamientoServicio, Long> {
@@ -18,4 +17,7 @@ public interface AlojamientoServicioRepository extends JpaRepository<Alojamiento
 
     // Usar la travesía de propiedades con guion bajo para evitar ambigüedad
     boolean existsByAlojamiento_IdAndServicio_Id(Long alojamientoId, Long servicioId);
+
+    // Eliminación en cascada lógica para desvincular todas las relaciones de un servicio antes de eliminarlo
+    void deleteByServicio_Id(Long servicioId);
 }
