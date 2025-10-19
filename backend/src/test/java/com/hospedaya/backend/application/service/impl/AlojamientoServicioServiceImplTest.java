@@ -1,8 +1,12 @@
 package com.hospedaya.backend.application.service.impl;
 
+import com.hospedaya.backend.domain.entity.Alojamiento;
 import com.hospedaya.backend.domain.entity.AlojamientoServicio;
+import com.hospedaya.backend.domain.entity.Servicio;
 import com.hospedaya.backend.exception.ResourceNotFoundException;
+import com.hospedaya.backend.infraestructure.repository.AlojamientoRepository;
 import com.hospedaya.backend.infraestructure.repository.AlojamientoServicioRepository;
+import com.hospedaya.backend.infraestructure.repository.ServicioRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,6 +27,10 @@ public class AlojamientoServicioServiceImplTest {
 
     @Mock
     private AlojamientoServicioRepository alojamientoServicioRepository;
+    @Mock
+    private AlojamientoRepository alojamientoRepository;
+    @Mock
+    private ServicioRepository servicioRepository;
 
     @InjectMocks
     private AlojamientoServicioServiceImpl alojamientoServicioService;
@@ -29,26 +38,54 @@ public class AlojamientoServicioServiceImplTest {
     // crearAlojamientoService
     @Test
     void crearAlojamientoService_debeGuardarYRetornar() {
+        // Arrange
+        Alojamiento alojamiento = new Alojamiento(); alojamiento.setId(1L);
+        Servicio servicio = new Servicio(); servicio.setId(2L);
         AlojamientoServicio rel = new AlojamientoServicio();
+        rel.setAlojamiento(alojamiento);
+        rel.setServicio(servicio);
+
+        when(alojamientoRepository.findById(1L)).thenReturn(Optional.of(alojamiento));
+        when(servicioRepository.findById(2L)).thenReturn(Optional.of(servicio));
+        when(alojamientoServicioRepository.existsByAlojamientoIdAndServicioId(1L, 2L)).thenReturn(false);
         when(alojamientoServicioRepository.save(any(AlojamientoServicio.class))).thenReturn(rel);
 
+        // Act
         AlojamientoServicio creado = alojamientoServicioService.crearAlojamientoService(rel);
 
+        // Assert
         assertThat(creado).isNotNull();
+        verify(alojamientoRepository).findById(1L);
+        verify(servicioRepository).findById(2L);
+        verify(alojamientoServicioRepository).existsByAlojamientoIdAndServicioId(1L, 2L);
         verify(alojamientoServicioRepository).save(any(AlojamientoServicio.class));
     }
 
     @Test
-    void crearAlojamientoService_conNull_debeLanzarNPE() {
-        when(alojamientoServicioRepository.save(null)).thenThrow(new NullPointerException("null relacion"));
-        assertThrows(NullPointerException.class, () -> alojamientoServicioService.crearAlojamientoService(null));
-        verify(alojamientoServicioRepository).save(null);
+    void crearAlojamientoService_conNull_debeLanzarIAE() {
+        assertThrows(IllegalArgumentException.class, () -> alojamientoServicioService.crearAlojamientoService(null));
+        verify(alojamientoServicioRepository, never()).save(any());
     }
 
     @Test
     void crearAlojamientoService_repoFalla_debePropagarExcepcion() {
+        // Arrange
+        Alojamiento alojamiento = new Alojamiento(); alojamiento.setId(1L);
+        Servicio servicio = new Servicio(); servicio.setId(2L);
+        AlojamientoServicio rel = new AlojamientoServicio();
+        rel.setAlojamiento(alojamiento);
+        rel.setServicio(servicio);
+
+        when(alojamientoRepository.findById(1L)).thenReturn(Optional.of(alojamiento));
+        when(servicioRepository.findById(2L)).thenReturn(Optional.of(servicio));
+        when(alojamientoServicioRepository.existsByAlojamientoIdAndServicioId(1L, 2L)).thenReturn(false);
         when(alojamientoServicioRepository.save(any(AlojamientoServicio.class))).thenThrow(new RuntimeException("db"));
-        assertThrows(RuntimeException.class, () -> alojamientoServicioService.crearAlojamientoService(new AlojamientoServicio()));
+
+        // Assert
+        assertThrows(RuntimeException.class, () -> alojamientoServicioService.crearAlojamientoService(rel));
+        verify(alojamientoRepository).findById(1L);
+        verify(servicioRepository).findById(2L);
+        verify(alojamientoServicioRepository).existsByAlojamientoIdAndServicioId(1L, 2L);
         verify(alojamientoServicioRepository).save(any(AlojamientoServicio.class));
     }
 
