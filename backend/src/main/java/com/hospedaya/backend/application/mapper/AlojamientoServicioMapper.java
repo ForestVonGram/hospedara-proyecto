@@ -18,7 +18,11 @@ public interface AlojamientoServicioMapper {
     @Mapping(target = "servicio", expression = "java(mapServicio(dto.getServicioId()))")
     AlojamientoServicio toEntity(AlojamientoServicioRequestDTO dto);
 
-    // La respuesta debe contener los datos del servicio asociado
+    // La respuesta debe contener los datos de la relación y del servicio asociado
+    @Mapping(target = "relacionId", source = "id")
+    @Mapping(target = "alojamientoId", source = "alojamiento.id")
+    @Mapping(target = "servicioId", source = "servicio.id")
+    @Mapping(target = "detalle", source = "detalle")
     @Mapping(target = "id", source = "servicio.id")
     @Mapping(target = "nombre", source = "servicio.nombre")
     @Mapping(target = "descripcion", source = "servicio.descripcion")
