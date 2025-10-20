@@ -38,8 +38,9 @@ public class AlojamientoServicioController {
             @ApiResponse(responseCode = "404", description = "No se encontraron servicios asociados")
     })
     @GetMapping
-    public ResponseEntity<List<AlojamientoServicioResponseDTO>> listarAlojamientoServicios() {
-        List<AlojamientoServicio> alojamientoServicios = alojamientoServicioService.listarAlojamientoServicios();
+    public ResponseEntity<List<AlojamientoServicioResponseDTO>> listarAlojamientoServicios(
+            @RequestParam(value = "alojamientoId", required = false) Long alojamientoId) {
+        List<AlojamientoServicio> alojamientoServicios = alojamientoServicioService.listarAlojamientoServicios(alojamientoId);
         List<AlojamientoServicioResponseDTO> response = alojamientoServicios.stream()
                 .map(alojamientoServicioMapper::toResponse)
                 .collect(Collectors.toList());

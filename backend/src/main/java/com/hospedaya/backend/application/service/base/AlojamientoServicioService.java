@@ -8,5 +8,7 @@ public interface AlojamientoServicioService {
 
     AlojamientoServicio crearAlojamientoService(AlojamientoServicio alojamientoServicio);
     List<AlojamientoServicio> listarAlojamientoServicios();
+    // Permite filtrar por alojamiento cuando se provee el id
+    List<AlojamientoServicio> listarAlojamientoServicios(Long alojamientoId);
     void eliminarAlojamientoServicio(Long id);
 }

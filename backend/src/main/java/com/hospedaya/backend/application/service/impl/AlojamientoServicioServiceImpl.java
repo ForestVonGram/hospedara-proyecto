@@ -65,6 +65,14 @@ public class AlojamientoServicioServiceImpl implements AlojamientoServicioServic
     }
 
     @Override
+    public List<AlojamientoServicio> listarAlojamientoServicios(Long alojamientoId) {
+        if (alojamientoId == null) {
+            return alojamientoServicioRepository.findAll();
+        }
+        return alojamientoServicioRepository.findByAlojamiento_Id(alojamientoId);
+    }
+
+    @Override
     public void eliminarAlojamientoServicio(Long id) {
         if (!alojamientoServicioRepository.existsById(id)) {
             throw new ResourceNotFoundException("Relación Alojamiento-Servicio no encontrada con id: " + id);
