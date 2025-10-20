@@ -62,10 +62,16 @@ public class FavoritoServiceImplTest {
 
     @Test
     void agregarFavorito_debeGuardarYRetornar() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(alojamientoRepository.findById(10L)).thenReturn(Optional.of(alojamiento));
+        when(favoritoRepository.findByUsuarioAndAlojamiento(usuario, alojamiento)).thenReturn(Optional.empty());
         when(favoritoRepository.save(any(Favorito.class))).thenReturn(favorito);
         Favorito result = favoritoService.agregarFavorito(favorito);
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(100L);
+        verify(usuarioRepository).findById(1L);
+        verify(alojamientoRepository).findById(10L);
+        verify(favoritoRepository).findByUsuarioAndAlojamiento(usuario, alojamiento);
         verify(favoritoRepository).save(any(Favorito.class));
     }
 
@@ -111,15 +117,20 @@ public class FavoritoServiceImplTest {
     // Extras to reach 3 tests per method
     @Test
     void agregarFavorito_conNull_debeLanzarNPE() {
-        when(favoritoRepository.save(null)).thenThrow(new NullPointerException("null favorito"));
         assertThrows(NullPointerException.class, () -> favoritoService.agregarFavorito(null));
-        verify(favoritoRepository).save(null);
+        verify(favoritoRepository, never()).save(any());
     }
 
     @Test
     void agregarFavorito_repoFalla_debePropagarExcepcion() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(alojamientoRepository.findById(10L)).thenReturn(Optional.of(alojamiento));
+        when(favoritoRepository.findByUsuarioAndAlojamiento(usuario, alojamiento)).thenReturn(Optional.empty());
         when(favoritoRepository.save(any(Favorito.class))).thenThrow(new RuntimeException("db"));
         assertThrows(RuntimeException.class, () -> favoritoService.agregarFavorito(favorito));
+        verify(usuarioRepository).findById(1L);
+        verify(alojamientoRepository).findById(10L);
+        verify(favoritoRepository).findByUsuarioAndAlojamiento(usuario, alojamiento);
         verify(favoritoRepository).save(any(Favorito.class));
     }
 

@@ -16,5 +16,7 @@ public interface FavoritoRepository extends JpaRepository<Favorito, Long> {
 
     Optional<Favorito> findByAlojamiento(Alojamiento alojamiento);
 
+    Optional<Favorito> findByUsuarioAndAlojamiento(Usuario usuario, Alojamiento alojamiento);
+
     List<Favorito> findAllByUsuario(Usuario usuario);
 }

@@ -189,6 +189,43 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<ApiError> handleNullPointerException(
+            NullPointerException ex,
+            HttpServletRequest request) {
+        String message = ex.getMessage() != null ? ex.getMessage() : "Solicitud inválida";
+        ApiError apiError = new ApiError(
+                request.getRequestURI(),
+                message,
+                HttpStatus.BAD_REQUEST.value()
+        );
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(jakarta.persistence.EntityNotFoundException.class)
+    public ResponseEntity<ApiError> handleEntityNotFoundException(
+            jakarta.persistence.EntityNotFoundException ex,
+            HttpServletRequest request) {
+        ApiError apiError = new ApiError(
+                request.getRequestURI(),
+                ex.getMessage() != null ? ex.getMessage() : "Recurso no encontrado",
+                HttpStatus.NOT_FOUND.value()
+        );
+        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(org.springframework.orm.jpa.JpaObjectRetrievalFailureException.class)
+    public ResponseEntity<ApiError> handleJpaObjectRetrievalFailureException(
+            org.springframework.orm.jpa.JpaObjectRetrievalFailureException ex,
+            HttpServletRequest request) {
+        ApiError apiError = new ApiError(
+                request.getRequestURI(),
+                ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : "Recurso no encontrado",
+                HttpStatus.NOT_FOUND.value()
+        );
+        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGenericException(
             Exception ex,

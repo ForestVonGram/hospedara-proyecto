@@ -77,7 +77,14 @@ public class ComentarioServiceImpl implements ComentarioService {
 
     @Override
     public List<Comentario> listarComentariosPorAlojamiento(Long alojamientoId) {
-        return comentarioRepository.findAllByAlojamientoId(alojamientoId);
+        List<Comentario> lista = comentarioRepository.findAllByAlojamientoId(alojamientoId);
+        // Si no hay comentarios, verificar si el alojamiento existe para responder 404 en caso de ID inexistente
+        if ((lista == null || lista.isEmpty()) && alojamientoRepository != null && alojamientoId != null) {
+            if (!alojamientoRepository.existsById(alojamientoId)) {
+                throw new ResourceNotFoundException("Alojamiento no encontrado con id: " + alojamientoId);
+            }
+        }
+        return lista;
     }
 
     @Override

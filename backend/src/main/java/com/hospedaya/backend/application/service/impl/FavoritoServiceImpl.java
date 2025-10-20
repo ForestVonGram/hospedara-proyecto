@@ -61,8 +61,29 @@ public class FavoritoServiceImpl implements FavoritoService {
 
     @Override
     public Favorito agregarFavorito(Favorito favorito) {
-        // Asumimos que el objeto Favorito ya contiene Usuario y Alojamiento válidos.
-        // Si se requiere validación adicional, puede agregarse aquí.
+        // Validar y obtener entidades gestionadas
+        Long usuarioId = favorito.getUsuario() != null ? favorito.getUsuario().getId() : null;
+        Long alojamientoId = favorito.getAlojamiento() != null ? favorito.getAlojamiento().getId() : null;
+
+        if (usuarioId == null || alojamientoId == null) {
+            throw new IllegalArgumentException("usuarioId y alojamientoId son obligatorios");
+        }
+
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + usuarioId));
+        Alojamiento alojamiento = alojamientoRepository.findById(alojamientoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Alojamiento no encontrado con id: " + alojamientoId));
+
+        // Evitar duplicados del mismo usuario y alojamiento
+        favoritoRepository.findByUsuarioAndAlojamiento(usuario, alojamiento).ifPresent(f -> {
+            throw new com.hospedaya.backend.exception.DuplicateResourceException(
+                    "El alojamiento ya se encuentra en favoritos del usuario");
+        });
+
+        // Reasignar referencias gestionadas antes de guardar
+        favorito.setUsuario(usuario);
+        favorito.setAlojamiento(alojamiento);
+
         return favoritoRepository.save(favorito);
     }
 
