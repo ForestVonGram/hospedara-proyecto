@@ -16,8 +16,8 @@ public interface FavoritoMapper {
     FavoritoMapper INSTANCE = Mappers.getMapper(FavoritoMapper.class);
 
     @Mappings({
-            @Mapping(target = "usuario.id", source = "usuarioId"),
-            @Mapping(target = "alojamiento.id", source = "alojamientoId")
+            @Mapping(target = "usuario", source = "usuarioId"),
+            @Mapping(target = "alojamiento", source = "alojamientoId")
     })
     Favorito toEntity(FavoritoRequestDTO dto);
 
