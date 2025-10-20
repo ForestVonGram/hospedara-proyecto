@@ -5,6 +5,7 @@ import com.hospedaya.backend.application.dto.comentario.ComentarioResponseDTO;
 import com.hospedaya.backend.application.mapper.ComentarioMapper;
 import com.hospedaya.backend.application.service.base.ComentarioService;
 import com.hospedaya.backend.domain.entity.Comentario;
+import com.hospedaya.backend.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -40,6 +41,9 @@ public class ComentarioController {
     @GetMapping("/alojamiento/{alojamientoId}")
     public ResponseEntity<List<ComentarioResponseDTO>> listarComentariosPorAlojamiento(@PathVariable Long alojamientoId) {
         List<Comentario> comentarios = comentarioService.listarComentariosPorAlojamiento(alojamientoId);
+        if (comentarios == null || comentarios.isEmpty()) {
+            throw new ResourceNotFoundException("No se encontraron comentarios para el alojamiento con id: " + alojamientoId);
+        }
         List<ComentarioResponseDTO> response = comentarios.stream()
                 .map(comentarioMapper::toResponse)
                 .collect(Collectors.toList());
