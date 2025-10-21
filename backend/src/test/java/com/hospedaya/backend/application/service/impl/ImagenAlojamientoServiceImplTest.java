@@ -51,6 +51,7 @@ public class ImagenAlojamientoServiceImplTest {
     // agregarImagen
     @Test
     void agregarImagen_debeGuardarYRetornar() {
+        when(alojamientoRepository.existsById(1L)).thenReturn(true);
         when(imagenAlojamientoRepository.save(any(ImagenAlojamiento.class))).thenReturn(imagen);
         ImagenAlojamiento result = imagenService.agregarImagen(imagen);
         assertThat(result).isNotNull();

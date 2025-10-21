@@ -36,7 +36,11 @@ public class ImagenAlojamientoServiceImpl implements ImagenAlojamientoService {
             throw new IllegalArgumentException("La URL de la imagen es obligatoria");
         }
 
-        // Guardar directamente; la relación debe venir con un alojamiento válido (ID gestionado)
+        Long alojamientoId = imagen.getAlojamiento().getId();
+        if (alojamientoId == null || !alojamientoRepository.existsById(alojamientoId)) {
+            throw new ResourceNotFoundException("Alojamiento no encontrado con ID: " + alojamientoId);
+        }
+
         return imagenAlojamientoRepository.save(imagen);
     }
 
