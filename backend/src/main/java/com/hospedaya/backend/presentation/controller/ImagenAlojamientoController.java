@@ -64,7 +64,7 @@ public class ImagenAlojamientoController {
         @ApiResponse(responseCode = "404", description = "Alojamiento no encontrado")
     })
     @PostMapping
-    public ResponseEntity<ImagenAlojamientoResponseDTO> agregarImagen(@RequestBody ImagenAlojamientoRequestDTO requestDTO) {
+    public ResponseEntity<ImagenAlojamientoResponseDTO> agregarImagen(@org.springframework.web.bind.annotation.RequestBody ImagenAlojamientoRequestDTO requestDTO) {
         ImagenAlojamiento imagen = imagenAlojamientoMapper.toEntity(requestDTO);
         ImagenAlojamiento creada = imagenAlojamientoService.agregarImagen(imagen);
         ImagenAlojamientoResponseDTO response = imagenAlojamientoMapper.toResponse(creada);
