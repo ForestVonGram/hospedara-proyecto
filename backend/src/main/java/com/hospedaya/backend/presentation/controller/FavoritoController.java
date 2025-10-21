@@ -8,7 +8,6 @@ import com.hospedaya.backend.domain.entity.Favorito;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -64,7 +63,7 @@ public class FavoritoController {
     })
     @PostMapping(consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<FavoritoResponseDTO> agregarFavorito(@jakarta.validation.Valid @RequestBody FavoritoRequestDTO requestDTO) {
+    public ResponseEntity<FavoritoResponseDTO> agregarFavorito(@RequestBody FavoritoRequestDTO requestDTO) {
         Favorito favorito = favoritoMapper.toEntity(requestDTO);
         Favorito favoritoCreado = favoritoService.agregarFavorito(favorito);
         FavoritoResponseDTO response = favoritoMapper.toResponse(favoritoCreado);
