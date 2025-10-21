@@ -65,7 +65,23 @@ public class ImagenAlojamientoController {
     })
     @PostMapping
     public ResponseEntity<ImagenAlojamientoResponseDTO> agregarImagen(@org.springframework.web.bind.annotation.RequestBody ImagenAlojamientoRequestDTO requestDTO) {
-        ImagenAlojamiento imagen = imagenAlojamientoMapper.toEntity(requestDTO);
+        // Mapeo manual para garantizar que la asociación con Alojamiento no sea nula
+        if (requestDTO == null) {
+            throw new IllegalArgumentException("La imagen no puede ser nula");
+        }
+        if (requestDTO.getAlojamientoId() == null) {
+            throw new IllegalArgumentException("La imagen debe estar asociada a un alojamiento");
+        }
+        if (requestDTO.getUrl() == null || requestDTO.getUrl().trim().isEmpty()) {
+            throw new IllegalArgumentException("La URL de la imagen es obligatoria");
+        }
+
+        ImagenAlojamiento imagen = new ImagenAlojamiento();
+        com.hospedaya.backend.domain.entity.Alojamiento alojamiento = new com.hospedaya.backend.domain.entity.Alojamiento();
+        alojamiento.setId(requestDTO.getAlojamientoId());
+        imagen.setAlojamiento(alojamiento);
+        imagen.setUrl(requestDTO.getUrl().trim());
+
         ImagenAlojamiento creada = imagenAlojamientoService.agregarImagen(imagen);
         ImagenAlojamientoResponseDTO response = imagenAlojamientoMapper.toResponse(creada);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
