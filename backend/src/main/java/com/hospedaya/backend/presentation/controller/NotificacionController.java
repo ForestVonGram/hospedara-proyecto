@@ -63,7 +63,7 @@ public class NotificacionController {
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
     })
     @PostMapping
-    public ResponseEntity<NotificacionResponseDTO> crearNotificacion(@RequestBody NotificacionRequestDTO requestDTO) {
+    public ResponseEntity<NotificacionResponseDTO> crearNotificacion(@org.springframework.web.bind.annotation.RequestBody NotificacionRequestDTO requestDTO) {
         Notificacion notificacion = notificacionMapper.toEntity(requestDTO);
         Notificacion creada = notificacionService.enviarNotificacion(notificacion);
         NotificacionResponseDTO response = notificacionMapper.toResponse(creada);

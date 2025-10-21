@@ -72,7 +72,7 @@ public class PagoController {
             @ApiResponse(responseCode = "404", description = "Reserva no encontrada")
     })
     @PostMapping
-    public ResponseEntity<PagoResponseDTO> registrarPago(@RequestBody PagoRequestDTO requestDTO) {
+    public ResponseEntity<PagoResponseDTO> registrarPago(@org.springframework.web.bind.annotation.RequestBody PagoRequestDTO requestDTO) {
         Pago pago = pagoMapper.toEntity(requestDTO);
         Pago creado = pagoService.registrarPago(pago);
         PagoResponseDTO response = pagoMapper.toResponse(creado);
