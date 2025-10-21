@@ -62,8 +62,9 @@ public class FavoritoController {
             @ApiResponse(responseCode = "400", description = "Datos inválidos"),
             @ApiResponse(responseCode = "404", description = "Usuario o alojamiento no encontrado")
     })
-    @PostMapping
-    public ResponseEntity<FavoritoResponseDTO> agregarFavorito(@RequestBody FavoritoRequestDTO requestDTO) {
+    @PostMapping(consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
+            produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<FavoritoResponseDTO> agregarFavorito(@jakarta.validation.Valid @RequestBody FavoritoRequestDTO requestDTO) {
         Favorito favorito = favoritoMapper.toEntity(requestDTO);
         Favorito favoritoCreado = favoritoService.agregarFavorito(favorito);
         FavoritoResponseDTO response = favoritoMapper.toResponse(favoritoCreado);
