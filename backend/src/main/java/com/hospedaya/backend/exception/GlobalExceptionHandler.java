@@ -27,9 +27,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiError> handleBadRequestException(
+    public ResponseEntity<Object> handleBadRequestException(
             BadRequestException ex,
             HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        if (uri != null && uri.startsWith("/pagos")) {
+            java.util.Map<String, String> body = new java.util.HashMap<>();
+            body.put("error", "Datos inválidos");
+            body.put("mensaje", "Los datos del pago no son válidos o están incompletos");
+            return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        }
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
                 ex.getMessage(),
@@ -52,9 +59,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleMethodArgumentNotValidException(
+    public ResponseEntity<Object> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException ex,
             HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        if (uri != null && uri.startsWith("/pagos")) {
+            java.util.Map<String, String> body = new java.util.HashMap<>();
+            body.put("error", "Datos inválidos");
+            body.put("mensaje", "Los datos del pago no son válidos o están incompletos");
+            return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        }
         List<String> errors = new ArrayList<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.add(error.getField() + ": " + error.getDefaultMessage());
@@ -239,9 +253,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiError> handleNotReadable(
+    public ResponseEntity<Object> handleNotReadable(
             org.springframework.http.converter.HttpMessageNotReadableException ex,
             HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        if (uri != null && uri.startsWith("/pagos")) {
+            java.util.Map<String, String> body = new java.util.HashMap<>();
+            body.put("error", "Datos inválidos");
+            body.put("mensaje", "Los datos del pago no son válidos o están incompletos");
+            return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        }
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
                 "Cuerpo JSON inválido o ausente",
