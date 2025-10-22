@@ -10,4 +10,8 @@ public interface PagoService {
     Pago obtenerPagoPorId(Long id);
     List<Pago> listarPagos();
     void eliminarPago(Long id);
+
+    // Nuevos métodos de apoyo para integraciones externas
+    Pago actualizarPago(Pago pago);
+    Pago obtenerPagoPorReferencia(String referenciaExterna);
 }
