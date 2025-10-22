@@ -6,8 +6,6 @@ import com.hospedaya.backend.domain.entity.Pago;
 import com.hospedaya.backend.domain.entity.Reserva;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.ObjectFactory;
-import org.mapstruct.TargetType;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
@@ -21,8 +19,9 @@ public interface PagoMapper {
     @Mapping(target = "reservaId", source = "reserva.id")
     PagoResponseDTO toResponse(Pago entity);
 
-    @ObjectFactory
-    default Reserva resolveReserva(Long reservaId, @TargetType Class<Reserva> type) {
+    // MapStruct will use this method to convert a Long ID into a Reserva reference
+    default Reserva map(Long reservaId) {
+        if (reservaId == null) return null;
         Reserva r = new Reserva();
         r.setId(reservaId);
         return r;
