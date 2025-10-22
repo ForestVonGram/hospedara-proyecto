@@ -1,8 +1,10 @@
 package com.hospedaya.backend.application.service.impl;
 
 import com.hospedaya.backend.domain.entity.Pago;
+import com.hospedaya.backend.domain.entity.Reserva;
 import com.hospedaya.backend.exception.ResourceNotFoundException;
 import com.hospedaya.backend.infraestructure.repository.PagoRepository;
+import com.hospedaya.backend.infraestructure.repository.ReservaRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,32 +27,57 @@ public class PagoServiceImplTest {
     @Mock
     private PagoRepository pagoRepository;
 
+    @Mock
+    private ReservaRepository reservaRepository;
+
     @InjectMocks
     private PagoServiceImpl pagoService;
 
     // registrarPago
     @Test
     void registrarPago_debeGuardarYRetornar() {
+        // given
+        Reserva reserva = new Reserva();
+        reserva.setId(1L);
+        when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
+
         Pago pago = new Pago();
+        Reserva rRef = new Reserva();
+        rRef.setId(1L);
+        pago.setReserva(rRef);
+
         when(pagoRepository.save(any(Pago.class))).thenReturn(pago);
 
+        // when
         Pago result = pagoService.registrarPago(pago);
 
+        // then
         assertThat(result).isNotNull();
+        verify(reservaRepository).findById(1L);
         verify(pagoRepository).save(any(Pago.class));
+        verify(reservaRepository).save(any(Reserva.class));
     }
 
     @Test
     void registrarPago_conNull_debeLanzarNPE() {
-        when(pagoRepository.save(null)).thenThrow(new NullPointerException("null pago"));
         assertThrows(NullPointerException.class, () -> pagoService.registrarPago(null));
-        verify(pagoRepository).save(null);
+        verifyNoInteractions(pagoRepository);
     }
 
     @Test
     void registrarPago_repoFalla_debePropagarExcepcion() {
+        Reserva reserva = new Reserva();
+        reserva.setId(2L);
+        when(reservaRepository.findById(2L)).thenReturn(Optional.of(reserva));
+
+        Pago pago = new Pago();
+        Reserva rRef = new Reserva();
+        rRef.setId(2L);
+        pago.setReserva(rRef);
+
         when(pagoRepository.save(any(Pago.class))).thenThrow(new RuntimeException("db"));
-        assertThrows(RuntimeException.class, () -> pagoService.registrarPago(new Pago()));
+        assertThrows(RuntimeException.class, () -> pagoService.registrarPago(pago));
+        verify(reservaRepository).findById(2L);
         verify(pagoRepository).save(any(Pago.class));
     }
 

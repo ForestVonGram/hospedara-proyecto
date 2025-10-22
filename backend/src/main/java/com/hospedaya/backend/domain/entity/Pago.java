@@ -2,10 +2,14 @@ package com.hospedaya.backend.domain.entity;
 
 import com.hospedaya.backend.domain.enums.EstadoPago;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "pagos")
 public class Pago {

@@ -62,7 +62,7 @@ public class PagoController {
             required = true,
             content = @Content(mediaType = "application/json",
                     examples = @ExampleObject(
-                            value = "{ \"reservaId\": 5, \"monto\": 450000, \"metodo\": \"tarjeta\", \"estado\": \"COMPLETADO\" }"
+                            value = "{ \"reservaId\": 5, \"monto\": 450000, \"metodo\": \"tarjeta\" }"
                     )
             )
     )
