@@ -59,8 +59,8 @@ public class PagoServiceImplTest {
     }
 
     @Test
-    void registrarPago_conNull_debeLanzarNPE() {
-        assertThrows(NullPointerException.class, () -> pagoService.registrarPago(null));
+    void registrarPago_conNull_debeLanzarBadRequest() {
+        assertThrows(com.hospedaya.backend.exception.BadRequestException.class, () -> pagoService.registrarPago(null));
         verifyNoInteractions(pagoRepository);
     }
 

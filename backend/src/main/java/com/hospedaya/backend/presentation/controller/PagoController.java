@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,7 +73,7 @@ public class PagoController {
             @ApiResponse(responseCode = "404", description = "Reserva no encontrada")
     })
     @PostMapping
-    public ResponseEntity<PagoResponseDTO> registrarPago(@org.springframework.web.bind.annotation.RequestBody PagoRequestDTO requestDTO) {
+    public ResponseEntity<PagoResponseDTO> registrarPago(@Valid @org.springframework.web.bind.annotation.RequestBody PagoRequestDTO requestDTO) {
         Pago pago = pagoMapper.toEntity(requestDTO);
         Pago creado = pagoService.registrarPago(pago);
         PagoResponseDTO response = pagoMapper.toResponse(creado);
