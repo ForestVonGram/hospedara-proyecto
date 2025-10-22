@@ -74,7 +74,7 @@ public class ServicioController {
             @ApiResponse(responseCode = "404", description = "Error al registrar servicio")
     })
     @PostMapping
-    public ResponseEntity<ServicioResponseDTO> crearServicio(@org.springframework.web.bind.annotation.RequestBody ServicioRequestDTO requestDTO) {
+    public ResponseEntity<ServicioResponseDTO> crearServicio(@org.springframework.web.bind.annotation.RequestBody ServicioRequestDTO requestDTO) { //Método funciona correctamente
         Servicio servicio = servicioMapper.toEntity(requestDTO);
         Servicio creado = servicioService.crearServicio(servicio);
         ServicioResponseDTO response = servicioMapper.toResponse(creado);
@@ -87,7 +87,7 @@ public class ServicioController {
             @ApiResponse(responseCode = "404", description = "Servicio no encontrado")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarServicio(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarServicio(@PathVariable Long id) { //Funciona, pero que cuando lo elimine salga un mensaje que diga alojamiento con ID:{id} fue eliminado
         servicioService.eliminarServicio(id);
         return ResponseEntity.noContent().build();
     }
