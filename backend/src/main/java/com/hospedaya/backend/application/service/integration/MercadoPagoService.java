@@ -39,6 +39,8 @@ public class MercadoPagoService {
     private String pendingUrl;
     @Value("${mercadopago.failure-url:https://example.com/failure}")
     private String failureUrl;
+    @Value("${mercadopago.webhook-url:http://localhost:8080/webhooks/mercadopago}")
+    private String webhookUrl;
 
     public MercadoPagoService(PagoService pagoService, TransaccionPagoService transaccionPagoService, ReservaRepository reservaRepository) {
         this.pagoService = pagoService;
@@ -82,6 +84,7 @@ public class MercadoPagoService {
                         .pending(pendingUrl)
                         .failure(failureUrl)
                         .build())
+                .notificationUrl(webhookUrl)
                 .autoReturn("approved")
                 .build();
 
