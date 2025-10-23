@@ -10,6 +10,7 @@ import com.hospedaya.backend.domain.enums.Rol;
 import com.hospedaya.backend.exception.ResourceNotFoundException;
 import com.hospedaya.backend.infraestructure.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,10 +22,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper) {
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
 //    public UsuarioResponseDTO crearUsuarioDesdeDTO(UsuarioRequestDTO requestDTO) {
@@ -94,7 +97,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         // Normalizar valores y defaults
         usuario.setNombre(nombre);
         usuario.setEmail(email);
-        usuario.setPassword(password);
+        usuario.setPassword(passwordEncoder.encode(password));
         if (usuario.getFechaRegistro() == null) {
             usuario.setFechaRegistro(java.time.LocalDate.now());
         }
@@ -111,7 +114,9 @@ public class UsuarioServiceImpl implements UsuarioService {
                 new ResourceNotFoundException("Usuario no encontrado con ID: " + id));
         existente.setNombre(usuario.getNombre());
         existente.setEmail(usuario.getEmail());
-        existente.setPassword(usuario.getPassword());
+        if (usuario.getPassword() != null && !usuario.getPassword().isBlank()) {
+            existente.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        }
         existente.setTelefono(usuario.getTelefono());
         existente.setRol(usuario.getRol());
         return usuarioRepository.save(existente);

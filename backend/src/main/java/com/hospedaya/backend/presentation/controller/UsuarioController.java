@@ -65,28 +65,6 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(guardado);
     }
 
-    @Operation(summary = "Iniciar sesión de usuario")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Inicio de sesión exitoso"),
-            @ApiResponse(responseCode = "401", description = "Contraseña incorrecta"),
-            @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
-    })
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(request.getEmail());
-
-        if (usuarioOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email no encontrado");
-        }
-
-        Usuario usuario = usuarioOpt.get();
-
-        if (!usuario.getPassword().equals(request.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta");
-        }
-
-        return ResponseEntity.ok("Inicio de sesión exitoso");
-    }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar un usuario")
@@ -118,5 +96,15 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al eliminar el usuario: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getPerfil(org.springframework.security.core.Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+        }
+        return usuarioRepository.findByEmail(authentication.getName())
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado"));
     }
 }
