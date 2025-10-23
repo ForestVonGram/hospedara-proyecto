@@ -35,6 +35,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        // Si el usuario (email) no existe, devolver 404 según el requerimiento
+        if (!usuarioRepository.existsByEmail(request.getEmail())) {
+            return ResponseEntity.status(404).body("Usuario no encontrado");
+        }
         try {
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
