@@ -1,5 +1,6 @@
 // Frontend service for Notificacion endpoints matching backend NotificacionController
-const BASE_URL = 'http://localhost:8080';
+import { API_BASE_URL } from '../config/api';
+const BASE_URL = API_BASE_URL;
 const RESOURCE = '/notificaciones';
 
 export interface NotificacionRequestDTO {

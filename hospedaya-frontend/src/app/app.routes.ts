@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home.component';
-import { LoginComponent } from './pages/login.component';
-import { RegistroComponent } from './pages/registro.component';
+import { HomePage } from './features/home/home-page/home-page';
+import { LoginPage } from './features/auth/login/login-page/login-page';
+import { RegistroPage } from './features/registro/registro-page/registro-page';
 import { NotFoundComponent } from './pages/not-found.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'registro', component: RegistroComponent },
+  { path: '', component: HomePage },
+  { path: 'login', component: LoginPage },
+  { path: 'registro', component: RegistroPage },
   { path: '**', component: NotFoundComponent }
 ];

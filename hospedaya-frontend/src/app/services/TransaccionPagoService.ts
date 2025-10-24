@@ -1,5 +1,6 @@
 // Frontend service for TransaccionPago endpoints matching backend TransaccionPagoController
-const BASE_URL = 'http://localhost:8080';
+import { API_BASE_URL } from '../config/api';
+const BASE_URL = API_BASE_URL;
 const RESOURCE = '/transacciones-pago';
 
 export interface TransaccionPagoRequestDTO {

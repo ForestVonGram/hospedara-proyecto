@@ -1,5 +1,6 @@
 // Frontend service for Comentario endpoints matching backend ComentarioController
-const BASE_URL = 'http://localhost:8080';
+import { API_BASE_URL } from '../config/api';
+const BASE_URL = API_BASE_URL;
 const RESOURCE = '/comentarios';
 
 export interface ComentarioRequestDTO {

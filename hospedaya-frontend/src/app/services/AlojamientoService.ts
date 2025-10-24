@@ -1,7 +1,8 @@
 // Frontend service for Alojamiento endpoints matching backend AlojamientoController
 // Minimal dependency version using fetch API
 
-const BASE_URL = 'http://localhost:8080';
+import { API_BASE_URL } from '../config/api';
+const BASE_URL = API_BASE_URL;
 const RESOURCE = '/alojamientos';
 
 export interface AlojamientoRequestDTO {

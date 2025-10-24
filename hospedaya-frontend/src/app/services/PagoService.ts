@@ -1,5 +1,6 @@
 // Frontend service for Pago endpoints matching backend PagoController
-const BASE_URL = 'http://localhost:8080';
+import { API_BASE_URL } from '../config/api';
+const BASE_URL = API_BASE_URL;
 const RESOURCE = '/pagos';
 
 export interface PagoRequestDTO {

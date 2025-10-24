@@ -1,5 +1,6 @@
 // Frontend service for Servicio endpoints matching backend ServicioController
-const BASE_URL = 'http://localhost:8080';
+import { API_BASE_URL } from '../config/api';
+const BASE_URL = API_BASE_URL;
 const RESOURCE = '/servicios';
 
 export interface ServicioRequestDTO {
