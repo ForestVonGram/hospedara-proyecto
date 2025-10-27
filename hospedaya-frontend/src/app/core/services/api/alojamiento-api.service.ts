@@ -1,7 +1,7 @@
 // Frontend service for Alojamiento endpoints matching backend AlojamientoController
 // Minimal dependency version using fetch API
 
-import { API_BASE_URL } from '../config/api';
+import { API_BASE_URL } from '../../../config/api';
 const BASE_URL = API_BASE_URL;
 const RESOURCE = '/alojamientos';
 
@@ -42,7 +42,7 @@ async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-export class AlojamientoService {
+export class AlojamientoApiService {
   static async getAll(): Promise<AlojamientoResponseDTO[]> {
     return http(`${BASE_URL}${RESOURCE}`);
   }

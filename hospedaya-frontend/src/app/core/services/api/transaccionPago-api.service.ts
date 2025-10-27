@@ -1,5 +1,5 @@
 // Frontend service for TransaccionPago endpoints matching backend TransaccionPagoController
-import { API_BASE_URL } from '../config/api';
+import { API_BASE_URL } from '../../../config/api';
 const BASE_URL = API_BASE_URL;
 const RESOURCE = '/transacciones-pago';
 
@@ -32,7 +32,7 @@ async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-export class TransaccionPagoService {
+export class TransaccionPagoApiService {
   static async getAll(): Promise<TransaccionPagoResponseDTO[]> {
     return http(`${BASE_URL}${RESOURCE}`);
   }

@@ -1,22 +1,22 @@
-// Frontend service for Comentario endpoints matching backend ComentarioController
-import { API_BASE_URL } from '../config/api';
+// Frontend service for Reserva endpoints matching backend ReservaController
+import { API_BASE_URL } from '../../../config/api';
 const BASE_URL = API_BASE_URL;
-const RESOURCE = '/comentarios';
+const RESOURCE = '/reservas';
 
-export interface ComentarioRequestDTO {
+export interface ReservaRequestDTO {
   usuarioId: number;
   alojamientoId: number;
-  texto: string;
-  calificacion: number;
+  fechaInicio: string; // ISO date string
+  fechaFin: string; // ISO date string
 }
 
-export interface ComentarioResponseDTO {
+export interface ReservaResponseDTO {
   id: number;
   usuarioId: number;
   alojamientoId: number;
-  texto: string;
-  calificacion: number;
-  fechaCreacion?: string;
+  fechaInicio: string;
+  fechaFin: string;
+  estado?: string;
 }
 
 async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
@@ -32,23 +32,27 @@ async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-export class ComentarioService {
-  static async getByAlojamiento(alojamientoId: number): Promise<ComentarioResponseDTO[]> {
-    return http(`${BASE_URL}${RESOURCE}/alojamiento/${alojamientoId}`);
+export class ReservaApiService {
+  static async getAll(): Promise<ReservaResponseDTO[]> {
+    return http(`${BASE_URL}${RESOURCE}`);
   }
 
-  static async getById(id: number): Promise<ComentarioResponseDTO> {
-    return http(`${BASE_URL}${RESOURCE}/${id}`);
+  static async getByUsuario(usuarioId: number): Promise<ReservaResponseDTO[]> {
+    return http(`${BASE_URL}${RESOURCE}/usuario/${usuarioId}`);
   }
 
-  static async create(payload: ComentarioRequestDTO): Promise<ComentarioResponseDTO> {
+  static async getById(reservaId: number): Promise<ReservaResponseDTO> {
+    return http(`${BASE_URL}${RESOURCE}/${reservaId}`);
+  }
+
+  static async create(payload: ReservaRequestDTO): Promise<ReservaResponseDTO> {
     return http(`${BASE_URL}${RESOURCE}`, {
       method: 'POST',
       body: JSON.stringify(payload),
     });
   }
 
-  static async delete(id: number): Promise<void> {
+  static async cancel(id: number): Promise<void> {
     const res = await fetch(`${BASE_URL}${RESOURCE}/${id}`, { method: 'DELETE' });
     if (!res.ok) {
       const text = await res.text().catch(() => '');

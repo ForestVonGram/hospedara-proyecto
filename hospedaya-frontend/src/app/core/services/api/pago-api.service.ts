@@ -1,20 +1,20 @@
-// Frontend service for Notificacion endpoints matching backend NotificacionController
-import { API_BASE_URL } from '../config/api';
+// Frontend service for Pago endpoints matching backend PagoController
+import { API_BASE_URL } from '../../../config/api';
 const BASE_URL = API_BASE_URL;
-const RESOURCE = '/notificaciones';
+const RESOURCE = '/pagos';
 
-export interface NotificacionRequestDTO {
-  usuarioId: number;
-  mensaje: string;
-  tipo?: string;
+export interface PagoRequestDTO {
+  reservaId: number;
+  monto: number;
+  metodo: string;
 }
 
-export interface NotificacionResponseDTO {
+export interface PagoResponseDTO {
   id: number;
-  usuarioId: number;
-  mensaje: string;
-  tipo?: string;
-  fechaCreacion?: string;
+  reservaId: number;
+  monto: number;
+  metodo: string;
+  fecha?: string;
 }
 
 async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
@@ -30,12 +30,16 @@ async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-export class NotificacionService {
-  static async getByUsuario(usuarioId: number): Promise<NotificacionResponseDTO[]> {
-    return http(`${BASE_URL}${RESOURCE}/usuario/${usuarioId}`);
+export class PagoApiService {
+  static async getAll(): Promise<PagoResponseDTO[]> {
+    return http(`${BASE_URL}${RESOURCE}`);
   }
 
-  static async create(payload: NotificacionRequestDTO): Promise<NotificacionResponseDTO> {
+  static async getById(id: number): Promise<PagoResponseDTO> {
+    return http(`${BASE_URL}${RESOURCE}/${id}`);
+  }
+
+  static async create(payload: PagoRequestDTO): Promise<PagoResponseDTO> {
     return http(`${BASE_URL}${RESOURCE}`, {
       method: 'POST',
       body: JSON.stringify(payload),

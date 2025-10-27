@@ -1,18 +1,10 @@
-// Frontend service for ImagenAlojamiento endpoints matching backend ImagenAlojamientoController
-import { API_BASE_URL } from '../config/api';
+// Frontend service for Servicio endpoints matching backend ServicioController
+import { API_BASE_URL } from '../../../config/api';
+import { ServicioRequest } from '../../models/servicio/ServicioRequest';
+import { ServicioResponse } from '../../models/servicio/ServicioResponse';
+
 const BASE_URL = API_BASE_URL;
-const RESOURCE = '/imagenes-alojamiento';
-
-export interface ImagenAlojamientoRequestDTO {
-  alojamientoId: number;
-  url: string;
-}
-
-export interface ImagenAlojamientoResponseDTO {
-  id: number;
-  alojamientoId: number;
-  url: string;
-}
+const RESOURCE = '/servicios';
 
 async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   const res = await fetch(input, {
@@ -27,12 +19,16 @@ async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-export class ImagenAlojamientoService {
-  static async getByAlojamiento(alojamientoId: number): Promise<ImagenAlojamientoResponseDTO[]> {
-    return http(`${BASE_URL}${RESOURCE}/alojamiento/${alojamientoId}`);
+export class ServicioApiService {
+  static async getAll(): Promise<ServicioResponse[]> {
+    return http(`${BASE_URL}${RESOURCE}`);
   }
 
-  static async create(payload: ImagenAlojamientoRequestDTO): Promise<ImagenAlojamientoResponseDTO> {
+  static async getById(id: number): Promise<ServicioResponse> {
+    return http(`${BASE_URL}${RESOURCE}/${id}`);
+  }
+
+  static async create(payload: ServicioRequest): Promise<ServicioResponse> {
     return http(`${BASE_URL}${RESOURCE}`, {
       method: 'POST',
       body: JSON.stringify(payload),

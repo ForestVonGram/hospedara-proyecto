@@ -1,17 +1,17 @@
-// Frontend service for Servicio endpoints matching backend ServicioController
-import { API_BASE_URL } from '../config/api';
+// Frontend service for Favorito endpoints matching backend FavoritoController
+import { API_BASE_URL } from '../../../config/api';
 const BASE_URL = API_BASE_URL;
-const RESOURCE = '/servicios';
+const RESOURCE = '/favoritos';
 
-export interface ServicioRequestDTO {
-  nombre: string;
-  descripcion?: string;
+export interface FavoritoRequestDTO {
+  usuarioId: number;
+  alojamientoId: number;
 }
 
-export interface ServicioResponseDTO {
+export interface FavoritoResponseDTO {
   id: number;
-  nombre: string;
-  descripcion?: string;
+  usuarioId: number;
+  alojamientoId: number;
 }
 
 async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
@@ -27,16 +27,12 @@ async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-export class ServicioService {
-  static async getAll(): Promise<ServicioResponseDTO[]> {
-    return http(`${BASE_URL}${RESOURCE}`);
+export class FavoritoApiService {
+  static async getByUsuario(usuarioId: number): Promise<FavoritoResponseDTO[]> {
+    return http(`${BASE_URL}${RESOURCE}/usuario/${usuarioId}`);
   }
 
-  static async getById(id: number): Promise<ServicioResponseDTO> {
-    return http(`${BASE_URL}${RESOURCE}/${id}`);
-  }
-
-  static async create(payload: ServicioRequestDTO): Promise<ServicioResponseDTO> {
+  static async create(payload: FavoritoRequestDTO): Promise<FavoritoResponseDTO> {
     return http(`${BASE_URL}${RESOURCE}`, {
       method: 'POST',
       body: JSON.stringify(payload),
