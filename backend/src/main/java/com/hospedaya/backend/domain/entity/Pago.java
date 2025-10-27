@@ -25,6 +25,10 @@ public class Pago {
     @Column(nullable = false, unique = true)
     private String referenciaExterna;
 
+    // ID de la preferencia creada en el proveedor (por ejemplo, Mercado Pago)
+    @Column(name = "preferencia_id")
+    private String preferenciaId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EstadoPago estado;

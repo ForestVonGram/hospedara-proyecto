@@ -27,10 +27,13 @@ public class PagoController {
 
     private final PagoService pagoService;
     private final PagoMapper pagoMapper;
+    private final com.hospedaya.backend.application.service.integration.MercadoPagoService mpService;
 
-    public PagoController(PagoService pagoService, PagoMapper pagoMapper) {
+    public PagoController(PagoService pagoService, PagoMapper pagoMapper,
+                          com.hospedaya.backend.application.service.integration.MercadoPagoService mpService) {
         this.pagoService = pagoService;
         this.pagoMapper = pagoMapper;
+        this.mpService = mpService;
     }
 
     @Operation(summary = "Listar pagos")
@@ -89,5 +92,17 @@ public class PagoController {
     public ResponseEntity<Void> eliminarPago(@PathVariable Long id) {
         pagoService.eliminarPago(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Iniciar pago con pasarela externa")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "URL de checkout creada"),
+            @ApiResponse(responseCode = "400", description = "Solicitud inválida"),
+            @ApiResponse(responseCode = "404", description = "Pago no encontrado")
+    })
+    @PostMapping("/{id}/iniciar")
+    public ResponseEntity<java.util.Map<String, String>> iniciarPago(@PathVariable Long id) {
+        String url = mpService.crearPreferenciaParaPago(id);
+        return ResponseEntity.ok(java.util.Map.of("init_point", url));
     }
 }

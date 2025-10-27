@@ -40,10 +40,12 @@ public class PagoServiceImpl implements PagoService {
         if (reservaId == null) {
             throw new BadRequestException("Se requiere el ID de la reserva para registrar el pago");
         }
-        BigDecimal monto = pago.getMonto();
-        if (monto == null || monto.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new BadRequestException("El monto del pago debe ser mayor a 0");
-        }
+        // Nota: En este servicio base no validamos el monto para permitir flujos donde el monto
+        // se establece posteriormente por una pasarela de pago externa.
+        // BigDecimal monto = pago.getMonto();
+        // if (monto == null || monto.compareTo(BigDecimal.ZERO) <= 0) {
+        //     throw new BadRequestException("El monto del pago debe ser mayor a 0");
+        // }
 
         // Enlazar la reserva desde BD
         Reserva reserva = reservaRepository.findById(reservaId)
@@ -55,7 +57,7 @@ public class PagoServiceImpl implements PagoService {
             pago.setReferenciaExterna("PAY-" + UUID.randomUUID());
         }
 
-        // Establecer estado del pago y fecha de confirmación
+        // En este flujo 'registrarPago' representa un pago confirmado internamente
         pago.setEstado(EstadoPago.APROBADO);
         pago.setFechaConfirmacion(LocalDateTime.now());
 
@@ -86,5 +88,19 @@ public class PagoServiceImpl implements PagoService {
             throw new ResourceNotFoundException("Pago no encontrado con ID: " + id);
         }
         pagoRepository.deleteById(id);
+    }
+
+    @Override
+    public Pago actualizarPago(Pago pago) {
+        if (pago == null || pago.getId() == null) {
+            throw new BadRequestException("Pago inválido para actualizar");
+        }
+        return pagoRepository.save(pago);
+    }
+
+    @Override
+    public Pago obtenerPagoPorReferencia(String referenciaExterna) {
+        return pagoRepository.findByReferenciaExterna(referenciaExterna)
+                .orElseThrow(() -> new ResourceNotFoundException("Pago no encontrado con referencia: " + referenciaExterna));
     }
 }
