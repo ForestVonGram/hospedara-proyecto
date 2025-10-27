@@ -1,0 +1,52 @@
+// Frontend service for Notificacion endpoints matching backend NotificacionController
+import { API_BASE_URL } from '../config/api';
+const BASE_URL = API_BASE_URL;
+const RESOURCE = '/notificaciones';
+
+export interface NotificacionRequestDTO {
+  usuarioId: number;
+  mensaje: string;
+  tipo?: string;
+}
+
+export interface NotificacionResponseDTO {
+  id: number;
+  usuarioId: number;
+  mensaje: string;
+  tipo?: string;
+  fechaCreacion?: string;
+}
+
+async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
+  const res = await fetch(input, {
+    headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
+    ...init,
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(text || `HTTP ${res.status}`);
+  }
+  if (res.status === 204) return undefined as unknown as T;
+  return (await res.json()) as T;
+}
+
+export class NotificacionService {
+  static async getByUsuario(usuarioId: number): Promise<NotificacionResponseDTO[]> {
+    return http(`${BASE_URL}${RESOURCE}/usuario/${usuarioId}`);
+  }
+
+  static async create(payload: NotificacionRequestDTO): Promise<NotificacionResponseDTO> {
+    return http(`${BASE_URL}${RESOURCE}`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  static async delete(id: number): Promise<void> {
+    const res = await fetch(`${BASE_URL}${RESOURCE}/${id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(text || `HTTP ${res.status}`);
+    }
+  }
+}
