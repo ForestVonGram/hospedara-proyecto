@@ -1,5 +1,5 @@
 // Frontend service for Usuario endpoints matching backend UsuarioController
-import { API_BASE_URL } from '../config/api';
+import { API_BASE_URL } from '../../../config/api';
 const BASE_URL = API_BASE_URL;
 const RESOURCE = '/usuarios';
 
@@ -30,7 +30,7 @@ async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-export class UsuarioService {
+export class UsuarioApiService {
   static async getAll(): Promise<Usuario[]> {
     return http(`${BASE_URL}${RESOURCE}`);
   }

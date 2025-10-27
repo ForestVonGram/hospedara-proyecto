@@ -1,17 +1,20 @@
-// Frontend service for Alojamiento-Servicio relation endpoints matching backend AlojamientoServicioController
-import { API_BASE_URL } from '../config/api';
+// Frontend service for Notificacion endpoints matching backend NotificacionController
+import { API_BASE_URL } from '../../../config/api';
 const BASE_URL = API_BASE_URL;
-const RESOURCE = '/alojamiento-servicios';
+const RESOURCE = '/notificaciones';
 
-export interface AlojamientoServicioRequestDTO {
-  alojamientoId: number;
-  servicioId: number;
+export interface NotificacionRequestDTO {
+  usuarioId: number;
+  mensaje: string;
+  tipo?: string;
 }
 
-export interface AlojamientoServicioResponseDTO {
+export interface NotificacionResponseDTO {
   id: number;
-  alojamientoId: number;
-  servicioId: number;
+  usuarioId: number;
+  mensaje: string;
+  tipo?: string;
+  fechaCreacion?: string;
 }
 
 async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
@@ -27,16 +30,12 @@ async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-export class AlojamientoServicioService {
-  static async list(alojamientoId?: number): Promise<AlojamientoServicioResponseDTO[]> {
-    const url = new URL(`${BASE_URL}${RESOURCE}`);
-    if (typeof alojamientoId === 'number') {
-      url.searchParams.set('alojamientoId', String(alojamientoId));
-    }
-    return http(url.toString());
+export class NotificacionApiService {
+  static async getByUsuario(usuarioId: number): Promise<NotificacionResponseDTO[]> {
+    return http(`${BASE_URL}${RESOURCE}/usuario/${usuarioId}`);
   }
 
-  static async create(payload: AlojamientoServicioRequestDTO): Promise<AlojamientoServicioResponseDTO> {
+  static async create(payload: NotificacionRequestDTO): Promise<NotificacionResponseDTO> {
     return http(`${BASE_URL}${RESOURCE}`, {
       method: 'POST',
       body: JSON.stringify(payload),

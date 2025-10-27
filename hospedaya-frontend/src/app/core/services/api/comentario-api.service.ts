@@ -1,17 +1,22 @@
-// Frontend service for Favorito endpoints matching backend FavoritoController
-import { API_BASE_URL } from '../config/api';
+// Frontend service for Comentario endpoints matching backend ComentarioController
+import { API_BASE_URL } from '../../../config/api';
 const BASE_URL = API_BASE_URL;
-const RESOURCE = '/favoritos';
+const RESOURCE = '/comentarios';
 
-export interface FavoritoRequestDTO {
+export interface ComentarioRequestDTO {
   usuarioId: number;
   alojamientoId: number;
+  texto: string;
+  calificacion: number;
 }
 
-export interface FavoritoResponseDTO {
+export interface ComentarioResponseDTO {
   id: number;
   usuarioId: number;
   alojamientoId: number;
+  texto: string;
+  calificacion: number;
+  fechaCreacion?: string;
 }
 
 async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
@@ -27,12 +32,16 @@ async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-export class FavoritoService {
-  static async getByUsuario(usuarioId: number): Promise<FavoritoResponseDTO[]> {
-    return http(`${BASE_URL}${RESOURCE}/usuario/${usuarioId}`);
+export class ComentarioApiService {
+  static async getByAlojamiento(alojamientoId: number): Promise<ComentarioResponseDTO[]> {
+    return http(`${BASE_URL}${RESOURCE}/alojamiento/${alojamientoId}`);
   }
 
-  static async create(payload: FavoritoRequestDTO): Promise<FavoritoResponseDTO> {
+  static async getById(id: number): Promise<ComentarioResponseDTO> {
+    return http(`${BASE_URL}${RESOURCE}/${id}`);
+  }
+
+  static async create(payload: ComentarioRequestDTO): Promise<ComentarioResponseDTO> {
     return http(`${BASE_URL}${RESOURCE}`, {
       method: 'POST',
       body: JSON.stringify(payload),
