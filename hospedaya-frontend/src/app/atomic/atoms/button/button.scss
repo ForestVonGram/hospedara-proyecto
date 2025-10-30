@@ -1,7 +1,45 @@
-.input {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  width: 100%;
-  font-size: 1rem;
+@use './././styles/variables' as *;
+
+.btn {
+  font-family: $font-family-base;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: $white;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &-primary {
+    background-color: $primary-color;
+
+    &:hover {
+      background-color: darken($primary-color, 5%);
+    }
+  }
+
+  &-secondary {
+    background: $secondary-color;
+
+    &:hover {
+      filter: brightness(1.05);
+    }
+  }
+
+  &-outline {
+    background: transparent;
+    border: 2px solid $primary-color;
+    color: $primary-color;
+
+    &:hover {
+      background: $primary-color;
+      color: $white;
+    }
+  }
 }
