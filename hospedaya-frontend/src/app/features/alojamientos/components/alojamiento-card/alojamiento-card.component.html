@@ -1,0 +1,12 @@
+<article class="card">
+  <a [routerLink]="['/alojamientos', alojamiento.id]" class="image-wrap" aria-label="Ver detalle de {{ alojamiento.nombre }}">
+    <img [src]="imageUrl || 'https://via.placeholder.com/600x400?text=Alojamiento'" [alt]="alojamiento.nombre" />
+  </a>
+  <div class="content">
+    <h3 class="title">
+      <a [routerLink]="['/alojamientos', alojamiento.id]">{{ alojamiento.nombre }}</a>
+    </h3>
+    <p class="direccion">{{ alojamiento.direccion }}</p>
+    <p class="precio">${{ alojamiento.precioPorNoche | number:'1.0-0' }} / noche</p>
+  </div>
+</article>
