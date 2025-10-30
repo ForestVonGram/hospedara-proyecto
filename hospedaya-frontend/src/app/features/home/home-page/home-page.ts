@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { LandingComponent } from '../../../atomic/pages/landing/landing.component';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [],
+  imports: [LandingComponent],
   templateUrl: './home-page.html',
-  styleUrls: ['./home-page.css'],
+  styleUrl: './home-page.css',
 })
 export class HomePage {
 
