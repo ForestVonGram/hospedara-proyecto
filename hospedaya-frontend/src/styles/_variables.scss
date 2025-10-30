@@ -1,0 +1,69 @@
+// ============================================================
+// VARIABLES GLOBALES - HospedaYa
+// ============================================================
+
+// ------------------------------
+// 🎨 Colores
+// ------------------------------
+$primary-color: #4F46E5; // Color principal de marca. Botones, enlaces, acentos.
+$secondary-color: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); // Fondo de formularios y pantallas secundarias.
+$white: #FFFFFF; // Fondos, textos sobre fondos oscuros.
+$gray-light: #F3F4F6; // Bloques informativos y secciones intermedias.
+$gray-medium: #6B7280; // Textos secundarios e íconos.
+$black-blue: #111827; // Textos principales y encabezados.
+
+// Colores complementarios
+$accent-color: #546bff; // Llamados a la acción o alertas.
+$success-color: #10B981; // Indicadores de éxito o confirmación.
+$error-color: #EF4444; // Indicadores de error o advertencia.
+$warning-color: #F59E0B; // Indicadores de precaución.
+
+// Degradados adicionales
+$gradient-primary: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%);
+
+// ------------------------------
+// Tipografía
+// ------------------------------
+$font-family-base: 'Poppins', sans-serif; // Fuente principal de la aplicación.
+$font-family-secondary: 'Roboto', sans-serif; // Fuente secundaria para títulos y destacados.
+
+// Tamaños
+$h1-size: 48px;
+$h2-size: 32px;
+$h3-size: 24px;
+$text-base-size: 16px;
+$text-secondary-size: 14px;
+$button-size: 16px;
+
+// Pesos
+$bold: 700;
+$semi-bold: 600;
+$medium: 500;
+$regular: 400;
+
+// ------------------------------
+// Espaciado y bordes
+// ------------------------------
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 32px;
+$spacing-xl: 64px;
+
+$border-radius-sm: 4px;
+$border-radius: 8px;
+$border-radius-lg: 16px;
+
+// ------------------------------
+// Sombras
+// ------------------------------
+$shadow-default: 0 4px 8px rgba(0, 0, 0, 0.08);
+$shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.12);
+
+// ------------------------------
+// Breakpoints (para responsive design)
+// ------------------------------
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
