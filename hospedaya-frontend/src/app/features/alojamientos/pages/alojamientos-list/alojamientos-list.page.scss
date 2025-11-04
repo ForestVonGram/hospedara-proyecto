@@ -1,9 +1,0 @@
-.alojamientos-list {
-  .header { margin-bottom: 1rem; }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1rem;
-  }
-  .item { display: block; }
-}
