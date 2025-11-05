@@ -1,11 +1,9 @@
 package com.hospedaya.backend.presentation.controller;
 
 import com.hospedaya.backend.application.dto.login.LoginRequest;
-import com.hospedaya.backend.application.dto.login.LoginResponse;
 import com.hospedaya.backend.application.service.base.UsuarioService;
 import com.hospedaya.backend.domain.entity.Usuario;
 import com.hospedaya.backend.infraestructure.repository.UsuarioRepository;
-import com.hospedaya.backend.infraestructure.security.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -30,8 +28,6 @@ public class UsuarioController {
     private UsuarioRepository usuarioRepository;
     @Autowired
     private UsuarioService usuarioService;
-    @Autowired
-    private JwtProvider jwtProvider;
 
     @Operation(summary = "Listar usuarios")
     @ApiResponses({
@@ -69,34 +65,6 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(guardado);
     }
 
-    @Operation(summary = "Iniciar sesión de usuario")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Inicio de sesión exitoso"),
-            @ApiResponse(responseCode = "401", description = "Contraseña incorrecta"),
-            @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
-    })
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(request.getEmail());
-
-        if (usuarioOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new java.util.HashMap<String, String>() {{
-                put("message", "Email no encontrado");
-            }});
-        }
-
-        Usuario usuario = usuarioOpt.get();
-
-        if (!usuario.getPassword().equals(request.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new java.util.HashMap<String, String>() {{
-                put("message", "Contraseña incorrecta");
-            }});
-        }
-
-        String token = jwtProvider.generateToken(usuario.getEmail(), usuario.getId());
-        LoginResponse response = new LoginResponse(token, usuario.getId(), usuario.getNombre(), usuario.getEmail(), usuario.getRol() != null ? usuario.getRol().toString() : "USER");
-        return ResponseEntity.ok(response);
-    }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar un usuario")
@@ -128,5 +96,15 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al eliminar el usuario: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getPerfil(org.springframework.security.core.Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+        }
+        return usuarioRepository.findByEmail(authentication.getName())
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado"));
     }
 }
