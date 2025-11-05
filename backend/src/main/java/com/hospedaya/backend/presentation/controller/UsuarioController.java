@@ -14,8 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,6 +85,30 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/foto")
+    public ResponseEntity<?> subirFotoPerfil(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        try {
+            Usuario usuario = usuarioService.findById(id);
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("Archivo vacío");
+            }
+            // Crear directorio si no existe
+            Path uploadDir = Paths.get("uploads/perfiles");
+            Files.createDirectories(uploadDir);
+            // Nombre del archivo
+            String filename = "usuario-" + id + "-" + System.currentTimeMillis() + "-" + file.getOriginalFilename();
+            Path destination = uploadDir.resolve(filename);
+            Files.write(destination, file.getBytes());
+            // Guardar URL pública
+            String publicUrl = "/uploads/perfiles/" + filename;
+            usuario.setFotoPerfilUrl(publicUrl);
+            usuarioService.actualizarUsuario(id, usuario);
+            return ResponseEntity.ok(publicUrl);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 

@@ -112,13 +112,26 @@ public class UsuarioServiceImpl implements UsuarioService {
     public Usuario actualizarUsuario(Long id, Usuario usuario) {
         Usuario existente = usuarioRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Usuario no encontrado con ID: " + id));
-        existente.setNombre(usuario.getNombre());
-        existente.setEmail(usuario.getEmail());
+
+        // Actualización parcial: solo campos presentes
+        if (usuario.getNombre() != null && !usuario.getNombre().isBlank()) {
+            existente.setNombre(usuario.getNombre());
+        }
+        if (usuario.getEmail() != null && !usuario.getEmail().isBlank()) {
+            existente.setEmail(usuario.getEmail());
+        }
         if (usuario.getPassword() != null && !usuario.getPassword().isBlank()) {
             existente.setPassword(passwordEncoder.encode(usuario.getPassword()));
         }
-        existente.setTelefono(usuario.getTelefono());
-        existente.setRol(usuario.getRol());
+        if (usuario.getTelefono() != null) {
+            existente.setTelefono(usuario.getTelefono());
+        }
+        if (usuario.getFotoPerfilUrl() != null && !usuario.getFotoPerfilUrl().isBlank()) {
+            existente.setFotoPerfilUrl(usuario.getFotoPerfilUrl());
+        }
+        if (usuario.getRol() != null) {
+            existente.setRol(usuario.getRol());
+        }
         return usuarioRepository.save(existente);
     }
 

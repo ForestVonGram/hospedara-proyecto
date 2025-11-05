@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService, LoginRequest } from '../../services/auth.service';
+import { UsuarioService } from '../../services/usuario.service';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +23,7 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
+    private usuarioService: UsuarioService,
     private router: Router
   ) {}
 
@@ -40,11 +42,14 @@ export class LoginComponent {
         // Guardar el token JWT
         if (response.token) {
           this.authService.setToken(response.token);
-          this.authService.saveUser(response);
+          // Cargar y cachear el perfil completo para tener foto/telefono en toda la app
+          this.usuarioService.me().subscribe({
+            next: (u) => this.authService.saveUser(u),
+            complete: () => this.router.navigate(['/profile-setup'])
+          });
+        } else {
+          this.router.navigate(['/profile-setup']);
         }
-        
-        // Redirigir a la página principal o dashboard
-        this.router.navigate(['/']);
       },
       error: (error) => {
         this.isLoading = false;

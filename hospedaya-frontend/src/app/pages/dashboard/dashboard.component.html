@@ -1,0 +1,48 @@
+<div class="dashboard">
+  <header class="topbar">
+    <div class="brand">HospedaYa</div>
+    <div class="menu">
+      <a>Inicio</a>
+      <a>Mis Reservas</a>
+      <a>Comentarios</a>
+      <a>Configuración</a>
+      <div class="avatar" *ngIf="user" [style.background-image]="user.fotoPerfilUrl ? 'url(' + user.fotoPerfilUrl + ')' : 'none'"></div>
+    </div>
+  </header>
+
+  <section class="welcome">
+    <h2>Bienvenido, {{ user?.nombre || 'Usuario' }}</h2>
+    <p>Encuentra tu próximo hospedaje ideal</p>
+
+    <div class="search">
+      <input placeholder="¿A dónde vas?" />
+      <input type="date" />
+      <input type="date" />
+      <select>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+      </select>
+      <button>Buscar</button>
+    </div>
+  </section>
+
+  <section class="destacados">
+    <h3>Alojamientos Destacados</h3>
+    <div class="grid">
+      <article class="card" *ngFor="let a of destacados">
+        <img [src]="a.img" alt="" />
+        <div class="info">
+          <h4>{{ a.titulo }}</h4>
+          <p>{{ a.ciudad }}</p>
+          <div class="meta">
+            <span>${{ a.precio }}/noche</span>
+            <span>★ {{ a.rating }}</span>
+          </div>
+          <button>Reservar</button>
+        </div>
+      </article>
+    </div>
+  </section>
+</div>

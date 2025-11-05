@@ -24,6 +24,9 @@ public class Usuario {
 
     private String telefono;
 
+    // URL pública de la foto de perfil (servida desde /uploads/**)
+    private String fotoPerfilUrl;
+
     @Column(name = "\"password\"", nullable = false)
     private String password;
 

@@ -19,6 +19,7 @@ export interface Usuario {
   nombre: string;
   email: string;
   telefono?: string;
+  fotoPerfilUrl?: string;
   rol: string;
   fechaRegistro: string;
   activo: boolean;

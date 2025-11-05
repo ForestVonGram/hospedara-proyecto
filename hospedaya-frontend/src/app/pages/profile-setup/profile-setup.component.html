@@ -1,0 +1,26 @@
+<div class="setup-container">
+  <h1>Personaliza tu perfil</h1>
+  <p>Sube una foto y agrega tu número de teléfono.</p>
+
+  <div class="card">
+    <div class="avatar-section">
+      <div class="avatar" [style.background-image]="previewUrl ? 'url(' + previewUrl + ')' : 'none'"></div>
+      <label class="btn">
+        Cambiar foto
+        <input type="file" accept="image/*" (change)="onFileChange($event)" hidden />
+      </label>
+    </div>
+
+    <div class="form-section">
+      <label>Teléfono</label>
+      <input type="tel" [(ngModel)]="telefono" placeholder="Ej: +57 300 123 4567" />
+
+      <div class="actions">
+        <button class="primary" (click)="guardar()" [disabled]="saving">Continuar</button>
+        <a routerLink="/dashboard" class="skip">Omitir por ahora</a>
+      </div>
+
+      <div class="error" *ngIf="error">{{ error }}</div>
+    </div>
+  </div>
+</div>
