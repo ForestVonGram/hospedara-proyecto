@@ -55,6 +55,11 @@ export class AuthService {
     return this.http.post<any>(`${this.authUrl}/register`, registerData);
   }
 
+  // Obtiene el perfil del usuario autenticado desde el backend
+  getMe(): Observable<Usuario> {
+    return this.http.get<Usuario>(`${this.apiUrl}/me`);
+  }
+
   // Métodos para gestionar el estado de autenticación
   saveUser(user: any): void {
     localStorage.setItem('user', JSON.stringify(user));
@@ -67,9 +72,10 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('user');
+    this.removeToken();
   }
 
   isLoggedIn(): boolean {
-    return this.getUser() !== null;
+    return !!this.getToken();
   }
 }

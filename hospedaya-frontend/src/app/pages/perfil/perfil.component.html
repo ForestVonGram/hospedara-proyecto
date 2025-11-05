@@ -1,0 +1,60 @@
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" [routerLink]="['/']"><h1 class="brand-title">Hospeda Ya</h1></a>
+    <nav class="main-nav" aria-label="Main Navigation">
+      <a [routerLink]="['/']">Inicio</a>
+      <a [routerLink]="['/']">Hospedajes</a>
+      <a [routerLink]="['/']">Reservas</a>
+      <a class="active" [routerLink]="['/perfil']" aria-current="page">Perfil</a>
+    </nav>
+    <div class="header-actions" *ngIf="!user">
+      <a class="login" [routerLink]="['/login']">Iniciar Sesión</a>
+      <a class="btn btn-outline" [routerLink]="['/register']">Registrarse</a>
+    </div>
+  </div>
+</header>
+
+<main class="perfil-page container">
+  <section *ngIf="loading" aria-live="polite">Cargando perfil…</section>
+  <section *ngIf="!loading && error" class="error" role="alert">{{ error }}</section>
+
+  <!-- Perfil -->
+  <section class="perfil-header" *ngIf="!loading && !error && user">
+    <div class="avatar-wrap" aria-hidden="true">
+      <img [src]="user?.fotoPerfilUrl || 'assets/images/user.jpg'" alt="Foto de perfil" class="perfil-avatar" />
+      <div class="fallback" *ngIf="!user?.fotoPerfilUrl">{{ initials }}</div>
+    </div>
+    <div class="perfil-info">
+      <h2>{{ user?.nombre }}</h2>
+      <p *ngIf="user?.email"><span class="icon">📧</span> {{ user?.email }}</p>
+      <p *ngIf="user?.telefono"><span class="icon">📞</span> {{ user?.telefono }}</p>
+      <p><span class="icon">🪪</span> Rol: {{ user?.rol }}</p>
+      <button class="btn btn-primary" type="button">Editar Perfil</button>
+    </div>
+  </section>
+
+  <!-- Historial de Reservas -->
+  <section class="perfil-reservas" *ngIf="!loading && !error">
+    <h3>Historial de Reservas</h3>
+    <p class="muted" *ngIf="!user">Inicia sesión para ver tus reservas.</p>
+    <!-- TODO: Integrar reservas reales desde backend /reservas/usuario/{id} -->
+    <p class="muted" *ngIf="user">Aún no has realizado reservas.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h4>HospedaYa</h4>
+      <p>Encuentra el hospedaje perfecto para tus viajes.</p>
+    </div>
+    <div>
+      <h5>Soporte</h5>
+      <ul class="links">
+        <li><a href="#">Centro de ayuda</a></li>
+        <li><a href="#">Seguridad</a></li>
+        <li><a href="#">Política de privacidad</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
