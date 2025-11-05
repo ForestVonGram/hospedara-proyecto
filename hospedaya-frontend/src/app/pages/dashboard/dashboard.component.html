@@ -5,8 +5,8 @@
       <a>Inicio</a>
       <a>Mis Reservas</a>
       <a>Comentarios</a>
-      <a>Configuración</a>
-      <div class="avatar" *ngIf="user" [style.background-image]="user.fotoPerfilUrl ? 'url(' + user.fotoPerfilUrl + ')' : 'none'"></div>
+      <a routerLink="/perfil">Configuración</a>
+      <div class="avatar" *ngIf="user" [style.background-image]="user.fotoPerfilUrl ? 'url(' + (user.fotoPerfilUrl.startsWith('http') ? user.fotoPerfilUrl : 'http://localhost:8080' + user.fotoPerfilUrl) + ')' : 'none'"></div>
     </div>
   </header>
 

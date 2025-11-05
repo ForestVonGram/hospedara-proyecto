@@ -27,7 +27,7 @@ export class ProfileSetupComponent implements OnInit {
       next: (u) => {
         this.user = u;
         this.telefono = u.telefono || '';
-        this.previewUrl = u.fotoPerfilUrl || null;
+        this.previewUrl = u.fotoPerfilUrl ? (u.fotoPerfilUrl.startsWith('http') ? u.fotoPerfilUrl : 'http://localhost:8080' + u.fotoPerfilUrl) : null;
       },
       error: () => {
         this.error = 'No se pudo cargar tu perfil';
