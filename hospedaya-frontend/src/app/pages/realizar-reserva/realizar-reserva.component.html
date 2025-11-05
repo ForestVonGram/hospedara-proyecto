@@ -1,0 +1,62 @@
+<!-- NAVBAR -->
+<header class="navbar">
+  <div class="logo">
+    <img src="https://cdn-icons-png.flaticon.com/512/1046/1046857.png" alt="Logo HospedaYa">
+    <span>HospedaYa</span>
+  </div>
+  <nav>
+    <a routerLink="/">Inicio</a>
+    <a routerLink="/dashboard">Mis Reservas</a>
+    <a routerLink="/profile-setup">Perfil</a>
+    <a routerLink="/login" class="cerrar">Cerrar sesión</a>
+  </nav>
+</header>
+
+<!-- CONTENIDO PRINCIPAL -->
+<main class="contenedor" *ngIf="!cargando">
+  <h1>Reserva en {{ alojamiento?.nombre || 'Alojamiento' }}</h1>
+
+  <form class="form-reserva" [formGroup]="form" (ngSubmit)="confirmarReserva()">
+    <div class="fechas">
+      <div class="campo">
+        <label for="entrada">Fecha de entrada</label>
+        <input type="date" id="entrada" formControlName="fechaInicio">
+      </div>
+
+      <div class="campo">
+        <label for="salida">Fecha de salida</label>
+        <input type="date" id="salida" formControlName="fechaFin">
+      </div>
+    </div>
+
+    <div class="campo">
+      <label for="huespedes">Número de huéspedes</label>
+      <select id="huespedes" formControlName="huespedes">
+        <option [value]="1">1 huésped</option>
+        <option [value]="2">2 huéspedes</option>
+        <option [value]="3">3 huéspedes</option>
+        <option [value]="4">4 huéspedes</option>
+      </select>
+    </div>
+
+    <div class="campo resumen">
+      <label>Resumen de precio</label>
+      <div class="box-resumen">
+        Total: <span class="precio">{{ total() | currency:'USD':'symbol' }}</span>
+        por {{ noches() }} noche(s)
+      </div>
+    </div>
+
+    <div *ngIf="error" style="color:#b91c1c; margin: .5rem 0;">{{ error }}</div>
+    <div *ngIf="exito" style="color:#16a34a; margin: .5rem 0;">{{ exito }}</div>
+
+    <button type="submit" class="btn-confirmar" [disabled]="form.invalid || noches() <= 0">
+      ✅ Confirmar Reserva
+    </button>
+
+    <p class="cancelacion">
+      Podrás cancelar gratis hasta 48 horas antes de tu llegada.
+    </p>
+  </form>
+</main>
+<div *ngIf="cargando" class="contenedor">Cargando...</div>

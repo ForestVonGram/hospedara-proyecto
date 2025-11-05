@@ -1,0 +1,147 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #f9fafc;
+  color: #1f1f1f;
+}
+
+/* NAVBAR */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1e2a78;
+  color: white;
+  padding: 1rem 2rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.logo img {
+  width: 28px;
+}
+
+.navbar nav a {
+  color: #dbe1ff;
+  text-decoration: none;
+  margin: 0 1rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.navbar nav a:hover {
+  color: #fff;
+}
+
+.navbar nav a.cerrar {
+  color: #ffd5d5;
+}
+
+/* CONTENEDOR */
+.contenedor {
+  max-width: 500px;
+  margin: 4rem auto;
+  text-align: center;
+}
+
+h1 {
+  color: #1e2a78;
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+}
+
+/* FORMULARIO */
+.form-reserva {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: left;
+}
+
+.fechas {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.campo {
+  margin-bottom: 1.2rem;
+  width: 100%;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.4rem;
+}
+
+input[type="date"],
+select {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.box-resumen {
+  border: 1px solid #c7d2fe;
+  padding: 0.8rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.precio {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.btn-confirmar {
+  display: block;
+  width: 100%;
+  background-color: #22c55e;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-confirmar:hover {
+  background-color: #15803d;
+}
+
+.cancelacion {
+  margin-top: 0.8rem;
+  font-size: 0.85rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* RESPONSIVO */
+@media (max-width: 480px) {
+  .contenedor {
+    margin: 2rem 1rem;
+  }
+
+  .fechas {
+    flex-direction: column;
+  }
+}

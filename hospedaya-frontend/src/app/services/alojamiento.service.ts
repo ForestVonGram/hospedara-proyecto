@@ -32,4 +32,8 @@ export class AlojamientoService {
   listarPorAnfitrion(anfitrionId: number): Observable<AlojamientoResponseDTO[]> {
     return this.http.get<AlojamientoResponseDTO[]>(`${this.baseUrl}/anfitrion/${anfitrionId}`);
   }
+
+  obtenerPorId(id: number): Observable<AlojamientoResponseDTO> {
+    return this.http.get<AlojamientoResponseDTO>(`${this.baseUrl}/${id}`);
+  }
 }

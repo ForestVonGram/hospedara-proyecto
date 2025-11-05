@@ -14,5 +14,6 @@ export const routes: Routes = [
   { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent) },
   { path: 'alojamientos/gestion', loadComponent: () => import('./pages/gestion-alojamientos/gestion-alojamientos.component').then(m => m.GestionAlojamientosComponent) },
   { path: 'alojamientos/nuevo', loadComponent: () => import('./pages/alojamiento-creation/alojamiento-creation.component').then(m => m.AlojamientoCreationComponent) },
+  { path: 'alojamientos/:id/reservar', loadComponent: () => import('./pages/realizar-reserva/realizar-reserva.component').then(m => m.RealizarReservaComponent) },
   { path: '**', redirectTo: '' }
 ];
