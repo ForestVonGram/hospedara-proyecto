@@ -2,6 +2,7 @@ package com.hospedaya.backend.presentation.controller;
 
 import com.hospedaya.backend.application.dto.login.AuthResponse;
 import com.hospedaya.backend.application.dto.login.LoginRequest;
+import com.hospedaya.backend.application.service.integration.EmailService;
 import com.hospedaya.backend.domain.entity.Usuario;
 import com.hospedaya.backend.infraestructure.repository.UsuarioRepository;
 import com.hospedaya.backend.infraestructure.security.JwtUtil;
@@ -24,13 +25,16 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil,
-                          UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+                          UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder,
+                          EmailService emailService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     @PostMapping("/login")
@@ -61,6 +65,10 @@ public class AuthController {
         if (usuario.getActivo() == null) usuario.setActivo(true);
         if (usuario.getFechaRegistro() == null) usuario.setFechaRegistro(java.time.LocalDate.now());
         Usuario saved = usuarioRepository.save(usuario);
+        
+        // Enviar correo de bienvenida
+        emailService.enviarCorreoRegistro(saved);
+        
         Map<String, Object> claims = new HashMap<>();
         claims.put("typ", "access");
         String token = jwtUtil.generateToken(saved.getEmail(), claims);

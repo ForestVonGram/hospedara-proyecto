@@ -50,8 +50,8 @@ export class AuthService {
     localStorage.removeItem(this.tokenKey);
   }
 
-  register(registerData: RegisterRequest): Observable<Usuario> {
-    return this.http.post<Usuario>(this.apiUrl, registerData);
+  register(registerData: RegisterRequest): Observable<any> {
+    return this.http.post<any>(`${this.authUrl}/register`, registerData);
   }
 
   // Métodos para gestionar el estado de autenticación
