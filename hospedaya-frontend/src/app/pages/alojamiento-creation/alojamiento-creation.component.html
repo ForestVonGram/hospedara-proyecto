@@ -1,0 +1,80 @@
+<!-- HEADER -->
+<header class="site-header host-header">
+  <div class="container header-inner">
+    <a class="brand" href="/">
+      <h1 class="brand-title">HospedaYa</h1>
+    </a>
+    <nav class="main-nav">
+      <a href="#">Dashboard Anfitrión</a>
+      <a class="active" href="#">Gestión de Propiedades</a>
+      <a href="#">Reservas</a>
+    </nav>
+    <div class="profile-icon">
+      <img src="assets/images/user.jpg" alt="Usuario" />
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="container nuevo-alojamiento">
+  <h2 class="page-title">Nuevo Alojamiento</h2>
+  <p class="page-sub">Completa la información de tu propiedad</p>
+
+  <!-- Subida de Fotos -->
+  <section class="upload-section">
+    <h3 class="section-title">📸 Subida de Fotos</h3>
+    <div class="upload-box" id="dropzone">
+      <p>Arrastra tus fotos aquí o haz clic para subir</p>
+      <button class="btn btn-primary" type="button" disabled>Seleccionar archivo (próximamente)</button>
+    </div>
+  </section>
+
+  <!-- Formulario -->
+  <section class="form-section">
+    <h3 class="section-title">📝 Formulario de Datos del Alojamiento</h3>
+
+    <form class="alojamiento-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <label for="nombre">Nombre del alojamiento</label>
+      <input id="nombre" type="text" placeholder="Ej: Casa de Playa Paradise" formControlName="nombre" />
+      <small class="error" *ngIf="f['nombre'].touched && f['nombre'].invalid">El nombre es obligatorio</small>
+
+      <label for="descripcion">Descripción</label>
+      <textarea id="descripcion" rows="4" placeholder="Describe tu propiedad..." formControlName="descripcion"></textarea>
+      <small class="error" *ngIf="f['descripcion'].touched && f['descripcion'].invalid">La descripción es obligatoria</small>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="direccion">Ubicación</label>
+          <input id="direccion" type="text" placeholder="Ciudad, dirección" formControlName="direccion" />
+          <small class="error" *ngIf="f['direccion'].touched && f['direccion'].invalid">La dirección es obligatoria</small>
+        </div>
+
+        <div class="form-group">
+          <label for="precioPorNoche">Precio por noche</label>
+          <input id="precioPorNoche" type="number" min="0" step="0.01" placeholder="$0.00" formControlName="precioPorNoche" />
+          <small class="error" *ngIf="f['precioPorNoche'].touched && f['precioPorNoche'].invalid">Ingresa un precio válido</small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="fechaInicio">Fecha de inicio</label>
+          <input id="fechaInicio" type="date" formControlName="fechaInicio" />
+        </div>
+        <div class="form-group">
+          <label for="fechaFin">Fecha de fin</label>
+          <input id="fechaFin" type="date" formControlName="fechaFin" />
+        </div>
+      </div>
+
+      <div class="messages">
+        <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+        <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
+      </div>
+
+      <button class="btn btn-primary publish-btn" type="submit" [disabled]="isSubmitting || form.invalid">
+        {{ isSubmitting ? 'Publicando...' : 'Publicar alojamiento' }}
+      </button>
+    </form>
+  </section>
+</main>

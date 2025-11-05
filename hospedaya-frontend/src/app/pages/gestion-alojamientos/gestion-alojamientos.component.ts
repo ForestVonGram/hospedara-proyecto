@@ -1,0 +1,60 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { AlojamientoService, AlojamientoResponseDTO } from '../../services/alojamiento.service';
+
+@Component({
+  selector: 'app-gestion-alojamientos',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  templateUrl: './gestion-alojamientos.component.html',
+  styleUrl: './gestion-alojamientos.component.css'
+})
+export class GestionAlojamientosComponent implements OnInit {
+  cargando = false;
+  error = '';
+  alojamientos: AlojamientoResponseDTO[] = [];
+
+  constructor(
+    private auth: AuthService,
+    private alojamientoService: AlojamientoService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    const user = this.auth.getUser();
+    if (!user) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    if (!user.rol || user.rol !== 'ANFITRION') {
+      this.router.navigate(['/register-host']);
+      return;
+    }
+
+    this.cargarAlojamientos(Number(user.id));
+  }
+
+  cargarAlojamientos(anfitrionId: number) {
+    this.cargando = true;
+    this.error = '';
+    this.alojamientoService.listarPorAnfitrion(anfitrionId).subscribe({
+      next: (data) => (this.alojamientos = data || []),
+      error: (err) => {
+        if (typeof err?.error === 'string' && err.error.trim().length > 0) {
+          this.error = err.error;
+        } else if (err?.error?.message) {
+          this.error = err.error.message;
+        } else {
+          this.error = 'No se pudieron cargar tus alojamientos. Inténtalo más tarde.';
+        }
+      },
+      complete: () => (this.cargando = false)
+    });
+  }
+
+  crearNuevo() {
+    this.router.navigate(['/alojamientos/nuevo']);
+  }
+}

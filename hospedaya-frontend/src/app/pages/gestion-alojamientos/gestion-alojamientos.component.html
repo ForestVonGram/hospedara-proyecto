@@ -1,0 +1,44 @@
+<!-- NAVBAR -->
+<header class="navbar">
+  <div class="logo">
+    <img src="https://cdn-icons-png.flaticon.com/512/1046/1046857.png" alt="Logo HospedaYa">
+    <span>HospedaYa</span>
+  </div>
+  <nav>
+    <a routerLink="/dashboard">Dashboard Anfitrión</a>
+    <a class="active" routerLink="/alojamientos/gestion">Gestión de Propiedades</a>
+    <a routerLink="/dashboard">Reservas</a>
+  </nav>
+  <div class="perfil">
+    <i class="fa-solid fa-user"></i>
+  </div>
+</header>
+
+<!-- CONTENIDO PRINCIPAL -->
+<main class="contenedor">
+  <h1>HospedaYa - Lista de Alojamientos</h1>
+  <p class="subtitulo">Gestiona todas tus propiedades desde un solo lugar</p>
+
+  <div *ngIf="cargando">Cargando alojamientos...</div>
+  <div *ngIf="!cargando && error" style="color:#b91c1c; margin-bottom:1rem;">{{ error }}</div>
+
+  <section *ngIf="!cargando && !error && alojamientos.length > 0" class="grid-alojamientos">
+    <article class="alojamiento-card" *ngFor="let a of alojamientos">
+      <img src="https://images.unsplash.com/photo-1494526585095-c41746248156" alt="Imagen alojamiento">
+      <div class="card-body">
+        <h3>{{ a.nombre }}</h3>
+        <p class="ubicacion">📍 {{ a.direccion }}</p>
+        <div class="acciones">
+          <button class="btn editar" type="button" title="Editar" disabled>✏️ Editar</button>
+          <button class="btn eliminar" type="button" title="Eliminar" disabled>🗑️ Eliminar</button>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <div *ngIf="!cargando && !error && alojamientos.length === 0" style="color:#6b7280;">
+    Aún no tienes alojamientos publicados. ¡Crea el primero!
+  </div>
+
+  <button class="btn-flotante" (click)="crearNuevo()">＋ Crear nuevo alojamiento</button>
+</main>

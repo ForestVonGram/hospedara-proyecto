@@ -12,5 +12,7 @@ export const routes: Routes = [
   { path: 'reset-password', loadComponent: () => import('./pages/reset-password/reset-password.component').then(m => m.ResetPasswordComponent) },
   { path: 'profile-setup', loadComponent: () => import('./pages/profile-setup/profile-setup.component').then(m => m.ProfileSetupComponent) },
   { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent) },
+  { path: 'alojamientos/gestion', loadComponent: () => import('./pages/gestion-alojamientos/gestion-alojamientos.component').then(m => m.GestionAlojamientosComponent) },
+  { path: 'alojamientos/nuevo', loadComponent: () => import('./pages/alojamiento-creation/alojamiento-creation.component').then(m => m.AlojamientoCreationComponent) },
   { path: '**', redirectTo: '' }
 ];

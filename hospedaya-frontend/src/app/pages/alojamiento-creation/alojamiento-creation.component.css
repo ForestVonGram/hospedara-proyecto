@@ -1,0 +1,154 @@
+/* NUEVO ALOJAMIENTO PAGE */
+body {
+  background: #faf5ff;
+}
+
+.host-header {
+  background: #7c3aed;
+  color: white;
+}
+
+.host-header .brand-title {
+  color: white;
+}
+
+.main-nav a {
+  color: #f1f5f9;
+  text-decoration: none;
+  margin-left: 20px;
+}
+
+.main-nav a.active {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.profile-icon img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+}
+
+/* Page layout */
+.nuevo-alojamiento {
+  padding: 40px 0 80px;
+}
+
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1e1b4b;
+  margin-bottom: 4px;
+}
+
+.page-sub {
+  color: #64748b;
+  margin-bottom: 28px;
+}
+
+/* Subida de fotos */
+.upload-section,
+.form-section {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 28px;
+  box-shadow: 0 4px 16px rgba(2,6,23,.08);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #7c3aed;
+  margin-bottom: 16px;
+}
+
+.upload-box {
+  border: 2px dashed #c4b5fd;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  background: #faf5ff;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.upload-box:hover {
+  background: #f5f3ff;
+  border-color: #7c3aed;
+}
+
+/* Formulario */
+.alojamiento-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+label {
+  font-weight: 500;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+input, textarea {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 15px;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, textarea:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.2);
+  outline: none;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.form-group {
+  flex: 1;
+}
+
+/* Botón publicar */
+.publish-btn {
+  margin-top: 12px;
+  padding: 14px 20px;
+  font-size: 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  background: linear-gradient(90deg, #7c3aed, #d946ef);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+
+.publish-btn:hover {
+  filter: brightness(0.95);
+  transform: translateY(-2px);
+}
+
+.publish-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+  .form-row {
+    flex-direction: column;
+  }
+  .upload-box {
+    padding: 24px;
+  }
+}
