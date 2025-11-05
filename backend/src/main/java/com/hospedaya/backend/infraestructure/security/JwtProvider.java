@@ -22,10 +22,10 @@ public class JwtProvider {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
         
         return Jwts.builder()
-                .subject(email)
+                .setSubject(email)
                 .claim("userId", userId)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(key)
                 .compact();
     }
@@ -49,10 +49,10 @@ public class JwtProvider {
 
     private Claims getAllClaimsFromToken(String token) {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-        return Jwts.parser()
-                .verifyWith(key)
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
                 .build()
-                .parseSignedClaims(token)
-                .getPayload();
+                .parseClaimsJws(token)
+                .getBody();
     }
 }

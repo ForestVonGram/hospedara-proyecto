@@ -29,12 +29,13 @@ export interface Usuario {
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/usuarios';
+  private authUrl = 'http://localhost:8080/auth';
   private tokenKey = 'auth_token';
 
   constructor(private http: HttpClient) {}
 
   login(loginData: LoginRequest): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, loginData);
+    return this.http.post<any>(`${this.authUrl}/login`, loginData);
   }
 
   getToken(): string | null {
