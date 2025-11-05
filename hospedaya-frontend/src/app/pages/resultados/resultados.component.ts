@@ -4,6 +4,8 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Alojamiento, AlojamientoService } from '../../services/alojamiento.service';
 import { UsuarioService, UsuarioProfile } from '../../services/usuario.service';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-resultados',
@@ -22,10 +24,11 @@ export class ResultadosComponent implements OnInit {
   filtrados: Alojamiento[] = [];
   precioMax?: number;
 
-  constructor(private route: ActivatedRoute, private alojService: AlojamientoService, private usuarioService: UsuarioService) {}
+  constructor(private route: ActivatedRoute, private alojService: AlojamientoService, private usuarioService: UsuarioService, private router: Router, private auth: AuthService) {}
 
   ngOnInit(): void {
-    this.usuarioService.me().subscribe({ next: u => this.user = u });
+    this.user = this.auth.getUser();
+    this.usuarioService.me().subscribe({ next: u => this.user = u, error: () => this.user = undefined });
 
     this.route.queryParamMap.subscribe(params => {
       this.destino = params.get('destino') || '';
@@ -57,8 +60,11 @@ export class ResultadosComponent implements OnInit {
     return url ? (url.startsWith('http') ? url : `http://localhost:8080${url}`) : 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?q=80&w=1200&auto=format&fit=crop';
   }
 
+  showMenu = false;
   avatar(): string | null {
     const u = this.user?.fotoPerfilUrl;
     return u ? (u.startsWith('http') ? u : `http://localhost:8080${u}`) : null;
   }
+  toggleMenu(){ this.showMenu = !this.showMenu; }
+  logout(){ this.auth.logout(); this.router.navigate(['/']); }
 }

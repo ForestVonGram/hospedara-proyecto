@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { UsuarioService, UsuarioProfile } from '../../services/usuario.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,10 +27,25 @@ export class DashboardComponent implements OnInit {
     { titulo: 'Loft moderno', ciudad: 'Guadalajara, México', precio: 75, rating: 4.7, img: 'https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200&auto=format&fit=crop' }
   ];
 
-  constructor(private usuarioService: UsuarioService, private router: Router) {}
+  constructor(private usuarioService: UsuarioService, private router: Router, private auth: AuthService) {}
 
   ngOnInit(): void {
-    this.usuarioService.me().subscribe({ next: (u) => (this.user = u) });
+    // Cargar rápido desde cache y luego confirmar con backend
+    this.user = this.auth.getUser();
+    this.usuarioService.me().subscribe({ next: (u) => (this.user = u), error: () => (this.user = undefined) });
+  }
+
+  showMenu = false;
+
+  avatarUrl(): string | null {
+    const u = this.user?.fotoPerfilUrl;
+    return u ? (u.startsWith('http') ? u : `http://localhost:8080${u}`) : null;
+  }
+
+  toggleMenu() { this.showMenu = !this.showMenu; }
+  logout() {
+    this.auth.logout();
+    this.router.navigate(['/']);
   }
 
   buscar() {

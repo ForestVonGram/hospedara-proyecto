@@ -10,6 +10,10 @@ public class StaticResourceConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Sirve archivos estáticos desde el directorio local "uploads/"
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:uploads/");
+                .addResourceLocations(
+                        "file:uploads/",           // si el working dir es backend/
+                        "file:backend/uploads/",   // si el working dir es el root del repo
+                        "classpath:/static/uploads/" // fallback opcional
+                );
     }
 }

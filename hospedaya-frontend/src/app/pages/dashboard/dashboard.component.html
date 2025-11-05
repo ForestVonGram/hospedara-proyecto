@@ -2,11 +2,23 @@
   <header class="topbar">
     <div class="brand">HospedaYa</div>
     <div class="menu">
-      <a>Inicio</a>
-      <a routerLink="/reservas">Mis Reservas</a>
-      <a>Comentarios</a>
-      <a routerLink="/perfil">Configuración</a>
-      <div class="avatar" *ngIf="user" [style.background-image]="user.fotoPerfilUrl ? 'url(' + (user.fotoPerfilUrl.startsWith('http') ? user.fotoPerfilUrl : 'http://localhost:8080' + user.fotoPerfilUrl) + ')' : 'none'"></div>
+      <ng-container *ngIf="user; else authLinks">
+        <div class="user-menu" [class.open]="showMenu">
+          <div class="avatar" (click)="toggleMenu()" [style.background-image]="avatarUrl() ? 'url(' + (avatarUrl() + '?v=' + (user?.fotoPerfilUrl ? '' : '')) + ')' : 'none'"></div>
+          <nav class="dropdown" *ngIf="showMenu">
+            <a routerLink="/">Inicio</a>
+            <a routerLink="/reservas">Mis Reservas</a>
+            <a>Comentarios</a>
+            <a routerLink="/perfil">Configuración</a>
+            <hr />
+            <a (click)="logout()">Cerrar sesión</a>
+          </nav>
+        </div>
+      </ng-container>
+      <ng-template #authLinks>
+        <a routerLink="/login">Iniciar sesión</a>
+        <a routerLink="/register">Registrarse</a>
+      </ng-template>
     </div>
   </header>
 

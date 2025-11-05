@@ -56,8 +56,15 @@ export class ProfileSetupComponent implements OnInit {
       next: () => {
         if (this.selectedFile) {
           this.usuarioService.uploadFoto(this.user!.id, this.selectedFile).subscribe({
-            next: () => {
-              // refrescar perfil y cachear
+            next: (publicUrl: any) => {
+              // actualizar vista y cache inmediatamente para evitar ver la foto anterior
+              const url = typeof publicUrl === 'string' ? publicUrl : String(publicUrl);
+              const abs = url.startsWith('http') ? url : 'http://localhost:8080' + url;
+              this.previewUrl = abs + '?v=' + Date.now();
+              if (this.user) this.user.fotoPerfilUrl = url;
+              this.auth.saveUser({ ...(this.user as any), fotoPerfilUrl: url });
+
+              // refrescar perfil desde el backend para asegurar persistencia
               this.usuarioService.me().subscribe({
                 next: (u) => this.auth.saveUser(u),
                 complete: () => this.router.navigate(['/dashboard'])
