@@ -1,0 +1,103 @@
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/"><h1 class="brand-title">Hospeda Ya</h1></a>
+    <nav class="main-nav" aria-label="Main Navigation">
+      <a href="#">Inicio</a>
+      <a href="#">Hospedajes</a>
+      <a href="#">Reservas</a>
+      <a href="#">Comentarios</a>
+    </nav>
+    <div class="header-actions">
+      <a class="login" href="#">Iniciar Sesión</a>
+      <a class="btn btn-outline" href="#">Registrarse</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg" style="background-image: url('assets/images/hero.jpg')"></div>
+    <div class="hero-overlay"></div>
+    <div class="container hero-inner">
+      <h1 class="hero-title">Encuentra el hospedaje perfecto para tu próxima aventura</h1>
+      <p class="hero-sub">Casas, apartamentos y fincas en el lugar que siempre soñaste</p>
+
+      <!-- Search Card -->
+      <form class="search-card" role="search" aria-label="Buscar hospedaje">
+        <div class="search-field destination">
+          <label class="sr-only" for="dest">Destino</label>
+          <input id="dest" name="dest" type="text" placeholder="Destino" autocomplete="off" />
+        </div>
+        <div class="search-field checkin">
+          <label class="sr-only" for="checkin">Check-in</label>
+          <input id="checkin" name="checkin" class="datepicker" placeholder="Check-in" readonly />
+        </div>
+        <div class="search-field checkout">
+          <label class="sr-only" for="checkout">Check-out</label>
+          <input id="checkout" name="checkout" class="datepicker" placeholder="Check-out" readonly />
+        </div>
+        <div class="search-field guests">
+          <label class="sr-only" for="guests">Huéspedes</label>
+          <input id="guests" name="guests" type="text" placeholder="Huéspedes" />
+        </div>
+        <button class="btn btn-primary" type="submit" style="padding: 14px 24px; font-size: 1rem;">Buscar</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features container">
+    <div class="feature">
+      <img src="assets/images/icon-home.svg" alt="" />
+      <h4>Variedad de hospedajes</h4>
+      <p>Casas, apartamentos y fincas para todos los gustos y presupuestos.</p>
+    </div>
+    <div class="feature">
+      <img src="assets/images/icon-lock.svg" alt="" />
+      <h4>Reservas seguras</h4>
+      <p>Proceso de reserva confiable con protección para huéspedes y anfitriones.</p>
+    </div>
+    <div class="feature">
+      <img src="assets/images/icon-speech.svg" alt="" />
+      <h4>Comentarios reales</h4>
+      <p>Lee opiniones verificadas de otros viajeros antes de reservar.</p>
+    </div>
+  </section>
+
+  <!-- Host CTA Section -->
+  <section class="host-cta">
+    <div class="container">
+      <h3>¿Eres anfitrión?</h3>
+      <p>Publica tu hospedaje y empieza a recibir reservas hoy</p>
+      <a class="btn btn-primary" href="#" style="text-decoration: none;">Regístrate como anfitrión</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h4>HospedaYa</h4>
+      <p>Encuentra el hospedaje perfecto para tus viajes.</p>
+    </div>
+    <div>
+      <h5>Enlaces rápidos</h5>
+      <ul class="links">
+        <li><a href="#">Sobre nosotros</a></li>
+        <li><a href="#">Carreras</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Prensa</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Soporte</h5>
+      <ul class="links">
+        <li><a href="#">Centro de ayuda</a></li>
+        <li><a href="#">Seguridad</a></li>
+        <li><a href="#">Política de privacidad</a></li>
+        <li><a href="#">Términos de servicio</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
