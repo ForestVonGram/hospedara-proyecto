@@ -60,8 +60,12 @@ export class RegisterComponent {
         
         if (error.status === 400) {
           this.errorMessage = 'Datos inválidos. Verifica la información ingresada.';
+        } else if (error.status === 409) {
+          this.errorMessage = 'El email ya está registrado';
         } else if (error.error?.message) {
           this.errorMessage = error.error.message;
+        } else if (typeof error.error === 'string' && error.error.trim().length > 0) {
+          this.errorMessage = error.error;
         } else {
           this.errorMessage = 'Error al registrar usuario. Intenta nuevamente.';
         }

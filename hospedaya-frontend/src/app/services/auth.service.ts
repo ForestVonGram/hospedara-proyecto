@@ -55,6 +55,15 @@ export class AuthService {
     return this.http.post<any>(`${this.authUrl}/register`, registerData);
   }
 
+  // Recuperación de contraseña
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post<any>(`${this.authUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    return this.http.post<any>(`${this.authUrl}/reset-password`, { token, newPassword });
+  }
+
   // Métodos para gestionar el estado de autenticación
   saveUser(user: any): void {
     localStorage.setItem('user', JSON.stringify(user));
