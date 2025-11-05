@@ -1,0 +1,34 @@
+<div class="dashboard">
+  <header class="topbar">
+    <div class="brand">HospedaYa</div>
+    <div class="menu">
+      <a routerLink="/">Inicio</a>
+      <a class="active">Mis Reservas</a>
+      <a>Comentarios</a>
+      <a routerLink="/perfil">Configuración</a>
+      <div class="avatar" *ngIf="user" [style.background-image]="avatar() ? 'url(' + avatar() + ')' : 'none'"></div>
+    </div>
+  </header>
+
+  <section class="reservas" *ngIf="reservas.length; else vacio">
+    <article class="reserva" *ngFor="let r of reservas">
+      <img [src]="resolverImg(r.alojamiento)" />
+      <div class="info">
+        <h3>{{ r.alojamiento?.titulo }}</h3>
+        <p>{{ r.alojamiento?.direccion }}</p>
+        <div class="dates">
+          <span>Check-in: {{ r.fechaInicio }}</span>
+          <span>Check-out: {{ r.fechaFin }}</span>
+        </div>
+        <div class="meta">
+          <span>${{ r.alojamiento?.precioPorNoche }}/noche</span>
+          <button>Ver detalles</button>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <ng-template #vacio>
+    <div class="empty">Aún no tienes reservas.</div>
+  </ng-template>
+</div>

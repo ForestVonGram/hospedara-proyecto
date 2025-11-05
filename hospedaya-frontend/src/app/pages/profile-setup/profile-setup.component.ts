@@ -14,6 +14,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class ProfileSetupComponent implements OnInit {
   user?: UsuarioProfile;
+  nombre: string = '';
   telefono: string = '';
   previewUrl: string | ArrayBuffer | null = null;
   selectedFile?: File;
@@ -26,6 +27,7 @@ export class ProfileSetupComponent implements OnInit {
     this.usuarioService.me().subscribe({
       next: (u) => {
         this.user = u;
+        this.nombre = u.nombre || '';
         this.telefono = u.telefono || '';
         this.previewUrl = u.fotoPerfilUrl ? (u.fotoPerfilUrl.startsWith('http') ? u.fotoPerfilUrl : 'http://localhost:8080' + u.fotoPerfilUrl) : null;
       },
@@ -50,7 +52,7 @@ export class ProfileSetupComponent implements OnInit {
     this.saving = true;
     this.error = '';
 
-    this.usuarioService.update(this.user.id, { telefono: this.telefono }).subscribe({
+    this.usuarioService.update(this.user.id, { nombre: this.nombre, telefono: this.telefono }).subscribe({
       next: () => {
         if (this.selectedFile) {
           this.usuarioService.uploadFoto(this.user!.id, this.selectedFile).subscribe({

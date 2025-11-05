@@ -1,17 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { UsuarioService, UsuarioProfile } from '../../services/usuario.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit {
   user?: UsuarioProfile;
+
+  destino = '';
+  checkin = '';
+  checkout = '';
+  huespedes = 1;
 
   destacados = [
     { titulo: 'Casa en la playa', ciudad: 'Cancún, México', precio: 120, rating: 4.8, img: 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?q=80&w=1200&auto=format&fit=crop' },
@@ -20,9 +26,20 @@ export class DashboardComponent implements OnInit {
     { titulo: 'Loft moderno', ciudad: 'Guadalajara, México', precio: 75, rating: 4.7, img: 'https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200&auto=format&fit=crop' }
   ];
 
-  constructor(private usuarioService: UsuarioService) {}
+  constructor(private usuarioService: UsuarioService, private router: Router) {}
 
   ngOnInit(): void {
     this.usuarioService.me().subscribe({ next: (u) => (this.user = u) });
+  }
+
+  buscar() {
+    this.router.navigate(['/buscar'], {
+      queryParams: {
+        destino: this.destino,
+        checkin: this.checkin,
+        checkout: this.checkout,
+        huespedes: this.huespedes
+      }
+    });
   }
 }

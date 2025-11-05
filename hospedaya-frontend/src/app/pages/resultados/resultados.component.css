@@ -1,0 +1,18 @@
+.dashboard { background: #f7f7fb; min-height: 100vh; }
+.topbar { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: #fff; border-bottom: 1px solid #eee; }
+.brand { font-weight: 800; color: #5b6cff; }
+.menu { display: flex; gap: 18px; align-items: center; color: #555; }
+.menu a { cursor: pointer; }
+.avatar { width: 36px; height: 36px; border-radius: 999px; background: #e5e7eb center/cover no-repeat; border: 1px solid #e5e7eb; }
+.welcome { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+.search { display: grid; grid-template-columns: 1fr repeat(3, 180px) 160px; gap: 10px; background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 12px; }
+.search input, .search select { border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; width: 100%; }
+.content { display: grid; grid-template-columns: 280px 1fr; gap: 24px; max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+.filters { background:#fff; border:1px solid #eee; border-radius: 10px; padding: 16px; height: fit-content; }
+.destacados { }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.06); display: flex; flex-direction: column; }
+.card img { width: 100%; height: 160px; object-fit: cover; }
+.card .info { padding: 12px; display: grid; gap: 6px; }
+.card .meta { display: flex; justify-content: space-between; color: #6b7280; }
+.card button { margin-top: 6px; background: #5b6cff; color: #fff; border: 0; border-radius: 8px; padding: 8px; }

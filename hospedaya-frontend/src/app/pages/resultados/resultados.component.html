@@ -1,0 +1,63 @@
+<div class="dashboard">
+  <header class="topbar">
+    <div class="brand">HospedaYa</div>
+    <div class="menu">
+      <a routerLink="/">Inicio</a>
+      <a routerLink="/reservas">Mis Reservas</a>
+      <a>Comentarios</a>
+      <a routerLink="/perfil">Configuración</a>
+      <div class="avatar" *ngIf="user" [style.background-image]="avatar() ? 'url(' + avatar() + ')' : 'none'"></div>
+    </div>
+  </header>
+
+  <section class="welcome">
+    <div class="search">
+      <div>
+        <label>Destino</label>
+        <input placeholder="¿A dónde vas?" [(ngModel)]="destino" (ngModelChange)="aplicarFiltros()" />
+      </div>
+      <div>
+        <label>Check-in</label>
+        <input type="date" [(ngModel)]="checkin" />
+      </div>
+      <div>
+        <label>Check-out</label>
+        <input type="date" [(ngModel)]="checkout" />
+      </div>
+      <div>
+        <label>Huéspedes</label>
+        <select [(ngModel)]="huespedes">
+          <option *ngFor="let n of [1,2,3,4,5,6,7,8]" [value]="n">{{n}}</option>
+        </select>
+      </div>
+      <button (click)="aplicarFiltros()">Buscar Alojamientos</button>
+    </div>
+  </section>
+
+  <div class="content">
+    <aside class="filters">
+      <h3>Filtros</h3>
+      <label>Rango de precio (max)</label>
+      <input type="range" min="0" max="1000" step="10" [(ngModel)]="precioMax" (change)="aplicarFiltros()" />
+      <div class="price">{{precioMax || 'Sin límite'}}€</div>
+    </aside>
+
+    <section class="destacados">
+      <h3>{{ filtrados.length }} alojamientos encontrados</h3>
+      <div class="grid">
+        <article class="card" *ngFor="let a of filtrados">
+          <img [src]="resolverImg(a)" alt="" />
+          <div class="info">
+            <h4>{{ a.titulo }}</h4>
+            <p>{{ a.direccion }}</p>
+            <div class="meta">
+              <span>${{ a.precioPorNoche }}/noche</span>
+              <span>★ 4.7</span>
+            </div>
+            <button [routerLink]="['/reservas']">Reservar</button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+</div>

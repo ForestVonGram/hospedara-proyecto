@@ -11,5 +11,7 @@ export const routes: Routes = [
   { path: 'reset-password', loadComponent: () => import('./pages/reset-password/reset-password.component').then(m => m.ResetPasswordComponent) },
   { path: 'perfil', loadComponent: () => import('./pages/profile-setup/profile-setup.component').then(m => m.ProfileSetupComponent) },
   { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent) },
+  { path: 'reservas', loadComponent: () => import('./pages/reservas/reservas.component').then(m => m.ReservasComponent) },
+  { path: 'buscar', loadComponent: () => import('./pages/resultados/resultados.component').then(m => m.ResultadosComponent) },
   { path: '**', redirectTo: '' }
 ];
