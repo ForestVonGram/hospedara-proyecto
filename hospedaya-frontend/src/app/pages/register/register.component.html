@@ -1,0 +1,112 @@
+<div class="register-container">
+  <div class="register-header">
+    <h1 class="brand">HospedaYa</h1>
+    <a routerLink="/" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Volver a Inicio
+    </a>
+  </div>
+
+  <div class="register-card">
+    <h2 class="register-title">Crea tu cuenta</h2>
+    <p class="register-subtitle">Comienza tu experiencia con HospedaYa</p>
+
+    <form (ngSubmit)="onSubmit()" class="register-form">
+      <div class="form-group">
+        <label for="nombre">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M4 18c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Nombre completo
+        </label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          [(ngModel)]="registerData.nombre"
+          placeholder="Tu nombre completo"
+          required
+          autocomplete="name"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="email">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M3 4h14a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="m2 5 8 6 8-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Correo electrónico
+        </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="registerData.email"
+          placeholder="tucorreo@ejemplo.com"
+          required
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="9" width="14" height="9" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M6 9V6a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Contraseña
+        </label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [(ngModel)]="registerData.password"
+          placeholder="••••••••"
+          required
+          autocomplete="new-password"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="9" width="14" height="9" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M6 9V6a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Confirmar contraseña
+        </label>
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          [(ngModel)]="confirmPassword"
+          placeholder="••••••••"
+          required
+          autocomplete="new-password"
+        />
+      </div>
+
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <button 
+        type="submit" 
+        class="submit-btn"
+        [disabled]="isLoading"
+      >
+        <span *ngIf="!isLoading">Registrarse</span>
+        <span *ngIf="isLoading">Registrando...</span>
+      </button>
+
+      <p class="login-link">
+        ¿Ya tienes cuenta?
+        <a routerLink="/login">Inicia sesión aquí</a>
+      </p>
+    </form>
+  </div>
+</div>

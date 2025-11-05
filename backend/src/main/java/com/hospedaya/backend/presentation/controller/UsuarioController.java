@@ -1,9 +1,11 @@
 package com.hospedaya.backend.presentation.controller;
 
 import com.hospedaya.backend.application.dto.login.LoginRequest;
+import com.hospedaya.backend.application.dto.login.LoginResponse;
 import com.hospedaya.backend.application.service.base.UsuarioService;
 import com.hospedaya.backend.domain.entity.Usuario;
 import com.hospedaya.backend.infraestructure.repository.UsuarioRepository;
+import com.hospedaya.backend.infraestructure.security.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -28,6 +30,8 @@ public class UsuarioController {
     private UsuarioRepository usuarioRepository;
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private JwtProvider jwtProvider;
 
     @Operation(summary = "Listar usuarios")
     @ApiResponses({
@@ -76,16 +80,22 @@ public class UsuarioController {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(request.getEmail());
 
         if (usuarioOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email no encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new java.util.HashMap<String, String>() {{
+                put("message", "Email no encontrado");
+            }});
         }
 
         Usuario usuario = usuarioOpt.get();
 
         if (!usuario.getPassword().equals(request.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new java.util.HashMap<String, String>() {{
+                put("message", "Contraseña incorrecta");
+            }});
         }
 
-        return ResponseEntity.ok("Inicio de sesión exitoso");
+        String token = jwtProvider.generateToken(usuario.getEmail(), usuario.getId());
+        LoginResponse response = new LoginResponse(token, usuario.getId(), usuario.getNombre(), usuario.getEmail(), usuario.getRol() != null ? usuario.getRol().toString() : "USER");
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
