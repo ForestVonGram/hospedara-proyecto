@@ -55,9 +55,13 @@ export class AuthService {
     return this.http.post<any>(`${this.authUrl}/register`, registerData);
   }
 
-  // Obtiene el perfil del usuario autenticado desde el backend
-  getMe(): Observable<Usuario> {
-    return this.http.get<Usuario>(`${this.apiUrl}/me`);
+  // Recuperación de contraseña
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post<any>(`${this.authUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    return this.http.post<any>(`${this.authUrl}/reset-password`, { token, newPassword });
   }
 
   // Métodos para gestionar el estado de autenticación
@@ -72,10 +76,9 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('user');
-    this.removeToken();
   }
 
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    return this.getUser() !== null;
   }
 }
