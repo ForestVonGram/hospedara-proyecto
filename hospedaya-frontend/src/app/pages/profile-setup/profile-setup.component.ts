@@ -14,6 +14,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class ProfileSetupComponent implements OnInit {
   user?: UsuarioProfile;
+  nombre: string = '';
   telefono: string = '';
   previewUrl: string | ArrayBuffer | null = null;
   selectedFile?: File;
@@ -26,8 +27,9 @@ export class ProfileSetupComponent implements OnInit {
     this.usuarioService.me().subscribe({
       next: (u) => {
         this.user = u;
+        this.nombre = u.nombre || '';
         this.telefono = u.telefono || '';
-        this.previewUrl = u.fotoPerfilUrl || null;
+        this.previewUrl = u.fotoPerfilUrl ? (u.fotoPerfilUrl.startsWith('http') ? u.fotoPerfilUrl : 'http://localhost:8080' + u.fotoPerfilUrl) : null;
       },
       error: () => {
         this.error = 'No se pudo cargar tu perfil';
@@ -50,12 +52,19 @@ export class ProfileSetupComponent implements OnInit {
     this.saving = true;
     this.error = '';
 
-    this.usuarioService.update(this.user.id, { telefono: this.telefono }).subscribe({
+    this.usuarioService.update(this.user.id, { nombre: this.nombre, telefono: this.telefono }).subscribe({
       next: () => {
         if (this.selectedFile) {
           this.usuarioService.uploadFoto(this.user!.id, this.selectedFile).subscribe({
-            next: () => {
-              // refrescar perfil y cachear
+            next: (publicUrl: any) => {
+              // actualizar vista y cache inmediatamente para evitar ver la foto anterior
+              const url = typeof publicUrl === 'string' ? publicUrl : String(publicUrl);
+              const abs = url.startsWith('http') ? url : 'http://localhost:8080' + url;
+              this.previewUrl = abs + '?v=' + Date.now();
+              if (this.user) this.user.fotoPerfilUrl = url;
+              this.auth.saveUser({ ...(this.user as any), fotoPerfilUrl: url });
+
+              // refrescar perfil desde el backend para asegurar persistencia
               this.usuarioService.me().subscribe({
                 next: (u) => this.auth.saveUser(u),
                 complete: () => this.router.navigate(['/dashboard'])

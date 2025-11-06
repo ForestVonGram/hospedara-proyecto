@@ -2,11 +2,23 @@
   <header class="topbar">
     <div class="brand">HospedaYa</div>
     <div class="menu">
-      <a>Inicio</a>
-      <a>Mis Reservas</a>
-      <a>Comentarios</a>
-      <a>Configuración</a>
-      <div class="avatar" *ngIf="user" [style.background-image]="user.fotoPerfilUrl ? 'url(' + user.fotoPerfilUrl + ')' : 'none'"></div>
+      <ng-container *ngIf="user; else authLinks">
+        <div class="user-menu" [class.open]="showMenu">
+          <div class="avatar" (click)="toggleMenu()" [style.background-image]="avatarUrl() ? 'url(' + (avatarUrl() + '?v=' + (user?.fotoPerfilUrl ? '' : '')) + ')' : 'none'"></div>
+          <nav class="dropdown" *ngIf="showMenu">
+            <a routerLink="/">Inicio</a>
+            <a routerLink="/reservas">Mis Reservas</a>
+            <a>Comentarios</a>
+            <a routerLink="/perfil">Configuración</a>
+            <hr />
+            <a (click)="logout()">Cerrar sesión</a>
+          </nav>
+        </div>
+      </ng-container>
+      <ng-template #authLinks>
+        <a routerLink="/login">Iniciar sesión</a>
+        <a routerLink="/register">Registrarse</a>
+      </ng-template>
     </div>
   </header>
 
@@ -15,16 +27,13 @@
     <p>Encuentra tu próximo hospedaje ideal</p>
 
     <div class="search">
-      <input placeholder="¿A dónde vas?" />
-      <input type="date" />
-      <input type="date" />
-      <select>
-        <option>1</option>
-        <option>2</option>
-        <option>3</option>
-        <option>4</option>
+      <input placeholder="¿A dónde vas?" [(ngModel)]="destino" />
+      <input type="date" [(ngModel)]="checkin" />
+      <input type="date" [(ngModel)]="checkout" />
+      <select [(ngModel)]="huespedes">
+        <option *ngFor="let n of [1,2,3,4,5,6,7,8]" [value]="n">{{n}}</option>
       </select>
-      <button>Buscar</button>
+      <button (click)="buscar()">Buscar</button>
     </div>
   </section>
 

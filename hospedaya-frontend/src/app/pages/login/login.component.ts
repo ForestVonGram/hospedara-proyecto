@@ -45,10 +45,10 @@ export class LoginComponent {
           // Cargar y cachear el perfil completo para tener foto/telefono en toda la app
           this.usuarioService.me().subscribe({
             next: (u) => this.authService.saveUser(u),
-            complete: () => this.router.navigate(['/profile-setup'])
+            complete: () => this.router.navigate(['/dashboard'])
           });
         } else {
-          this.router.navigate(['/profile-setup']);
+          this.router.navigate(['/dashboard']);
         }
       },
       error: (error) => {
