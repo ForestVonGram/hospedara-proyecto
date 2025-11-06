@@ -7,6 +7,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AlojamientoService, AlojamientoCreateRequest, AlojamientoResponseDTO, AlojamientoUpdateRequest } from '../../services/alojamiento.service';
 import { ImagenAlojamientoService, ImagenAlojamientoCreateRequest, ImagenAlojamientoResponseDTO } from '../../services/imagen-alojamiento.service';
+import { ImageUploadService, ImageUploadResult } from '../../services/image-upload.service';
 
 @Component({
   selector: 'app-alojamiento-creation',
@@ -27,11 +28,16 @@ export class AlojamientoCreationComponent implements OnInit {
   nuevaImagenUrl = '';
   imagenesList: { id?: number; url: string; isNew?: boolean }[] = [];
 
+  // Subida de archivos
+  selectedFile: File | null = null;
+  uploadProgress = 0;
+
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
     private alojamientoService: AlojamientoService,
     private imagenService: ImagenAlojamientoService,
+    private imageUpload: ImageUploadService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -205,6 +211,31 @@ export class AlojamientoCreationComponent implements OnInit {
     }
   }
 
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+      this.uploadProgress = 0;
+    }
+  }
+
+  async uploadSelectedImage() {
+    if (!this.selectedFile) return;
+    this.errorMessage = '';
+    this.uploadProgress = 0;
+    try {
+      const { result } = await lastValueFrom(this.imageUpload.uploadWithProgress(this.selectedFile, 'alojamientos'));
+      if (result?.url) {
+        this.imagenesList = [...this.imagenesList, { url: result.url, isNew: true }];
+      }
+      this.selectedFile = null;
+      this.uploadProgress = 100;
+    } catch (err: any) {
+      this.errorMessage = err?.error?.message || 'No se pudo subir la imagen.';
+      this.uploadProgress = 0;
+    }
+  }
+
   agregarImagenUrl() {
     const url = (this.nuevaImagenUrl || '').trim();
     if (!url) return;
@@ -213,6 +244,8 @@ export class AlojamientoCreationComponent implements OnInit {
   }
 
   async quitarImagen(item: { id?: number; url: string; isNew?: boolean }) {
+    // Si vino de Cloudinary y tienes publicId (no lo guardamos aquí para simpleza),
+    // podrías llamar imageUpload.deleteByPublicId(publicId) antes de quitarlo.
     // Si existe en backend (tiene id), eliminar allí
     if (this.isEdit && this.editId != null && item.id) {
       try {

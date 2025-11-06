@@ -42,10 +42,14 @@
           <path d="M9.5 10.5L12 8l2.5 2.5" stroke="#7c3aed" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <p class="upload-copy">Agrega URLs de imágenes (el backend recibe links)</p>
-      <div class="upload-controls">
+      <p class="upload-copy">Sube archivos o pega URLs (ahora el backend usa Cloudinary)</p>
+      <div class="upload-controls" style="display:flex; gap:8px; flex-wrap: wrap; align-items:center;">
+        <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+        <button class="btn btn-primary" type="button" (click)="uploadSelectedImage()" [disabled]="!selectedFile">Subir archivo</button>
+        <span *ngIf="uploadProgress > 0 && uploadProgress < 100">Subiendo: {{uploadProgress}}%</span>
+        <div style="flex:1"></div>
         <input type="url" placeholder="https://..." [(ngModel)]="nuevaImagenUrl" name="nuevaImagenUrl" />
-        <button class="btn btn-primary" type="button" (click)="agregarImagenUrl()">Agregar</button>
+        <button class="btn btn-secondary" type="button" (click)="agregarImagenUrl()">Agregar URL</button>
       </div>
       <ul class="preview-list" *ngIf="imagenesList.length > 0">
         <li *ngFor="let item of imagenesList">
