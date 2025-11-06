@@ -23,6 +23,13 @@ export interface AlojamientoResponseDTO {
   imagenes?: string[];
 }
 
+export interface AlojamientoUpdateRequest {
+  nombre?: string;
+  descripcion?: string;
+  direccion?: string;
+  precioPorNoche?: number;
+}
+
 // Modelo de dominio usado en la UI
 export interface Alojamiento {
   id: number;
@@ -55,6 +62,16 @@ export class AlojamientoService {
   // Crear (se mantiene con DTO del backend)
   crearAlojamiento(req: AlojamientoCreateRequest): Observable<AlojamientoResponseDTO> {
     return this.http.post<AlojamientoResponseDTO>(`${this.baseUrl}`, req);
+  }
+
+  // Actualizar parcial o total (PUT en backend actual)
+  actualizarAlojamiento(id: number, req: AlojamientoUpdateRequest): Observable<AlojamientoResponseDTO> {
+    return this.http.put<AlojamientoResponseDTO>(`${this.baseUrl}/${id}`, req);
+  }
+
+  // Eliminar por id
+  eliminarAlojamiento(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${id}`);
   }
 
   // Listado general para página de resultados (mapea a modelo de UI)

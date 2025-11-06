@@ -36,4 +36,14 @@ export class ReservaService {
   porUsuario(usuarioId: number): Observable<Reserva[]> {
     return this.http.get<Reserva[]>(`${this.baseUrl}/usuario/${usuarioId}`);
   }
+
+  // Listar todas las reservas (para que el anfitrión filtre por sus alojamientos)
+  listarTodas(): Observable<Reserva[]> {
+    return this.http.get<Reserva[]>(`${this.baseUrl}`);
+  }
+
+  // Cancelar una reserva
+  cancelar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
 }

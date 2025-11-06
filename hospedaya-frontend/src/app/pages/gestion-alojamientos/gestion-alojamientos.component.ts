@@ -15,6 +15,7 @@ export class GestionAlojamientosComponent implements OnInit {
   cargando = false;
   error = '';
   alojamientos: AlojamientoResponseDTO[] = [];
+  anfitrionId: number | null = null;
 
   constructor(
     private auth: AuthService,
@@ -33,7 +34,8 @@ export class GestionAlojamientosComponent implements OnInit {
       return;
     }
 
-    this.cargarAlojamientos(Number(user.id));
+    this.anfitrionId = Number(user.id);
+    this.cargarAlojamientos(this.anfitrionId);
   }
 
   cargarAlojamientos(anfitrionId: number) {
@@ -56,5 +58,34 @@ export class GestionAlojamientosComponent implements OnInit {
 
   crearNuevo() {
     this.router.navigate(['/alojamientos/nuevo']);
+  }
+
+  editar(a: AlojamientoResponseDTO) {
+    this.router.navigate(['/alojamientos/nuevo'], { queryParams: { editId: a.id } });
+  }
+
+  eliminar(a: AlojamientoResponseDTO) {
+    if (!confirm(`¿Seguro que quieres eliminar "${a.nombre}"? Esta acción no se puede deshacer.`)) {
+      return;
+    }
+    this.cargando = true;
+    this.error = '';
+    this.alojamientoService.eliminarAlojamiento(a.id).subscribe({
+      next: () => {
+        if (this.anfitrionId != null) {
+          this.cargarAlojamientos(this.anfitrionId);
+        }
+      },
+      error: (err) => {
+        if (typeof err?.error === 'string' && err.error.trim().length > 0) {
+          this.error = err.error;
+        } else if (err?.error?.message) {
+          this.error = err.error.message;
+        } else {
+          this.error = 'No se pudo eliminar el alojamiento. Inténtalo nuevamente.';
+        }
+        this.cargando = false;
+      }
+    });
   }
 }

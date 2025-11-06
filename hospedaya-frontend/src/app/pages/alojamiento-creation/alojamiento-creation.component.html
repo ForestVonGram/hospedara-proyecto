@@ -17,8 +17,8 @@
 
 <!-- MAIN CONTENT -->
 <main class="container nuevo-alojamiento">
-  <h2 class="page-title">Nuevo Alojamiento</h2>
-  <p class="page-sub">Completa la información de tu propiedad</p>
+  <h2 class="page-title">{{ isEdit ? 'Editar Alojamiento' : 'Nuevo Alojamiento' }}</h2>
+  <p class="page-sub">{{ isEdit ? 'Actualiza la información de tu propiedad' : 'Completa la información de tu propiedad' }}</p>
 
   <!-- Subida de Fotos -->
   <section class="upload-section">
@@ -73,7 +73,7 @@
       </div>
 
       <button class="btn btn-primary publish-btn" type="submit" [disabled]="isSubmitting || form.invalid">
-        {{ isSubmitting ? 'Publicando...' : 'Publicar alojamiento' }}
+        {{ isSubmitting ? (isEdit ? 'Guardando...' : 'Publicando...') : (isEdit ? 'Guardar cambios' : 'Publicar alojamiento') }}
       </button>
     </form>
   </section>

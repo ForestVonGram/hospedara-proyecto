@@ -29,8 +29,8 @@
         <h3>{{ a.nombre }}</h3>
         <p class="ubicacion">📍 {{ a.direccion }}</p>
         <div class="acciones">
-          <button class="btn editar" type="button" title="Editar" disabled>✏️ Editar</button>
-          <button class="btn eliminar" type="button" title="Eliminar" disabled>🗑️ Eliminar</button>
+          <button class="btn editar" type="button" title="Editar" (click)="editar(a)">✏️ Editar</button>
+          <button class="btn eliminar" type="button" title="Eliminar" (click)="eliminar(a)">🗑️ Eliminar</button>
         </div>
       </div>
     </article>

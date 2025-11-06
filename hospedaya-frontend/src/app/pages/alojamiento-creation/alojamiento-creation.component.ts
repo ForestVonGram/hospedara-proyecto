@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { AlojamientoService, AlojamientoCreateRequest } from '../../services/alojamiento.service';
+import { AlojamientoService, AlojamientoCreateRequest, AlojamientoResponseDTO, AlojamientoUpdateRequest } from '../../services/alojamiento.service';
 
 @Component({
   selector: 'app-alojamiento-creation',
@@ -17,12 +17,15 @@ export class AlojamientoCreationComponent implements OnInit {
   isSubmitting = false;
   errorMessage = '';
   successMessage = '';
+  isEdit = false;
+  editId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
     private alojamientoService: AlojamientoService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -47,6 +50,34 @@ export class AlojamientoCreationComponent implements OnInit {
       fechaInicio: [null],
       fechaFin: [null]
     });
+
+    // Detectar modo edición por query param ?editId=123
+    this.route.queryParamMap.subscribe(params => {
+      const idParam = params.get('editId');
+      if (idParam) {
+        const id = Number(idParam);
+        if (!isNaN(id)) {
+          this.isEdit = true;
+          this.editId = id;
+          // Cargar datos existentes
+          this.alojamientoService.obtenerPorId(id).subscribe({
+            next: (dto: AlojamientoResponseDTO) => {
+              this.form.patchValue({
+                nombre: dto.nombre,
+                descripcion: dto.descripcion,
+                direccion: dto.direccion,
+                precioPorNoche: dto.precioPorNoche
+              });
+            },
+            error: (err) => {
+              this.errorMessage = typeof err?.error === 'string' && err.error.trim().length > 0
+                ? err.error
+                : err?.error?.message || 'No se pudo cargar el alojamiento para editar.';
+            }
+          });
+        }
+      }
+    });
   }
 
   get f() { return this.form.controls; }
@@ -62,7 +93,42 @@ export class AlojamientoCreationComponent implements OnInit {
 
     const user = this.auth.getUser();
     if (!user || user.rol !== 'ANFITRION') {
-      this.errorMessage = 'Solo los anfitriones pueden publicar alojamientos.';
+      this.errorMessage = 'Solo los anfitriones pueden gestionar alojamientos.';
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    if (this.isEdit && this.editId != null) {
+      const update: AlojamientoUpdateRequest = {
+        nombre: this.f['nombre'].value,
+        descripcion: this.f['descripcion'].value,
+        direccion: this.f['direccion'].value,
+        precioPorNoche: Number(this.f['precioPorNoche'].value)
+      };
+
+      this.alojamientoService.actualizarAlojamiento(this.editId, update).subscribe({
+        next: (resp: AlojamientoResponseDTO) => {
+          this.successMessage = 'Alojamiento actualizado correctamente';
+          this.router.navigate(['/alojamientos/gestion']);
+        },
+        error: (err) => {
+          if (typeof err?.error === 'string' && err.error.trim().length > 0) {
+            this.errorMessage = err.error;
+          } else if (err?.error?.message) {
+            this.errorMessage = err.error.message;
+          } else if (err.status === 400) {
+            this.errorMessage = 'Datos inválidos. Verifica la información ingresada.';
+          } else if (err.status === 404) {
+            this.errorMessage = 'Alojamiento no encontrado para editar.';
+          } else {
+            this.errorMessage = 'Error al actualizar el alojamiento. Inténtalo nuevamente.';
+          }
+        },
+        complete: () => {
+          this.isSubmitting = false;
+        }
+      });
       return;
     }
 
@@ -74,12 +140,10 @@ export class AlojamientoCreationComponent implements OnInit {
       anfitrionId: Number(user.id)
     };
 
-    this.isSubmitting = true;
     this.alojamientoService.crearAlojamiento(payload).subscribe({
       next: (resp) => {
         this.successMessage = 'Alojamiento publicado correctamente';
-        // Navegar al dashboard del anfitrión o listado
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/alojamientos/gestion']);
       },
       error: (err) => {
         // Manejo de errores según backend

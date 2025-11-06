@@ -1,0 +1,150 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f3f8;
+}
+
+/* NAVBAR */
+.navbar {
+  background-color: #5a1b91;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 2rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo h1 {
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+nav a.active {
+  border-bottom: 2px solid #fff;
+  padding-bottom: 3px;
+}
+
+.user-icon {
+  font-size: 1.4rem;
+}
+
+/* CONTENIDO PRINCIPAL */
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  background: transparent;
+  padding: 0 1rem;
+}
+
+h2 {
+  color: #4b0f73;
+  font-size: 1.8rem;
+  margin-bottom: 0.3rem;
+}
+
+.subtitle {
+  color: #555;
+  margin-bottom: 1.5rem;
+}
+
+/* TARJETAS DE RESERVAS */
+.reserva-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reserva-info h3 {
+  color: #4b0f73;
+  margin: 0;
+}
+
+.reserva-info p {
+  margin: 3px 0;
+  color: #333;
+}
+
+.fecha {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.estado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ETIQUETAS DE ESTADO */
+.confirmada, .pendiente, .cancelada {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+}
+
+.confirmada {
+  background-color: #d6f5dc;
+  color: #2e7d32;
+}
+
+.pendiente {
+  background-color: #f9d8e1;
+  color: #a32b4f;
+}
+
+.cancelada {
+  background-color: #ececec;
+  color: #555;
+}
+
+/* BOTONES */
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #fff;
+  transition: all 0.2s ease;
+}
+
+.confirmar {
+  background-color: #782bdb;
+}
+
+.confirmar:hover {
+  background-color: #6922c8;
+}
+
+.rechazar {
+  background-color: #d64545;
+}
+
+.rechazar:hover {
+  background-color: #b63030;
+}
