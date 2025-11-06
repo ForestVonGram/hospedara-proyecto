@@ -14,7 +14,7 @@
 
 <!-- CONTENIDO PRINCIPAL -->
 <main class="contenedor" *ngIf="!cargando">
-  <h1>Reserva en {{ alojamiento?.nombre || 'Alojamiento' }}</h1>
+  <h1>Reserva en {{ alojamiento?.titulo || 'Alojamiento' }}</h1>
 
   <form class="form-reserva" [formGroup]="form" (ngSubmit)="confirmarReserva()">
     <div class="fechas">

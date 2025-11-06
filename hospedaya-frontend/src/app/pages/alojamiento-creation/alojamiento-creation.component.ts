@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
+import { lastValueFrom } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AlojamientoService, AlojamientoCreateRequest, AlojamientoResponseDTO, AlojamientoUpdateRequest } from '../../services/alojamiento.service';
+import { ImagenAlojamientoService, ImagenAlojamientoCreateRequest, ImagenAlojamientoResponseDTO } from '../../services/imagen-alojamiento.service';
 
 @Component({
   selector: 'app-alojamiento-creation',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, FormsModule],
   templateUrl: './alojamiento-creation.component.html',
   styleUrl: './alojamiento-creation.component.css'
 })
@@ -20,10 +23,15 @@ export class AlojamientoCreationComponent implements OnInit {
   isEdit = false;
   editId: number | null = null;
 
+  // Gestión de imágenes (URLs + id cuando existen en backend)
+  nuevaImagenUrl = '';
+  imagenesList: { id?: number; url: string; isNew?: boolean }[] = [];
+
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
     private alojamientoService: AlojamientoService,
+    private imagenService: ImagenAlojamientoService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -63,10 +71,22 @@ export class AlojamientoCreationComponent implements OnInit {
           this.alojamientoService.obtenerPorId(id).subscribe({
             next: (dto: AlojamientoResponseDTO) => {
               this.form.patchValue({
-                nombre: dto.nombre,
+                nombre: dto.titulo,
                 descripcion: dto.descripcion,
                 direccion: dto.direccion,
                 precioPorNoche: dto.precioPorNoche
+              });
+              // Cargar imágenes desde servicio dedicado para obtener IDs
+              this.imagenService.listarPorAlojamiento(id).subscribe({
+                next: (imgs) => {
+                  this.imagenesList = (imgs || []).map(i => ({ id: i.id, url: i.url }));
+                },
+                error: () => {
+                  // Fallback: si falla, usa lo que venga en el DTO (sin IDs)
+                  if (Array.isArray((dto as any).imagenes)) {
+                    this.imagenesList = ((dto as any).imagenes as string[]).map(u => ({ url: u }));
+                  }
+                }
               });
             },
             error: (err) => {
@@ -108,7 +128,9 @@ export class AlojamientoCreationComponent implements OnInit {
       };
 
       this.alojamientoService.actualizarAlojamiento(this.editId, update).subscribe({
-        next: (resp: AlojamientoResponseDTO) => {
+        next: async (resp: AlojamientoResponseDTO) => {
+          // Subir nuevas imágenes añadidas (si son URLs nuevas)
+          await this.subirImagenesSiCorresponde(this.editId!);
           this.successMessage = 'Alojamiento actualizado correctamente';
           this.router.navigate(['/alojamientos/gestion']);
         },
@@ -141,7 +163,11 @@ export class AlojamientoCreationComponent implements OnInit {
     };
 
     this.alojamientoService.crearAlojamiento(payload).subscribe({
-      next: (resp) => {
+      next: async (resp) => {
+        // Subir imágenes si el usuario agregó URLs
+        if (resp?.id) {
+          await this.subirImagenesSiCorresponde(Number(resp.id));
+        }
         this.successMessage = 'Alojamiento publicado correctamente';
         this.router.navigate(['/alojamientos/gestion']);
       },
@@ -163,5 +189,39 @@ export class AlojamientoCreationComponent implements OnInit {
         this.isSubmitting = false;
       }
     });
+  }
+  private async subirImagenesSiCorresponde(alojamientoId: number) {
+    const nuevas = (this.imagenesList || []).filter(i => i.isNew && i.url && i.url.trim().length > 0);
+    for (const item of nuevas) {
+      const url = item.url.trim();
+      try {
+        const created = await lastValueFrom(this.imagenService.agregarImagen({ alojamientoId, url }));
+        // actualizar item con id asignado
+        item.id = created?.id;
+        item.isNew = false;
+      } catch (_) {
+        // Ignorar fallos individuales por ahora; se podría notificar por imagen fallida
+      }
+    }
+  }
+
+  agregarImagenUrl() {
+    const url = (this.nuevaImagenUrl || '').trim();
+    if (!url) return;
+    this.imagenesList = [...this.imagenesList, { url, isNew: true }];
+    this.nuevaImagenUrl = '';
+  }
+
+  async quitarImagen(item: { id?: number; url: string; isNew?: boolean }) {
+    // Si existe en backend (tiene id), eliminar allí
+    if (this.isEdit && this.editId != null && item.id) {
+      try {
+        await lastValueFrom(this.imagenService.eliminarImagen(item.id));
+      } catch (_) {
+        // En caso de error, igualmente lo quitamos de la UI; podríamos mostrar error si prefieres
+      }
+    }
+    // Quitar de la lista local
+    this.imagenesList = this.imagenesList.filter(i => i !== item);
   }
 }

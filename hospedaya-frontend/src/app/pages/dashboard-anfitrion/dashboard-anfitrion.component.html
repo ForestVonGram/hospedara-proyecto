@@ -73,9 +73,9 @@
       <div *ngIf="alojamientos.length === 0" class="card" style="padding:16px;">Aún no tienes alojamientos. ¡Crea el primero!</div>
 
       <div class="alojamiento" *ngFor="let a of alojamientos">
-        <img src="https://placehold.co/600x400/9333ea/ffffff?text={{ a.nombre | uppercase }}" alt="{{ a.nombre }}">
+        <img [src]="a.imagenes && a.imagenes.length ? a.imagenes[0] : 'https://placehold.co/600x400/9333ea/ffffff?text=' + (a.titulo || 'ALOJAMIENTO')" [alt]="a.titulo">
         <div class="info">
-          <h4>{{ a.nombre }}</h4>
+          <h4>{{ a.titulo }}</h4>
           <p class="ubicacion">{{ a.direccion }}</p>
           <div class="detalle">
             <p class="precio">{{ a.precioPorNoche | currency:'USD':'symbol' }} <span>/noche</span></p>

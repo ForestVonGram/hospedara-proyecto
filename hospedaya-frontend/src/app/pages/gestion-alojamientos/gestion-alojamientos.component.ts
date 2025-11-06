@@ -65,7 +65,7 @@ export class GestionAlojamientosComponent implements OnInit {
   }
 
   eliminar(a: AlojamientoResponseDTO) {
-    if (!confirm(`¿Seguro que quieres eliminar "${a.nombre}"? Esta acción no se puede deshacer.`)) {
+    if (!confirm(`¿Seguro que quieres eliminar \"${a.titulo}\"? Esta acción no se puede deshacer.`)) {
       return;
     }
     this.cargando = true;

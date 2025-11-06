@@ -14,7 +14,7 @@ export interface AlojamientoCreateRequest {
 // DTO tal como lo entrega el backend
 export interface AlojamientoResponseDTO {
   id: number;
-  nombre: string;
+  titulo: string;
   descripcion: string;
   direccion: string;
   precioPorNoche: number;
@@ -44,7 +44,7 @@ export interface Alojamiento {
 function dtoToAlojamiento(dto: AlojamientoResponseDTO): Alojamiento {
   return {
     id: dto.id,
-    titulo: dto.nombre,
+    titulo: dto.titulo,
     descripcion: dto.descripcion,
     direccion: dto.direccion,
     precioPorNoche: dto.precioPorNoche,

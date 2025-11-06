@@ -24,9 +24,9 @@
 
   <section *ngIf="!cargando && !error && alojamientos.length > 0" class="grid-alojamientos">
     <article class="alojamiento-card" *ngFor="let a of alojamientos">
-      <img src="https://images.unsplash.com/photo-1494526585095-c41746248156" alt="Imagen alojamiento">
+      <img [src]="a.imagenes && a.imagenes.length ? a.imagenes[0] : 'https://images.unsplash.com/photo-1494526585095-c41746248156'" [alt]="a.titulo || 'Imagen alojamiento'">
       <div class="card-body">
-        <h3>{{ a.nombre }}</h3>
+        <h3>{{ a.titulo }}</h3>
         <p class="ubicacion">📍 {{ a.direccion }}</p>
         <div class="acciones">
           <button class="btn editar" type="button" title="Editar" (click)="editar(a)">✏️ Editar</button>

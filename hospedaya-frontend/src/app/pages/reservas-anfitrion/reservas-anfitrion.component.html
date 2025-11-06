@@ -25,7 +25,7 @@
 
   <section class="reserva-card" *ngFor="let r of reservas">
     <div class="reserva-info">
-      <h3>{{ r.alojamiento?.nombre || ('Alojamiento #' + r.alojamientoId) }}</h3>
+      <h3>{{ r.alojamiento?.titulo || ('Alojamiento #' + r.alojamientoId) }}</h3>
       <p class="fecha">📅 {{ r.fechaInicio }} – {{ r.fechaFin }}</p>
     </div>
     <div class="estado">
