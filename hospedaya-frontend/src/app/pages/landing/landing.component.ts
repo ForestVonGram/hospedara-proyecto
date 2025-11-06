@@ -19,7 +19,13 @@ export class LandingComponent {
   constructor(private usuarioService: UsuarioService, private auth: AuthService, private router: Router) {}
 
   ngOnInit() {
-    this.usuarioService.me().subscribe({ next: u => (this.user = u) });
+    // Restringe landing si ya está logueado
+    const u = this.auth.getUser();
+    if (u) {
+      this.router.navigate(['/dashboard']);
+      return;
+    }
+    // Si quisieras mostrar algo del usuario en landing (no recomendado), podrías llamar a me() aquí.
   }
 
   ngAfterViewInit() {

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface AlojamientoCreateRequest {
   nombre: string;
@@ -10,6 +11,7 @@ export interface AlojamientoCreateRequest {
   anfitrionId: number;
 }
 
+// DTO tal como lo entrega el backend
 export interface AlojamientoResponseDTO {
   id: number;
   nombre: string;
@@ -17,6 +19,31 @@ export interface AlojamientoResponseDTO {
   direccion: string;
   precioPorNoche: number;
   anfitrionId?: number;
+  // El backend podría no devolver imágenes aquí, pero lo mantenemos por compatibilidad si existiera
+  imagenes?: string[];
+}
+
+// Modelo de dominio usado en la UI
+export interface Alojamiento {
+  id: number;
+  titulo: string; // mapea desde nombre
+  descripcion: string;
+  direccion: string;
+  precioPorNoche: number | string; // algunas vistas lo tratan como string
+  anfitrionId?: number;
+  imagenes?: string[];
+}
+
+function dtoToAlojamiento(dto: AlojamientoResponseDTO): Alojamiento {
+  return {
+    id: dto.id,
+    titulo: dto.nombre,
+    descripcion: dto.descripcion,
+    direccion: dto.direccion,
+    precioPorNoche: dto.precioPorNoche,
+    anfitrionId: dto.anfitrionId,
+    imagenes: dto.imagenes || []
+  };
 }
 
 @Injectable({ providedIn: 'root' })
@@ -25,15 +52,30 @@ export class AlojamientoService {
 
   constructor(private http: HttpClient) {}
 
+  // Crear (se mantiene con DTO del backend)
   crearAlojamiento(req: AlojamientoCreateRequest): Observable<AlojamientoResponseDTO> {
     return this.http.post<AlojamientoResponseDTO>(`${this.baseUrl}`, req);
   }
 
+  // Listado general para página de resultados (mapea a modelo de UI)
+  listar(): Observable<Alojamiento[]> {
+    return this.http
+      .get<AlojamientoResponseDTO[]>(`${this.baseUrl}`)
+      .pipe(map(list => (list || []).map(dtoToAlojamiento)));
+  }
+
+  // Listado por anfitrión (se mantiene como DTO para pantallas de gestión)
   listarPorAnfitrion(anfitrionId: number): Observable<AlojamientoResponseDTO[]> {
     return this.http.get<AlojamientoResponseDTO[]>(`${this.baseUrl}/anfitrion/${anfitrionId}`);
   }
 
+  // Obtener por id en formato DTO
   obtenerPorId(id: number): Observable<AlojamientoResponseDTO> {
     return this.http.get<AlojamientoResponseDTO>(`${this.baseUrl}/${id}`);
+  }
+
+  // Obtener por id para la UI (mapea DTO -> UI)
+  obtener(id: number): Observable<Alojamiento> {
+    return this.obtenerPorId(id).pipe(map(dtoToAlojamiento));
   }
 }

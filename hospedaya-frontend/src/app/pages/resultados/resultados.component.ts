@@ -28,7 +28,7 @@ export class ResultadosComponent implements OnInit {
 
   ngOnInit(): void {
     this.user = this.auth.getUser();
-    this.usuarioService.me().subscribe({ next: u => this.user = u, error: () => this.user = undefined });
+    this.usuarioService.me().subscribe({ next: (u) => this.user = u, error: () => this.user = undefined });
 
     this.route.queryParamMap.subscribe(params => {
       this.destino = params.get('destino') || '';
@@ -40,7 +40,7 @@ export class ResultadosComponent implements OnInit {
   }
 
   cargar() {
-    this.alojService.listar().subscribe(list => {
+    this.alojService.listar().subscribe((list: Alojamiento[]) => {
       this.alojamientos = list;
       this.aplicarFiltros();
     });
@@ -48,7 +48,7 @@ export class ResultadosComponent implements OnInit {
 
   aplicarFiltros() {
     const d = this.destino.toLowerCase();
-    this.filtrados = this.alojamientos.filter(a => {
+    this.filtrados = this.alojamientos.filter((a: Alojamiento) => {
       const matchDestino = d ? (a.direccion?.toLowerCase().includes(d) || a.titulo?.toLowerCase().includes(d)) : true;
       const matchPrecio = this.precioMax ? (Number(a.precioPorNoche) <= this.precioMax) : true;
       return matchDestino && matchPrecio;
@@ -60,11 +60,5 @@ export class ResultadosComponent implements OnInit {
     return url ? (url.startsWith('http') ? url : `http://localhost:8080${url}`) : 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?q=80&w=1200&auto=format&fit=crop';
   }
 
-  showMenu = false;
-  avatar(): string | null {
-    const u = this.user?.fotoPerfilUrl;
-    return u ? (u.startsWith('http') ? u : `http://localhost:8080${u}`) : null;
-  }
-  toggleMenu(){ this.showMenu = !this.showMenu; }
   logout(){ this.auth.logout(); this.router.navigate(['/']); }
 }

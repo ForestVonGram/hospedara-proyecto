@@ -25,31 +25,26 @@ export class ReservasComponent implements OnInit {
   constructor(private usuarioService: UsuarioService, private reservaService: ReservaService, private alojService: AlojamientoService, private router: Router, private auth: AuthService) {}
 
   ngOnInit(): void {
-    this.user = this.auth.getUser();
-    if (this.user) this.cargarReservas();
-    this.usuarioService.me().subscribe({
-      next: u => { this.user = u; this.cargarReservas(); },
-      error: () => { this.user = undefined; this.reservas = []; }
-    });
+    const u = this.auth.getUser();
+    if (!u) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.user = u;
+    this.cargarReservas();
   }
 
   cargarReservas() {
     if (!this.user?.id) return;
-    this.reservaService.porUsuario(this.user.id).subscribe(list => {
-      this.reservas = list.map(r => ({...r}));
+    this.reservaService.porUsuario(Number(this.user.id)).subscribe((list: Reserva[]) => {
+      this.reservas = list.map((r: Reserva) => ({...r}));
       // cargar detalles de alojamiento
-      this.reservas.forEach(rv => {
-        this.alojService.obtener(rv.alojamientoId).subscribe(a => rv.alojamiento = a);
+      this.reservas.forEach((rv: ReservaVista) => {
+        this.alojService.obtener(Number(rv.alojamientoId)).subscribe((a: Alojamiento) => rv.alojamiento = a);
       });
     });
   }
 
-  showMenu = false;
-  avatar(): string | null {
-    const u = this.user?.fotoPerfilUrl;
-    return u ? (u.startsWith('http') ? u : `http://localhost:8080${u}`) : null;
-  }
-  toggleMenu(){ this.showMenu = !this.showMenu; }
   logout(){ this.auth.logout(); this.router.navigate(['/']); }
 
   resolverImg(a?: Alojamiento): string {
