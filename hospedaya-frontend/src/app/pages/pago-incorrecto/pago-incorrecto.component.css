@@ -1,0 +1,177 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #f9fafc;
+  color: #1f1f1f;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1e2a78;
+  color: white;
+  padding: 1rem 2rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.logo img {
+  width: 28px;
+}
+
+.navbar nav a {
+  color: #dbe1ff;
+  text-decoration: none;
+  margin: 0 1rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.navbar nav a:hover {
+  color: #fff;
+}
+
+.navbar nav a.cerrar {
+  color: #ffd5d5;
+}
+
+/* CONTENEDOR */
+.contenedor {
+  max-width: 500px;
+  margin: 4rem auto;
+  text-align: center;
+}
+
+h1 {
+  color: #1e2a78;
+  font-size: 1.6rem;
+  margin-top: 0.5rem;
+}
+
+/* TARJETA DE ERROR */
+.error-card {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.icono-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mensaje {
+  color: #374151;
+  margin: 0.75rem 0 1rem 0;
+}
+
+.detalles-pago {
+  margin: 1rem 0 1.25rem 0;
+  text-align: left;
+}
+
+.detalles-pago h3 {
+  margin-bottom: 0.5rem;
+  color: #111827;
+}
+
+.detalle-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.detalle-item:last-child {
+  border-bottom: none;
+}
+
+.label {
+  color: #6b7280;
+}
+
+.valor {
+  color: #374151;
+  font-weight: 600;
+}
+
+.precio {
+  color: #b91c1c;
+}
+
+.estado-error {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+/* ACCIONES */
+.acciones {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-principal {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-principal:hover {
+  background-color: #b91c1c;
+}
+
+.btn-secundario {
+  background: white;
+  color: #1e2a78;
+  border: 2px solid #1e2a78;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-terciario {
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.nota {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* RESPONSIVO */
+@media (max-width: 480px) {
+  .contenedor {
+    margin: 2rem 1rem;
+  }
+}

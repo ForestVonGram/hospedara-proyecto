@@ -1,0 +1,65 @@
+<!-- NAVBAR -->
+<header class="navbar">
+  <div class="logo">
+    <img src="https://cdn-icons-png.flaticon.com/512/1046/1046857.png" alt="Logo HospedaYa">
+    <span>HospedaYa</span>
+  </div>
+  <nav>
+    <a routerLink="/">Inicio</a>
+    <a routerLink="/dashboard">Mis Reservas</a>
+    <a routerLink="/profile-setup">Perfil</a>
+    <a routerLink="/login" class="cerrar">Cerrar sesión</a>
+  </nav>
+</header>
+
+<!-- CONTENIDO PRINCIPAL -->
+<main class="contenedor">
+  <div class="error-card">
+    <div class="icono-error">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="32" fill="#dc2626"/>
+        <path d="M22 22l20 20M42 22L22 42" stroke="white" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <h1>Pago no completado</h1>
+
+    <div class="mensaje">
+      <p>No hemos recibido una confirmación válida del pago.</p>
+      <p *ngIf="errorDetalle">Detalle: {{ errorDetalle }}</p>
+      <p *ngIf="!errorDetalle">Puedes intentar nuevamente o revisar tus reservas.</p>
+    </div>
+
+    <div class="detalles-pago" *ngIf="pagoInfo">
+      <h3>Información</h3>
+      <div class="detalle-item" *ngIf="pagoInfo.transaccionId">
+        <span class="label">Referencia/Transacción:</span>
+        <span class="valor">{{ pagoInfo.transaccionId }}</span>
+      </div>
+      <div class="detalle-item" *ngIf="pagoInfo.monto">
+        <span class="label">Monto:</span>
+        <span class="valor precio">{{ pagoInfo.monto | currency:'COP':'symbol' }}</span>
+      </div>
+      <div class="detalle-item" *ngIf="pagoInfo.estado">
+        <span class="label">Estado:</span>
+        <span class="valor estado-error">{{ pagoInfo.estado }}</span>
+      </div>
+    </div>
+
+    <div class="acciones">
+      <button class="btn-principal" (click)="intentarDeNuevo()">
+        Intentar de nuevo
+      </button>
+      <button class="btn-secundario" (click)="verMisReservas()">
+        Ver mis reservas
+      </button>
+      <button class="btn-terciario" routerLink="/">
+        Volver al inicio
+      </button>
+    </div>
+
+    <p class="nota">
+      Si crees que es un error, revisa el método de pago o contáctanos.
+    </p>
+  </div>
+</main>

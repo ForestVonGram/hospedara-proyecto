@@ -17,5 +17,7 @@ export const routes: Routes = [
   { path: 'alojamientos/nuevo', loadComponent: () => import('./pages/alojamiento-creation/alojamiento-creation.component').then(m => m.AlojamientoCreationComponent) },
   { path: 'alojamientos/:id', loadComponent: () => import('./pages/detalle-alojamiento/detalle-alojamiento.component').then(m => m.DetalleAlojamientoComponent) },
   { path: 'alojamientos/:id/reservar', loadComponent: () => import('./pages/realizar-reserva/realizar-reserva.component').then(m => m.RealizarReservaComponent) },
+  { path: 'pago-correcto', loadComponent: () => import('./pages/pago-correcto/pago-correcto.component').then(m => m.PagoCorrectoComponent) },
+  { path: 'pago-incorrecto', loadComponent: () => import('./pages/pago-incorrecto/pago-incorrecto.component').then(m => m.PagoIncorrectoComponent) },
   { path: '**', redirectTo: '' }
 ];

@@ -12,7 +12,7 @@ import { PagoService } from '../../services/pago.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './realizar-reserva.component.html',
-  styleUrl: './realizar-reserva.component.css'
+  styleUrls: ['./realizar-reserva.component.css']
 })
 export class RealizarReservaComponent implements OnInit {
   private route = inject(ActivatedRoute);
