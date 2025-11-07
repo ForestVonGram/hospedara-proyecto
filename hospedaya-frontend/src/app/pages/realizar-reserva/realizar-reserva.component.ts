@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AlojamientoResponseDTO, AlojamientoService } from '../../services/alojamiento.service';
 import { AuthService } from '../../services/auth.service';
 import { ReservaRequest, ReservaService } from '../../services/reserva.service';
+import { PagoService } from '../../services/pago.service';
 
 @Component({
   selector: 'app-realizar-reserva',
@@ -20,6 +21,7 @@ export class RealizarReservaComponent implements OnInit {
   private alojamientoService = inject(AlojamientoService);
   private auth = inject(AuthService);
   private reservaService = inject(ReservaService);
+  private pagoService = inject(PagoService);
 
   form!: FormGroup;
   alojamiento?: AlojamientoResponseDTO;
@@ -98,9 +100,47 @@ export class RealizarReservaComponent implements OnInit {
 
     this.cargando = true;
     this.reservaService.crearReserva(payload).subscribe({
-      next: () => {
-        this.exito = 'Reserva creada correctamente';
-        this.router.navigate(['/dashboard']);
+      next: (reserva) => {
+        // Con la reserva creada, registramos un pago por el total calculado
+        const monto = this.total();
+        if (monto <= 0) {
+          this.error = 'El monto a pagar es inválido.';
+          this.cargando = false;
+          return;
+        }
+        this.pagoService.registrarPago({
+          reservaId: Number(reserva.id),
+          monto: Number(monto),
+          referenciaExterna: `RES-${reserva.id}`
+        }).subscribe({
+          next: (pago) => {
+            // Iniciamos el checkout de Mercado Pago
+            this.pagoService.iniciarPago(Number(pago.id)).subscribe({
+              next: (resp) => {
+                const url = resp?.init_point;
+                if (url) {
+                  window.location.href = url;
+                } else {
+                  this.error = 'No se pudo obtener la URL de pago.';
+                }
+              },
+              error: (err2) => {
+                this.error = typeof err2?.error === 'string' && err2.error.trim().length > 0
+                  ? err2.error
+                  : 'Error al iniciar el pago.';
+              },
+              complete: () => {
+                this.cargando = false;
+              }
+            });
+          },
+          error: (err1) => {
+            this.error = typeof err1?.error === 'string' && err1.error.trim().length > 0
+              ? err1.error
+              : 'No se pudo registrar el pago.';
+            this.cargando = false;
+          }
+        });
       },
       error: (err) => {
         if (typeof err?.error === 'string' && err.error.trim().length > 0) {
@@ -114,8 +154,8 @@ export class RealizarReservaComponent implements OnInit {
         } else {
           this.error = 'No se pudo crear la reserva. Intenta nuevamente.';
         }
-      },
-      complete: () => (this.cargando = false)
+        this.cargando = false;
+      }
     });
   }
 }
