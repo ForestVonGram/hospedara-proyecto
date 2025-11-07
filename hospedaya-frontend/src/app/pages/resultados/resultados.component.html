@@ -44,15 +44,20 @@
       <h3>{{ filtrados.length }} alojamientos encontrados</h3>
       <div class="grid">
         <article class="card" *ngFor="let a of filtrados">
-          <img [src]="resolverImg(a)" alt="" />
+          <a [routerLink]="['/alojamientos', a.id]">
+            <img [src]="resolverImg(a)" alt="Imagen del alojamiento" />
+          </a>
           <div class="info">
-            <h4>{{ a.titulo }}</h4>
+            <h4><a [routerLink]="['/alojamientos', a.id]">{{ a.titulo }}</a></h4>
             <p>{{ a.direccion }}</p>
             <div class="meta">
               <span>${{ a.precioPorNoche }}/noche</span>
               <span>★ 4.7</span>
             </div>
-            <button [routerLink]="['/reservas']">Reservar</button>
+            <div class="actions">
+              <a class="btn" [routerLink]="['/alojamientos', a.id]">Ver detalles</a>
+              <button class="btn" [routerLink]="['/alojamientos', a.id, 'reservar']">Reservar</button>
+            </div>
           </div>
         </article>
       </div>
