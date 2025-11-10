@@ -6,6 +6,7 @@ import { Reserva, ReservaService } from '../../services/reserva.service';
 import { Alojamiento, AlojamientoService } from '../../services/alojamiento.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { HeaderComponent } from '../../shared/components/header/header.component';
 
 interface ReservaVista extends Reserva {
   alojamiento?: Alojamiento;
@@ -14,7 +15,7 @@ interface ReservaVista extends Reserva {
 @Component({
   selector: 'app-reservas',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, HeaderComponent],
   templateUrl: './reservas.component.html',
   styleUrl: './reservas.component.css'
 })

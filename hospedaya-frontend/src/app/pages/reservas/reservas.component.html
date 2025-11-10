@@ -1,13 +1,6 @@
-<div class="dashboard">
-  <header class="topbar">
-    <div class="brand">HospedaYa</div>
-    <div class="menu">
-      <a routerLink="/login">Iniciar sesión</a>
-      <a routerLink="/register">Registrarse</a>
-      <a *ngIf="user" (click)="logout()">Cerrar sesión</a>
-    </div>
-  </header>
+<app-header></app-header>
 
+<div class="dashboard">
   <section class="reservas" *ngIf="reservas.length; else vacio">
     <article class="reserva" *ngFor="let r of reservas">
       <img [src]="resolverImg(r.alojamiento)" />

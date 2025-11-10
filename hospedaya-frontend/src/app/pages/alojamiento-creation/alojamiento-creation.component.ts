@@ -8,11 +8,12 @@ import { AuthService } from '../../services/auth.service';
 import { AlojamientoService, AlojamientoCreateRequest, AlojamientoResponseDTO, AlojamientoUpdateRequest } from '../../services/alojamiento.service';
 import { ImagenAlojamientoService, ImagenAlojamientoCreateRequest, ImagenAlojamientoResponseDTO } from '../../services/imagen-alojamiento.service';
 import { ImageUploadService, ImageUploadResult } from '../../services/image-upload.service';
+import { HeaderComponent } from '../../shared/components/header/header.component';
 
 @Component({
   selector: 'app-alojamiento-creation',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, FormsModule, HeaderComponent],
   templateUrl: './alojamiento-creation.component.html',
   styleUrl: './alojamiento-creation.component.css'
 })
@@ -59,10 +60,7 @@ export class AlojamientoCreationComponent implements OnInit {
       nombre: ['', [Validators.required, Validators.maxLength(120)]],
       descripcion: ['', [Validators.required, Validators.maxLength(1000)]],
       direccion: ['', [Validators.required, Validators.maxLength(200)]],
-      precioPorNoche: [null, [Validators.required, Validators.min(0)]],
-      // Campos de UI no enviados aún al backend:
-      fechaInicio: [null],
-      fechaFin: [null]
+      precioPorNoche: [null, [Validators.required, Validators.min(0)]]
     });
 
     // Detectar modo edición por query param ?editId=123

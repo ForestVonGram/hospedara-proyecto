@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -29,22 +29,23 @@ export class RealizarReservaComponent implements OnInit {
   error = '';
   exito = '';
 
-  noches = computed(() => {
+  noches(): number {
     const i = this.form?.get('fechaInicio')?.value as string;
     const f = this.form?.get('fechaFin')?.value as string;
     if (!i || !f) return 0;
-    const inicio = new Date(i);
-    const fin = new Date(f);
+    // Normalizamos a medianoche local para evitar problemas de zona horaria
+    const inicio = new Date(i + 'T00:00:00');
+    const fin = new Date(f + 'T00:00:00');
     const diff = fin.getTime() - inicio.getTime();
     const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
     return isNaN(days) || days <= 0 ? 0 : days;
-  });
+  }
 
-  total = computed(() => {
+  total(): number {
     const noches = this.noches();
     const precio = this.alojamiento?.precioPorNoche ?? 0;
     return noches * precio;
-  });
+  }
 
   ngOnInit(): void {
     this.form = this.fb.group({

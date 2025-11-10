@@ -1,26 +1,6 @@
+<app-header></app-header>
+
 <div class="dashboard">
-  <header class="topbar">
-    <div class="brand">HospedaYa</div>
-    <div class="menu">
-      <ng-container *ngIf="user; else authLinks">
-        <div class="user-menu" [class.open]="showMenu">
-          <div class="avatar" (click)="toggleMenu()" [style.background-image]="avatarUrl() ? 'url(' + (avatarUrl() + '?v=' + (user?.fotoPerfilUrl ? '' : '')) + ')' : 'none'"></div>
-          <nav class="dropdown" *ngIf="showMenu">
-            <a routerLink="/">Inicio</a>
-            <a routerLink="/reservas">Mis Reservas</a>
-            <a>Comentarios</a>
-            <a routerLink="/perfil">Configuración</a>
-            <hr />
-            <a (click)="logout()">Cerrar sesión</a>
-          </nav>
-        </div>
-      </ng-container>
-      <ng-template #authLinks>
-        <a routerLink="/login">Iniciar sesión</a>
-        <a routerLink="/register">Registrarse</a>
-      </ng-template>
-    </div>
-  </header>
 
   <section class="welcome">
     <h2>Bienvenido, {{ user?.nombre || 'Usuario' }}</h2>
@@ -39,19 +19,25 @@
 
   <section class="destacados">
     <h3>Alojamientos Destacados</h3>
-    <div class="grid">
-      <article class="card" *ngFor="let a of destacados">
-        <img [src]="a.img" alt="" />
-        <div class="info">
-          <h4>{{ a.titulo }}</h4>
-          <p>{{ a.ciudad }}</p>
-          <div class="meta">
-            <span>${{ a.precio }}/noche</span>
-            <span>★ {{ a.rating }}</span>
+    <div *ngIf="loadingAlojamientos">Cargando alojamientos...</div>
+    <div *ngIf="errorAlojamientos" class="error">{{ errorAlojamientos }}</div>
+    <div class="grid" *ngIf="!loadingAlojamientos && !errorAlojamientos">
+      <ng-container *ngIf="alojamientos.length; else noAlojamientos">
+        <article class="card" *ngFor="let a of alojamientos">
+          <img [src]="imagenPrincipal(a)" alt="Imagen de {{ a.titulo }}" />
+          <div class="info">
+            <h4>{{ a.titulo }}</h4>
+            <p class="direccion">{{ a.direccion }}</p>
+            <div class="meta">
+              <span>${{ a.precioPorNoche }}/noche</span>
+            </div>
+            <button (click)="reservar(a)">Reservar</button>
           </div>
-          <button>Reservar</button>
-        </div>
-      </article>
+        </article>
+      </ng-container>
+      <ng-template #noAlojamientos>
+        <p>No hay alojamientos disponibles por ahora.</p>
+      </ng-template>
     </div>
   </section>
 </div>

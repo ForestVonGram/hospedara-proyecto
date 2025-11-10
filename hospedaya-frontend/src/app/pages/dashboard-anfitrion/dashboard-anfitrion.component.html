@@ -1,19 +1,4 @@
-<header class="header">
-  <div class="container header-content">
-    <h1 class="logo">HospedaYa</h1>
-    <nav class="nav">
-      <a routerLink="/" routerLinkActive="active">Inicio</a>
-      <a routerLink="/alojamientos/gestion" routerLinkActive="active">Mis Alojamientos</a>
-      <a routerLink="/dashboard" routerLinkActive="active">Reservas</a>
-      <a routerLink="/profile-setup" routerLinkActive="active">Perfil</a>
-    </nav>
-    <div class="avatar" title="{{ user?.nombre }}">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z" />
-      </svg>
-    </div>
-  </div>
-</header>
+<app-header></app-header>
 
 <main class="container">
   <section class="welcome">
@@ -83,6 +68,36 @@
           </div>
           <button class="btn-detalle" (click)="verDetalle(a)">Ver detalles</button>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reservas recibidas -->
+  <section class="listado" style="margin-top:24px;">
+    <div class="listado-header">
+      <h3>Reservas recibidas</h3>
+      <button class="btn-agregar" (click)="irAGestion()">Gestionar alojamientos</button>
+    </div>
+
+    <div *ngIf="cargandoReservas" class="card" style="padding:16px;">Cargando reservas...</div>
+    <div *ngIf="!cargandoReservas && errorReservas" class="card" style="padding:16px; color:#b91c1c;">{{ errorReservas }}</div>
+
+    <div class="alojamientos" *ngIf="!cargandoReservas && !errorReservas">
+      <div *ngIf="reservas.length === 0" class="card" style="padding:16px;">Aún no tienes reservas en tus alojamientos.</div>
+
+      <div class="alojamiento" *ngFor="let r of reservas">
+        <ng-container *ngIf="alojamientoDeReserva(r) as a">
+          <img [src]="resolverImg(a)" [alt]="a.titulo">
+          <div class="info">
+            <h4>{{ a.titulo }}</h4>
+            <p class="ubicacion">📍 {{ a.direccion }}</p>
+            <div class="detalle">
+              <p class="precio">{{ a.precioPorNoche | currency:'USD':'symbol' }} <span>/noche</span></p>
+              <p class="valoracion">Reserva: {{ r.fechaInicio }} → {{ r.fechaFin }}</p>
+            </div>
+            <span class="badge" style="background:#eef2ff; color:#3730a3; padding:4px 8px; border-radius:6px; font-size:12px;">{{ r.estado || 'PENDIENTE' }}</span>
+          </div>
+        </ng-container>
       </div>
     </div>
   </section>

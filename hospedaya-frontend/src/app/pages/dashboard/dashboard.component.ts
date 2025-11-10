@@ -4,11 +4,13 @@ import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { UsuarioService, UsuarioProfile } from '../../services/usuario.service';
 import { AuthService } from '../../services/auth.service';
+import { Alojamiento, AlojamientoService } from '../../services/alojamiento.service';
+import {HeaderComponent} from '../../shared/components/header/header.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, HeaderComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -20,19 +22,34 @@ export class DashboardComponent implements OnInit {
   checkout = '';
   huespedes = 1;
 
-  destacados = [
-    { titulo: 'Casa en la playa', ciudad: 'Cancún, México', precio: 120, rating: 4.8, img: 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?q=80&w=1200&auto=format&fit=crop' },
-    { titulo: 'Departamento céntrico', ciudad: 'CDMX, México', precio: 85, rating: 4.5, img: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop' },
-    { titulo: 'Cabaña en el bosque', ciudad: 'Valle de Bravo, México', precio: 95, rating: 4.9, img: 'https://images.unsplash.com/photo-1542718610-a1d656d1884f?q=80&w=1200&auto=format&fit=crop' },
-    { titulo: 'Loft moderno', ciudad: 'Guadalajara, México', precio: 75, rating: 4.7, img: 'https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200&auto=format&fit=crop' }
-  ];
+  alojamientos: Alojamiento[] = [];
+  loadingAlojamientos = false;
+  errorAlojamientos: string | null = null;
 
-  constructor(private usuarioService: UsuarioService, private router: Router, private auth: AuthService) {}
+  constructor(
+    private usuarioService: UsuarioService,
+    private router: Router,
+    private auth: AuthService,
+    private alojService: AlojamientoService
+  ) {}
 
   ngOnInit(): void {
     // Cargar rápido desde cache y luego confirmar con backend
     this.user = this.auth.getUser();
     this.usuarioService.me().subscribe({ next: (u) => (this.user = u), error: () => (this.user = undefined) });
+
+    // Cargar alojamientos reales
+    this.loadingAlojamientos = true;
+    this.alojService.listar().subscribe({
+      next: (list) => {
+        this.alojamientos = list || [];
+        this.loadingAlojamientos = false;
+      },
+      error: () => {
+        this.errorAlojamientos = 'No se pudieron cargar los alojamientos.';
+        this.loadingAlojamientos = false;
+      }
+    });
   }
 
   showMenu = false;
@@ -42,10 +59,22 @@ export class DashboardComponent implements OnInit {
     return u ? (u.startsWith('http') ? u : `http://localhost:8080${u}`) : null;
   }
 
+  imagenPrincipal(a: Alojamiento): string {
+    const img = a.imagenes && a.imagenes.length ? a.imagenes[0] : '';
+    if (!img) {
+      return 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?q=80&w=1200&auto=format&fit=crop';
+    }
+    return img.startsWith('http') ? img : `http://localhost:8080${img}`;
+  }
+
   toggleMenu() { this.showMenu = !this.showMenu; }
   logout() {
     this.auth.logout();
     this.router.navigate(['/']);
+  }
+
+  reservar(a: Alojamiento) {
+    this.router.navigate(['/alojamientos', a.id, 'reservar']);
   }
 
   buscar() {
