@@ -1,0 +1,80 @@
+<header class="header">
+  <div class="container">
+    <div class="header-content">
+      <!-- Logo -->
+      <a [routerLink]="['/']" class="logo">
+        <span class="logo-text">HospedaYa</span>
+      </a>
+
+      <!-- Navegación principal -->
+      <nav class="nav-menu">
+        <!-- Links para usuarios NO logueados -->
+        @if (!isLoggedIn) {
+          <a [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
+          <a [routerLink]="['/resultados']" routerLinkActive="active">Buscar alojamientos</a>
+        }
+
+        <!-- Links para HUÉSPEDES -->
+        @if (isHuesped) {
+          <a [routerLink]="['/dashboard']" routerLinkActive="active">Inicio</a>
+          <a [routerLink]="['/resultados']" routerLinkActive="active">Buscar</a>
+          <a [routerLink]="['/reservas']" routerLinkActive="active">Mis Reservas</a>
+        }
+
+        <!-- Links para ANFITRIONES -->
+        @if (isAnfitrion) {
+          <a [routerLink]="['/dashboard-anfitrion']" routerLinkActive="active">Dashboard</a>
+          <a [routerLink]="['/alojamientos/gestion']" routerLinkActive="active">Mis Alojamientos</a>
+          <a [routerLink]="['/alojamientos/nuevo']" routerLinkActive="active" class="btn-create">+ Crear alojamiento</a>
+        }
+      </nav>
+
+      <!-- Botones de acción -->
+      <div class="header-actions">
+        @if (!isLoggedIn) {
+          <!-- Usuario NO logueado -->
+          <a [routerLink]="['/login']" class="btn btn-secondary">Iniciar Sesión</a>
+          <a [routerLink]="['/register']" class="btn btn-primary">Registrarse</a>
+        } @else {
+          <!-- Usuario logueado - Menú de perfil -->
+          <div class="user-menu">
+            <button class="user-avatar" (click)="toggleMenu()">
+              @if (avatarUrl()) {
+                <img [src]="avatarUrl()" [alt]="user?.nombre" />
+              } @else {
+                <div class="avatar-initials">{{ getInitials() }}</div>
+              }
+            </button>
+
+            @if (showMenu) {
+              <div class="dropdown-menu">
+                <div class="user-info">
+                  <p class="user-name">{{ user?.nombre }}</p>
+                  <p class="user-email">{{ user?.email }}</p>
+                  <span class="user-role">{{ isAnfitrion ? 'Anfitrión' : 'Huésped' }}</span>
+                </div>
+                <div class="menu-divider"></div>
+                <a [routerLink]="['/profile-setup']" class="menu-item">
+                  <span>Mi Perfil</span>
+                </a>
+                @if (isAnfitrion) {
+                  <a [routerLink]="['/alojamientos/gestion']" class="menu-item">
+                    <span>Gestionar Alojamientos</span>
+                  </a>
+                } @else {
+                  <a [routerLink]="['/reservas']" class="menu-item">
+                    <span>Mis Reservas</span>
+                  </a>
+                }
+                <div class="menu-divider"></div>
+                <button (click)="logout()" class="menu-item logout">
+                  <span>Cerrar Sesión</span>
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</header>

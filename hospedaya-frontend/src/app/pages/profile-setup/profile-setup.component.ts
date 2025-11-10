@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { UsuarioService, UsuarioProfile } from '../../services/usuario.service';
 import { AuthService } from '../../services/auth.service';
+import { ImagenService } from '../../services/imagen.service';
 
 @Component({
   selector: 'app-profile-setup',
@@ -21,7 +22,12 @@ export class ProfileSetupComponent implements OnInit {
   saving = false;
   error = '';
 
-  constructor(private usuarioService: UsuarioService, private auth: AuthService, private router: Router) {}
+  constructor(
+    private usuarioService: UsuarioService, 
+    private auth: AuthService, 
+    private router: Router,
+    private imagenService: ImagenService
+  ) {}
 
   ngOnInit(): void {
     this.usuarioService.me().subscribe({
@@ -52,34 +58,63 @@ export class ProfileSetupComponent implements OnInit {
     this.saving = true;
     this.error = '';
 
+    // Primero actualizar nombre y teléfono
     this.usuarioService.update(this.user.id, { nombre: this.nombre, telefono: this.telefono }).subscribe({
       next: () => {
         if (this.selectedFile) {
-          this.usuarioService.uploadFoto(this.user!.id, this.selectedFile).subscribe({
-            next: (publicUrl: any) => {
-              // actualizar vista y cache inmediatamente para evitar ver la foto anterior
-              const url = typeof publicUrl === 'string' ? publicUrl : String(publicUrl);
-              const abs = url.startsWith('http') ? url : 'http://localhost:8080' + url;
-              this.previewUrl = abs + '?v=' + Date.now();
-              if (this.user) this.user.fotoPerfilUrl = url;
-              this.auth.saveUser({ ...(this.user as any), fotoPerfilUrl: url });
+          // Validar archivo antes de subir
+          if (!this.imagenService.isValidImageFile(this.selectedFile)) {
+            this.error = 'El archivo debe ser una imagen (JPG, PNG, GIF, WEBP)';
+            this.saving = false;
+            return;
+          }
+          
+          if (!this.imagenService.isValidImageSize(this.selectedFile, 5)) {
+            this.error = 'La imagen no puede superar 5MB';
+            this.saving = false;
+            return;
+          }
 
-              // refrescar perfil desde el backend para asegurar persistencia
+          // Subir imagen a Cloudinary
+          this.imagenService.uploadAvatar(this.selectedFile).subscribe({
+            next: (response) => {
+              // Actualizar vista y cache con la URL de Cloudinary
+              this.previewUrl = response.url;
+              if (this.user) this.user.fotoPerfilUrl = response.url;
+              
+              // Refrescar perfil desde el backend
               this.usuarioService.me().subscribe({
-                next: (u) => this.auth.saveUser(u),
-                complete: () => this.router.navigate(['/dashboard'])
+                next: (u) => {
+                  this.auth.saveUser(u);
+                  // Redirigir según el rol
+                  const dashboardRoute = u.rol === 'ANFITRION' ? '/dashboard-anfitrion' : '/dashboard';
+                  this.router.navigate([dashboardRoute]);
+                },
+                error: () => {
+                  // Aunque falle el refresh, la imagen ya se subió
+                  const dashboardRoute = this.user?.rol === 'ANFITRION' ? '/dashboard-anfitrion' : '/dashboard';
+                  this.router.navigate([dashboardRoute]);
+                }
               });
             },
-            error: () => {
+            error: (err) => {
               this.saving = false;
-              this.error = 'Error subiendo la foto';
+              this.error = err.error?.message || 'Error al subir la imagen';
             }
           });
         } else {
-          // solo teléfono actualizado, refrescar cache
+          // Solo se actualizó nombre/teléfono, refrescar cache
           this.usuarioService.me().subscribe({
-            next: (u) => this.auth.saveUser(u),
-            complete: () => this.router.navigate(['/dashboard'])
+            next: (u) => {
+              this.auth.saveUser(u);
+              // Redirigir según el rol
+              const dashboardRoute = u.rol === 'ANFITRION' ? '/dashboard-anfitrion' : '/dashboard';
+              this.router.navigate([dashboardRoute]);
+            },
+            error: () => {
+              const dashboardRoute = this.user?.rol === 'ANFITRION' ? '/dashboard-anfitrion' : '/dashboard';
+              this.router.navigate([dashboardRoute]);
+            }
           });
         }
       },

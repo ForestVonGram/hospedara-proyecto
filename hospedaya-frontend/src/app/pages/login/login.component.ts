@@ -44,11 +44,23 @@ export class LoginComponent {
           this.authService.setToken(response.token);
           // Cargar y cachear el perfil completo para tener foto/telefono en toda la app
           this.usuarioService.me().subscribe({
-            next: (u) => this.authService.saveUser(u),
-            complete: () => this.router.navigate(['/dashboard'])
+            next: (u) => {
+              this.authService.saveUser(u);
+              // Redirigir según el rol del usuario
+              if (u.rol === 'ANFITRION') {
+                this.router.navigate(['/dashboard-anfitrion']);
+              } else {
+                this.router.navigate(['/dashboard']);
+              }
+            },
+            error: (err) => {
+              console.error('Error al cargar perfil', err);
+              // Si falla cargar el perfil, redirigir a landing
+              this.router.navigate(['/']);
+            }
           });
         } else {
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/']);
         }
       },
       error: (error) => {
