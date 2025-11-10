@@ -22,10 +22,28 @@
 
   <!-- Subida de Fotos -->
   <section class="upload-section">
-    <h3 class="section-title">📸 Subida de Fotos</h3>
+    <h3 class="section-title">📸 Subida de Fotos (Opcional - Máximo 10 imágenes)</h3>
     <div class="upload-box" id="dropzone">
-      <p>Arrastra tus fotos aquí o haz clic para subir</p>
-      <button class="btn btn-primary" type="button" disabled>Seleccionar archivo (próximamente)</button>
+      <p>Selecciona imágenes de tu alojamiento</p>
+      <input 
+        type="file" 
+        accept="image/*" 
+        multiple 
+        (change)="onFilesSelected($event)" 
+        style="display: none;" 
+        #fileInput
+      />
+      <button class="btn btn-primary" type="button" (click)="fileInput.click()">
+        Seleccionar imágenes
+      </button>
+    </div>
+
+    <!-- Previews de imágenes -->
+    <div class="image-previews" *ngIf="imagePreviews.length > 0">
+      <div class="preview-item" *ngFor="let preview of imagePreviews; let i = index">
+        <img [src]="preview" alt="Preview {{i+1}}" />
+        <button type="button" class="remove-btn" (click)="removeImage(i)">×</button>
+      </div>
     </div>
   </section>
 

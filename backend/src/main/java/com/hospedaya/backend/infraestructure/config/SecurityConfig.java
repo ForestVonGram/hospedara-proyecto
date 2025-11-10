@@ -40,7 +40,8 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/webhooks/mercadopago/**",
                                 "/actuator/**",
-                                "/uploads/**"
+                                "/uploads/**",
+                                "/test/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

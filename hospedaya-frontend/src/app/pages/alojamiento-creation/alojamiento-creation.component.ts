@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AlojamientoService, AlojamientoCreateRequest } from '../../services/alojamiento.service';
+import { ImagenService } from '../../services/imagen.service';
 
 @Component({
   selector: 'app-alojamiento-creation',
@@ -17,12 +18,18 @@ export class AlojamientoCreationComponent implements OnInit {
   isSubmitting = false;
   errorMessage = '';
   successMessage = '';
+  
+  // Imágenes
+  selectedFiles: File[] = [];
+  imagePreviews: string[] = [];
+  uploadingImages = false;
 
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
     private alojamientoService: AlojamientoService,
-    private router: Router
+    private router: Router,
+    private imagenService: ImagenService
   ) {}
 
   ngOnInit(): void {
@@ -50,6 +57,47 @@ export class AlojamientoCreationComponent implements OnInit {
   }
 
   get f() { return this.form.controls; }
+
+  onFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files) return;
+
+    const files = Array.from(input.files);
+    
+    // Validar cantidad
+    if (files.length > 10) {
+      this.errorMessage = 'Máximo 10 imágenes por alojamiento';
+      return;
+    }
+
+    // Validar cada archivo
+    for (const file of files) {
+      if (!this.imagenService.isValidImageFile(file)) {
+        this.errorMessage = `${file.name} no es una imagen válida`;
+        return;
+      }
+      if (!this.imagenService.isValidImageSize(file, 10)) {
+        this.errorMessage = `${file.name} supera el tamaño máximo de 10MB`;
+        return;
+      }
+    }
+
+    this.selectedFiles = files;
+    this.imagePreviews = [];
+    this.errorMessage = '';
+
+    // Generar previews
+    files.forEach(file => {
+      this.imagenService.fileToDataUrl(file).then(dataUrl => {
+        this.imagePreviews.push(dataUrl);
+      });
+    });
+  }
+
+  removeImage(index: number): void {
+    this.selectedFiles.splice(index, 1);
+    this.imagePreviews.splice(index, 1);
+  }
 
   onSubmit(): void {
     this.errorMessage = '';

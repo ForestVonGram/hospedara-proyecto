@@ -8,6 +8,9 @@ export interface UsuarioProfile {
   email: string;
   telefono?: string;
   fotoPerfilUrl?: string;
+  rol: string;
+  activo?: boolean;
+  fechaRegistro?: string;
 }
 
 @Injectable({ providedIn: 'root' })
