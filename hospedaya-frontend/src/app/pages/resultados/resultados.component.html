@@ -1,12 +1,5 @@
 <div class="dashboard">
-  <header class="topbar">
-    <div class="brand">HospedaYa</div>
-    <div class="menu">
-      <a routerLink="/login">Iniciar sesión</a>
-      <a routerLink="/register">Registrarse</a>
-      <a *ngIf="user" (click)="logout()">Cerrar sesión</a>
-    </div>
-  </header>
+  <app-header></app-header>
 
   <section class="welcome">
     <div class="search">
@@ -35,9 +28,17 @@
   <div class="content">
     <aside class="filters">
       <h3>Filtros</h3>
-      <label>Rango de precio (max)</label>
-      <input type="range" min="0" max="1000" step="10" [(ngModel)]="precioMax" (change)="aplicarFiltros()" />
-      <div class="price">{{precioMax || 'Sin límite'}}€</div>
+      <div class="price-range">
+        <div class="field">
+          <label>Precio mínimo (COP)</label>
+          <input type="number" min="0" step="50" [(ngModel)]="minPrecio" (ngModelChange)="aplicarFiltros()" placeholder="Sin límite" />
+        </div>
+        <div class="field">
+          <label>Precio máximo (COP)</label>
+          <input type="number" min="0" step="50" [(ngModel)]="maxPrecio" (ngModelChange)="aplicarFiltros()" placeholder="Sin límite" />
+        </div>
+        <small class="hint">Deja en blanco para "Sin límite". Los valores se interpretan en COP.</small>
+      </div>
     </aside>
 
     <section class="destacados">
@@ -51,7 +52,7 @@
             <h4><a [routerLink]="['/alojamientos', a.id]">{{ a.titulo }}</a></h4>
             <p>{{ a.direccion }}</p>
             <div class="meta">
-              <span>${{ a.precioPorNoche }}/noche</span>
+              <span>{{ a.precioPorNoche | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}/noche</span>
               <span>★ 4.7</span>
             </div>
             <div class="actions">

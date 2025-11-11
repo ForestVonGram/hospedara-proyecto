@@ -78,7 +78,8 @@ export class DashboardComponent implements OnInit {
   }
 
   buscar() {
-    this.router.navigate(['/buscar'], {
+    // Navega a la página de resultados con los parámetros de búsqueda
+    this.router.navigate(['/resultados'], {
       queryParams: {
         destino: this.destino,
         checkin: this.checkin,

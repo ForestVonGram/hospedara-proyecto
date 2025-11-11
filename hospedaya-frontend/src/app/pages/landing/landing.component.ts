@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { UsuarioService, UsuarioProfile } from '../../services/usuario.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.css'
 })
@@ -15,6 +16,12 @@ export class LandingComponent {
   protected readonly year = new Date().getFullYear();
   user?: UsuarioProfile;
   showMenu = false;
+
+  // Campos de búsqueda
+  destino = '';
+  checkin = '';
+  checkout = '';
+  huespedes: number | null = null;
 
   constructor(private usuarioService: UsuarioService, private auth: AuthService, private router: Router) {}
 
@@ -46,6 +53,17 @@ export class LandingComponent {
       (window as any).flatpickr?.('#checkin', { dateFormat: 'Y-m-d' });
       (window as any).flatpickr?.('#checkout', { dateFormat: 'Y-m-d' });
     } catch {}
+  }
+
+  onSearchSubmit() {
+    this.router.navigate(['/resultados'], {
+      queryParams: {
+        destino: this.destino,
+        checkin: this.checkin,
+        checkout: this.checkout,
+        huespedes: this.huespedes || undefined
+      }
+    });
   }
 
   avatarUrl(): string | null {

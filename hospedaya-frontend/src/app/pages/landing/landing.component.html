@@ -39,22 +39,22 @@
       <p class="hero-sub">Casas, apartamentos y fincas en el lugar que siempre soñaste</p>
 
       <!-- Search Card -->
-      <form class="search-card" role="search" aria-label="Buscar hospedaje">
+      <form class="search-card" role="search" aria-label="Buscar hospedaje" (ngSubmit)="onSearchSubmit()">
         <div class="search-field destination">
           <label class="sr-only" for="dest">Destino</label>
-          <input id="dest" name="dest" type="text" placeholder="Destino" autocomplete="off" />
+          <input id="dest" name="destino" type="text" placeholder="Destino" autocomplete="off" [(ngModel)]="destino" />
         </div>
         <div class="search-field checkin">
           <label class="sr-only" for="checkin">Check-in</label>
-          <input id="checkin" name="checkin" class="datepicker" placeholder="Check-in" readonly />
+          <input id="checkin" name="checkin" class="datepicker" placeholder="Check-in" readonly [(ngModel)]="checkin" />
         </div>
         <div class="search-field checkout">
           <label class="sr-only" for="checkout">Check-out</label>
-          <input id="checkout" name="checkout" class="datepicker" placeholder="Check-out" readonly />
+          <input id="checkout" name="checkout" class="datepicker" placeholder="Check-out" readonly [(ngModel)]="checkout" />
         </div>
         <div class="search-field guests">
           <label class="sr-only" for="guests">Huéspedes</label>
-          <input id="guests" name="guests" type="text" placeholder="Huéspedes" />
+          <input id="guests" name="huespedes" type="number" min="1" placeholder="Huéspedes" [(ngModel)]="huespedes" />
         </div>
         <button class="btn btn-primary" type="submit" style="padding: 14px 24px; font-size: 1rem;">Buscar</button>
       </form>

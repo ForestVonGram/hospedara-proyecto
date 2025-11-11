@@ -25,6 +25,10 @@ export const routes: Routes = [
     canActivate: [guestOnlyGuard] // Permite búsqueda sin login
   },
   {
+    path: 'alojamientos/:id',
+    loadComponent: () => import('./pages/detalle-alojamiento/detalle-alojamiento.component').then(m => m.DetalleAlojamientoComponent)
+  },
+  {
     path: 'alojamientos/:id/reservar',
     loadComponent: () => import('./pages/realizar-reserva/realizar-reserva.component').then(m => m.RealizarReservaComponent),
     canActivate: [authGuard] // Requiere estar logueado

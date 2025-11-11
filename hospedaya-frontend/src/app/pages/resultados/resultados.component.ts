@@ -6,11 +6,12 @@ import { Alojamiento, AlojamientoService } from '../../services/alojamiento.serv
 import { UsuarioService, UsuarioProfile } from '../../services/usuario.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { HeaderComponent } from '../../shared/components/header/header.component';
 
 @Component({
   selector: 'app-resultados',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, HeaderComponent],
   templateUrl: './resultados.component.html',
   styleUrl: './resultados.component.css'
 })
@@ -22,7 +23,10 @@ export class ResultadosComponent implements OnInit {
   huespedes = 1;
   alojamientos: Alojamiento[] = [];
   filtrados: Alojamiento[] = [];
-  precioMax?: number;
+
+  // Filtros de precio (COP). Dejar vacío = Sin límite
+  minPrecio: number | null = null;
+  maxPrecio: number | null = null;
 
   constructor(private route: ActivatedRoute, private alojService: AlojamientoService, private usuarioService: UsuarioService, private router: Router, private auth: AuthService) {}
 
@@ -41,17 +45,30 @@ export class ResultadosComponent implements OnInit {
 
   cargar() {
     this.alojService.listar().subscribe((list: Alojamiento[]) => {
-      this.alojamientos = list;
+      // Asegurar que el precio sea numérico para mostrar con currency pipe
+      this.alojamientos = (list || []).map(a => ({
+        ...a,
+        precioPorNoche: Number(a.precioPorNoche)
+      } as Alojamiento));
+      // Mantener sin límite por defecto
+      this.minPrecio = null;
+      this.maxPrecio = null;
       this.aplicarFiltros();
     });
   }
 
   aplicarFiltros() {
     const d = this.destino.toLowerCase();
+    const min = this.minPrecio == null || this.minPrecio === undefined || this.minPrecio === 0 ? undefined : Number(this.minPrecio);
+    const max = this.maxPrecio == null || this.maxPrecio === undefined || this.maxPrecio === 0 ? undefined : Number(this.maxPrecio);
+
     this.filtrados = this.alojamientos.filter((a: Alojamiento) => {
       const matchDestino = d ? (a.direccion?.toLowerCase().includes(d) || a.titulo?.toLowerCase().includes(d)) : true;
-      const matchPrecio = this.precioMax ? (Number(a.precioPorNoche) <= this.precioMax) : true;
-      return matchDestino && matchPrecio;
+      const precio = Number(a.precioPorNoche);
+      const okMin = (min === undefined) ? true : (!Number.isNaN(precio) && precio >= min);
+      const okMax = (max === undefined) ? true : (!Number.isNaN(precio) && precio <= max);
+      // Si ambos están definidos y min > max, no filtra por rango (o podríamos intercambiar). Aquí normalizamos: si min>max, intercambiamos.
+      return matchDestino && okMin && okMax;
     });
   }
 
