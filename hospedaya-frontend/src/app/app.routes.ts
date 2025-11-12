@@ -25,15 +25,6 @@ export const routes: Routes = [
     canActivate: [guestOnlyGuard] // Permite búsqueda sin login
   },
   {
-    path: 'alojamientos/:id',
-    loadComponent: () => import('./pages/detalle-alojamiento/detalle-alojamiento.component').then(m => m.DetalleAlojamientoComponent)
-  },
-  {
-    path: 'alojamientos/:id/reservar',
-    loadComponent: () => import('./pages/realizar-reserva/realizar-reserva.component').then(m => m.RealizarReservaComponent),
-    canActivate: [authGuard] // Requiere estar logueado
-  },
-  {
     path: 'reservas',
     loadComponent: () => import('./pages/reservas/reservas.component').then(m => m.ReservasComponent),
     canActivate: [userGuard] // Solo huéspedes
@@ -54,6 +45,15 @@ export const routes: Routes = [
     path: 'alojamientos/nuevo',
     loadComponent: () => import('./pages/alojamiento-creation/alojamiento-creation.component').then(m => m.AlojamientoCreationComponent),
     canActivate: [hostGuard]
+  },
+  {
+    path: 'alojamientos/:id',
+    loadComponent: () => import('./pages/detalle-alojamiento/detalle-alojamiento.component').then(m => m.DetalleAlojamientoComponent)
+  },
+  {
+    path: 'alojamientos/:id/reservar',
+    loadComponent: () => import('./pages/realizar-reserva/realizar-reserva.component').then(m => m.RealizarReservaComponent),
+    canActivate: [authGuard] // Requiere estar logueado
   },
 
   // Profile setup (disponible para todos los usuarios autenticados)

@@ -70,8 +70,8 @@ export class AlojamientoService {
   }
 
   // Eliminar por id
-  eliminarAlojamiento(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/${id}`);
+  eliminarAlojamiento(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
   // Listado general para página de resultados (mapea a modelo de UI)

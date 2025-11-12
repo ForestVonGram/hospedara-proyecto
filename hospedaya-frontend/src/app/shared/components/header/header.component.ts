@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
@@ -11,6 +11,8 @@ import { AuthService } from '../../../services/auth.service';
   styleUrl: './header.component.css'
 })
 export class HeaderComponent implements OnInit {
+  @Input() variant: 'default' | 'host' = 'default';
+
   user: any = null;
   showMenu = false;
   isAnfitrion = false;

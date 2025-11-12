@@ -4,11 +4,13 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AlojamientoService, AlojamientoResponseDTO } from '../../services/alojamiento.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
+import { ToastsComponent } from '../../shared/toast/toasts.component';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-gestion-alojamientos',
   standalone: true,
-  imports: [CommonModule, RouterModule, HeaderComponent],
+  imports: [CommonModule, RouterModule, HeaderComponent, ToastsComponent],
   templateUrl: './gestion-alojamientos.component.html',
   styleUrl: './gestion-alojamientos.component.css'
 })
@@ -21,7 +23,8 @@ export class GestionAlojamientosComponent implements OnInit {
   constructor(
     private auth: AuthService,
     private alojamientoService: AlojamientoService,
-    private router: Router
+    private router: Router,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -73,18 +76,27 @@ export class GestionAlojamientosComponent implements OnInit {
     this.error = '';
     this.alojamientoService.eliminarAlojamiento(a.id).subscribe({
       next: () => {
+        this.toast.show('Alojamiento eliminado correctamente', 'success');
         if (this.anfitrionId != null) {
           this.cargarAlojamientos(this.anfitrionId);
         }
       },
       error: (err) => {
-        if (typeof err?.error === 'string' && err.error.trim().length > 0) {
+        if (err?.status === 404) {
+          this.toast.show('El alojamiento ya no existe. Actualizando la lista…', 'warning');
+          if (this.anfitrionId != null) this.cargarAlojamientos(this.anfitrionId);
+          return;
+        }
+        if (err?.status === 409) {
+          this.error = 'No se puede eliminar el alojamiento porque tiene reservas activas.';
+        } else if (typeof err?.error === 'string' && err.error.trim().length > 0) {
           this.error = err.error;
         } else if (err?.error?.message) {
           this.error = err.error.message;
         } else {
           this.error = 'No se pudo eliminar el alojamiento. Inténtalo nuevamente.';
         }
+        this.toast.show(this.error, 'error');
         this.cargando = false;
       }
     });

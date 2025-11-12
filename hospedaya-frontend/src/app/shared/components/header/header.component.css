@@ -20,6 +20,22 @@
   gap: 2rem;
 }
 
+.header.header--host {
+  background: #6d28d9;
+}
+.header.header--host .logo,
+.header.header--host .nav-menu a.active,
+.header.header--host .nav-menu a:hover,
+.header.header--host .btn-primary,
+.header.header--host .nav-menu a.btn-create,
+.header.header--host .menu-item.logout { color: #ffffff; }
+.header.header--host .nav-menu a { color: #ede9fe; }
+.header.header--host .nav-menu a.active { border-bottom-color: #ffffff; }
+.header.header--host .nav-menu a.btn-create { background: #8b5cf6; border-radius: 999px; }
+.header.header--host .nav-menu a.btn-create:hover { background: #7c3aed; }
+.header.header--host .btn-primary { background: #8b5cf6; }
+.header.header--host .btn-primary:hover { background: #7c3aed; }
+
 /* Logo */
 .logo {
   text-decoration: none;
