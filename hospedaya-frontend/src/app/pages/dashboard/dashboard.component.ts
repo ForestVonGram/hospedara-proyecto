@@ -57,12 +57,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     // Inicializa el mapa con la configuración predeterminada
     this.mapService.create();
-    // Obtiene todos los alojamientos de prueba
-    const places = this.placesService.getAll();
-    // Mapea los alojamientos a marcadores y los dibuja en el mapa
-    const markers = this.mapItemToMarker(places);
-    // Dibuja los marcadores en el mapa
-    this.mapService.drawMarkers(markers);
 
     // Cargar alojamientos reales
     this.loadingAlojamientos = true;
@@ -70,6 +64,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       next: (list) => {
         this.alojamientos = list || [];
         this.loadingAlojamientos = false;
+        // Dibujar marcadores de alojamientos reales en el mapa
+        this.drawAlojamientosOnMap();
       },
       error: () => {
         this.errorAlojamientos = 'No se pudieron cargar los alojamientos.';
@@ -115,6 +111,24 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
+  private drawAlojamientosOnMap(): void {
+    const markers: MarkerDTO[] = this.alojamientos
+      .filter(a => a.latitud != null && a.longitud != null)
+      .map(a => ({
+        id: a.id,
+        title: a.titulo,
+        photoUrl: this.imagenPrincipal(a),
+        location: {
+          latitud: a.latitud!,
+          longitud: a.longitud!
+        }
+      }));
+
+    if (markers.length > 0) {
+      this.mapService.drawMarkers(markers);
+    }
+  }
+
   public mapItemToMarker(places: PlaceDTO[]): MarkerDTO[] {
     return places.map((item) => ({
       id: item.id,
@@ -123,6 +137,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       photoUrl: item.images[0] || "",
     }));
   }
+
   ngAfterViewInit(): void {
     // El mapa se inicializa en ngOnInit
   }

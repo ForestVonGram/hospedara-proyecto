@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Alojamiento, AlojamientoService } from '../../services/alojamiento.service';
+import { MapService } from '../../mapbox/map-service';
 
 @Component({
   selector: 'app-detalle-alojamiento',
@@ -11,7 +12,7 @@ import { Alojamiento, AlojamientoService } from '../../services/alojamiento.serv
   templateUrl: './detalle-alojamiento.component.html',
   styleUrl: './detalle-alojamiento.component.css'
 })
-export class DetalleAlojamientoComponent implements OnInit, OnDestroy {
+export class DetalleAlojamientoComponent implements OnInit, OnDestroy, AfterViewInit {
   id?: number;
   alojamiento?: Alojamiento;
   loading = true;
@@ -20,10 +21,13 @@ export class DetalleAlojamientoComponent implements OnInit, OnDestroy {
 
   private sub?: Subscription;
 
+  private mapInitialized = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private alojService: AlojamientoService
+    private alojService: AlojamientoService,
+    private mapService: MapService
   ) {}
 
   ngOnInit(): void {
@@ -40,6 +44,10 @@ export class DetalleAlojamientoComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit(): void {
+    // El mapa se inicializará cuando se cargue el alojamiento
+  }
+
   ngOnDestroy(): void { this.sub?.unsubscribe(); }
 
   cargar(id: number) {
@@ -49,9 +57,25 @@ export class DetalleAlojamientoComponent implements OnInit, OnDestroy {
       next: (a) => {
         this.alojamiento = a;
         this.loading = false;
+        // Inicializar el mapa si el alojamiento tiene coordenadas
+        if (a.latitud != null && a.longitud != null) {
+          this.initializeMap();
+        }
       },
       error: (e) => { console.error(e); this.error = 'No se pudo cargar el alojamiento'; this.loading = false; }
     });
+  }
+
+  private initializeMap(): void {
+    if (this.mapInitialized || !this.alojamiento) return;
+    
+    setTimeout(() => {
+      this.mapService.create('map-detalle');
+      if (this.alojamiento?.latitud != null && this.alojamiento?.longitud != null) {
+        this.mapService.setMarker(this.alojamiento.longitud, this.alojamiento.latitud);
+      }
+      this.mapInitialized = true;
+    }, 100);
   }
 
   resolverImg(url?: string): string {
