@@ -31,6 +31,9 @@ public class Alojamiento {
     @Column(nullable = false)
     private Double precioPorNoche;
 
+    @Column(name = "max_huespedes")
+    private Integer maxHuespedes; // capacidad máxima de huéspedes
+
     @Enumerated(EnumType.STRING)
     private EstadoAlojamiento estado = EstadoAlojamiento.ACTIVO;
 

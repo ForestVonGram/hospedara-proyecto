@@ -15,4 +15,7 @@ public interface ComentarioRepository extends JpaRepository<Comentario, Long> {
     List<Comentario> findAllByAlojamientoId(Long alojamientoId);
 
     List<Comentario> findAllByCalificacion(int calificacion);
+
+    // Todos los comentarios recibidos por un anfitrión (para todos sus alojamientos)
+    List<Comentario> findAllByAlojamiento_Anfitrion_Id(Long anfitrionId);
 }

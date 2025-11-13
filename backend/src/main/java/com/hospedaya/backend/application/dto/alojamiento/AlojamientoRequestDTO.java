@@ -11,5 +11,6 @@ public class AlojamientoRequestDTO {
     private String descripcion;
     private String direccion;
     private BigDecimal precioPorNoche;
+    private Integer maxHuespedes;
     private Long anfitrionId;
 }

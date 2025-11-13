@@ -45,17 +45,21 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        // Si el usuario (email) no existe, devolver 404 según el requerimiento
-        if (!usuarioRepository.existsByEmail(request.getEmail())) {
+        String emailNorm = request.getEmail() != null ? request.getEmail().trim().toLowerCase() : null;
+        if (emailNorm == null || emailNorm.isEmpty()) {
+            return ResponseEntity.badRequest().body("Email es requerido");
+        }
+        // Verificación insensible a mayúsculas/minúsculas
+        if (!usuarioRepository.existsByEmailIgnoreCase(emailNorm)) {
             return ResponseEntity.status(404).body("Usuario no encontrado");
         }
         try {
             Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(emailNorm, request.getPassword())
             );
             Map<String, Object> claims = new HashMap<>();
             claims.put("typ", "access");
-            String token = jwtUtil.generateToken(request.getEmail(), claims);
+            String token = jwtUtil.generateToken(emailNorm, claims);
             return ResponseEntity.ok(new AuthResponse(token));
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(401).body("Credenciales inválidas");
@@ -64,7 +68,13 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Usuario usuario) {
-        if (usuarioRepository.existsByEmail(usuario.getEmail())) {
+        if (usuario.getEmail() == null || usuario.getEmail().isBlank()) {
+            return ResponseEntity.badRequest().body("Email es requerido");
+        }
+        // Normalizar email
+        String emailNorm = usuario.getEmail().trim().toLowerCase();
+        usuario.setEmail(emailNorm);
+        if (usuarioRepository.existsByEmailIgnoreCase(emailNorm)) {
             return ResponseEntity.status(409).body("El email ya está registrado");
         }
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
@@ -87,8 +97,9 @@ public class AuthController {
         if (email == null || email.isBlank()) {
             return ResponseEntity.badRequest().body("Email es requerido");
         }
+        String emailNorm = email.trim().toLowerCase();
 
-        usuarioRepository.findByEmail(email).ifPresent(usuario -> {
+        usuarioRepository.findByEmailIgnoreCase(emailNorm).ifPresent(usuario -> {
             // Crear token y guardar
             PasswordResetToken token = new PasswordResetToken();
             token.setToken(UUID.randomUUID().toString());

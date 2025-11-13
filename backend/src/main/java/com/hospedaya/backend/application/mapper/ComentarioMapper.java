@@ -24,7 +24,9 @@ public interface ComentarioMapper {
 
     @Mappings({
             @Mapping(target = "usuarioId", source = "usuario.id"),
+            @Mapping(target = "usuarioNombre", source = "usuario.nombre"),
             @Mapping(target = "alojamientoId", source = "alojamiento.id"),
+            @Mapping(target = "alojamientoNombre", source = "alojamiento.nombre"),
             @Mapping(target = "texto", source = "contenido")
     })
     ComentarioResponseDTO toResponse(Comentario entity);

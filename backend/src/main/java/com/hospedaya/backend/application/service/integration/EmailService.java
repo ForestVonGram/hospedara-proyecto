@@ -143,4 +143,113 @@ public class EmailService {
             log.error("Error al enviar correo de recuperación a {}: {}", usuario.getEmail(), e.getMessage());
         }
     }
+    public void enviarCorreoNuevaReserva(com.hospedaya.backend.domain.entity.Usuario anfitrion,
+                                         com.hospedaya.backend.domain.entity.Usuario huesped,
+                                         com.hospedaya.backend.domain.entity.Alojamiento alojamiento,
+                                         com.hospedaya.backend.domain.entity.Reserva reserva) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(anfitrion.getEmail());
+            helper.setSubject("Nueva reserva recibida - " + (alojamiento.getNombre() != null ? alojamiento.getNombre() : "Tu alojamiento"));
+
+            String html = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                  <style>
+                    body { font-family: Arial, sans-serif; background:#f6f8fa; margin:0; padding:0; }
+                    .box { max-width:600px; margin:24px auto; background:#fff; border:1px solid #e5e7eb; border-radius:10px; overflow:hidden; }
+                    .hdr { background:#4f46e5; color:#fff; padding:16px 20px; font-weight:700; }
+                    .cnt { padding:20px; color:#111827; }
+                    .muted { color:#6b7280; }
+                    .badge { display:inline-block; background:#eef2ff; color:#3730a3; padding:4px 8px; border-radius:999px; font-size:12px; }
+                  </style>
+                </head>
+                <body>
+                  <div class=\"box\">
+                    <div class=\"hdr\">Nueva reserva recibida</div>
+                    <div class=\"cnt\">
+                      <p>Hola %s,</p>
+                      <p>Has recibido una nueva reserva para tu alojamiento <strong>%s</strong>.</p>
+                      <p class=\"muted\">Detalles:</p>
+                      <ul>
+                        <li><strong>Huésped:</strong> %s (%s)</li>
+                        <li><strong>Fechas:</strong> %s → %s</li>
+                      </ul>
+                      <p>Puedes gestionar tus reservas desde tu panel de anfitrión.</p>
+                      <p class=\"muted\">HospedaYa</p>
+                    </div>
+                  </div>
+                </body>
+                </html>
+            """.formatted(
+                anfitrion.getNombre() != null ? anfitrion.getNombre() : anfitrion.getEmail(),
+                alojamiento.getNombre(),
+                huesped.getNombre() != null ? huesped.getNombre() : huesped.getEmail(),
+                huesped.getEmail(),
+                reserva.getFechaInicio() != null ? reserva.getFechaInicio().toString() : "",
+                reserva.getFechaFin() != null ? reserva.getFechaFin().toString() : ""
+            );
+            helper.setText(html, true);
+            mailSender.send(message);
+            log.info("Correo de nueva reserva enviado a anfitrión {}", anfitrion.getEmail());
+        } catch (MessagingException e) {
+            log.error("Error al enviar correo de nueva reserva a {}: {}", anfitrion.getEmail(), e.getMessage());
+        }
+    }
+
+    public void enviarCorreoNuevaResena(com.hospedaya.backend.domain.entity.Usuario anfitrion,
+                                        com.hospedaya.backend.domain.entity.Usuario autor,
+                                        com.hospedaya.backend.domain.entity.Alojamiento alojamiento,
+                                        com.hospedaya.backend.domain.entity.Comentario comentario) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(anfitrion.getEmail());
+            helper.setSubject("Nueva reseña en tu alojamiento - " + (alojamiento.getNombre() != null ? alojamiento.getNombre() : "Tu alojamiento"));
+
+            String html = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                  <style>
+                    body { font-family: Arial, sans-serif; background:#f6f8fa; margin:0; padding:0; }
+                    .box { max-width:600px; margin:24px auto; background:#fff; border:1px solid #e5e7eb; border-radius:10px; overflow:hidden; }
+                    .hdr { background:#059669; color:#fff; padding:16px 20px; font-weight:700; }
+                    .cnt { padding:20px; color:#111827; }
+                    .muted { color:#6b7280; }
+                    .score { display:inline-block; background:#fffbeb; color:#b45309; border:1px solid #fde68a; padding:4px 10px; border-radius:999px; font-weight:700; }
+                    .comment { border-left:4px solid #d1d5db; padding:10px 12px; background:#f9fafb; border-radius:6px; }
+                  </style>
+                </head>
+                <body>
+                  <div class=\"box\">
+                    <div class=\"hdr\">Nueva reseña recibida</div>
+                    <div class=\"cnt\">
+                      <p>Hola %s,</p>
+                      <p>Has recibido una nueva reseña en tu alojamiento <strong>%s</strong>.</p>
+                      <p><strong>Autor:</strong> %s (%s)</p>
+                      <p><span class=\"score\">Calificación: %s★</span></p>
+                      <div class=\"comment\">%s</div>
+                      <p class=\"muted\">HospedaYa</p>
+                    </div>
+                  </div>
+                </body>
+                </html>
+            """.formatted(
+                anfitrion.getNombre() != null ? anfitrion.getNombre() : anfitrion.getEmail(),
+                alojamiento.getNombre(),
+                autor.getNombre() != null ? autor.getNombre() : autor.getEmail(),
+                autor.getEmail(),
+                String.valueOf(comentario.getCalificacion()),
+                comentario.getContenido()
+            );
+            helper.setText(html, true);
+            mailSender.send(message);
+            log.info("Correo de nueva reseña enviado a anfitrión {}", anfitrion.getEmail());
+        } catch (MessagingException e) {
+            log.error("Error al enviar correo de nueva reseña a {}: {}", anfitrion.getEmail(), e.getMessage());
+        }
+    }
 }

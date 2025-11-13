@@ -13,5 +13,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     boolean existsByEmail(String email);
 
+    // Búsquedas insensibles a mayúsculas/minúsculas para email
+    Optional<Usuario> findByEmailIgnoreCase(String email);
+    boolean existsByEmailIgnoreCase(String email);
+
     Optional<Usuario> findByNombre(String nombre);
 }

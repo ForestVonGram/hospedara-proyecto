@@ -26,6 +26,9 @@ public class AlojamientoServiceImplTest {
     @Mock
     private AlojamientoRepository alojamientoRepository;
 
+    @Mock
+    private com.hospedaya.backend.infraestructure.repository.ReservaRepository reservaRepository;
+
     @InjectMocks
     private AlojamientoServiceImpl alojamientoService;
 

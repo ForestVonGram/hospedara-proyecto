@@ -26,10 +26,19 @@ public class ComentarioController {
 
     private final ComentarioService comentarioService;
     private final ComentarioMapper comentarioMapper;
+    private final com.hospedaya.backend.application.service.integration.EmailService emailService;
+    private final com.hospedaya.backend.application.service.base.UsuarioService usuarioService;
+    private final com.hospedaya.backend.application.service.base.AlojamientoService alojamientoService;
 
-    public ComentarioController(ComentarioService comentarioService, ComentarioMapper comentarioMapper) {
+    public ComentarioController(ComentarioService comentarioService, ComentarioMapper comentarioMapper,
+                                com.hospedaya.backend.application.service.integration.EmailService emailService,
+                                com.hospedaya.backend.application.service.base.UsuarioService usuarioService,
+                                com.hospedaya.backend.application.service.base.AlojamientoService alojamientoService) {
         this.comentarioService = comentarioService;
         this.comentarioMapper = comentarioMapper;
+        this.emailService = emailService;
+        this.usuarioService = usuarioService;
+        this.alojamientoService = alojamientoService;
     }
 
     @Operation(summary = "Listar comentarios por alojamiento")
@@ -81,6 +90,15 @@ public class ComentarioController {
     public ResponseEntity<ComentarioResponseDTO> crearComentario(@RequestBody ComentarioRequestDTO requestDTO) {
         Comentario comentario = comentarioMapper.toEntity(requestDTO);
         Comentario comentarioCreado = comentarioService.agregarComentario(comentario);
+
+        // Notificar al anfitrión del alojamiento
+        try {
+            com.hospedaya.backend.domain.entity.Usuario autor = usuarioService.findById(requestDTO.getUsuarioId());
+            com.hospedaya.backend.domain.entity.Alojamiento alo = alojamientoService.obtenerAlojamientoPorId(requestDTO.getAlojamientoId());
+            com.hospedaya.backend.domain.entity.Usuario anfitrion = alo.getAnfitrion();
+            emailService.enviarCorreoNuevaResena(anfitrion, autor, alo, comentarioCreado);
+        } catch (Exception ignored) {}
+
         ComentarioResponseDTO response = comentarioMapper.toResponse(comentarioCreado);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -94,5 +112,19 @@ public class ComentarioController {
     public ResponseEntity<Void> eliminarComentario(@PathVariable Long id) {
         comentarioService.eliminarComentario(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Listar comentarios por anfitrión (todas sus propiedades)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Comentarios del anfitrión obtenidos"),
+            @ApiResponse(responseCode = "404", description = "Anfitrión no encontrado")
+    })
+    @GetMapping("/anfitrion/{anfitrionId}")
+    public ResponseEntity<List<ComentarioResponseDTO>> listarComentariosPorAnfitrion(@PathVariable Long anfitrionId) {
+        List<Comentario> comentarios = comentarioService.listarComentariosPorAnfitrion(anfitrionId);
+        List<ComentarioResponseDTO> response = comentarios.stream()
+                .map(comentarioMapper::toResponse)
+                .collect(java.util.stream.Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 }

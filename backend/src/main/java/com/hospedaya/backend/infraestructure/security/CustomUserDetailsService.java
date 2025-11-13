@@ -24,7 +24,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByEmail(username)
+        String normalized = username != null ? username.trim().toLowerCase() : null;
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(normalized)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
         Collection<? extends GrantedAuthority> authorities = List.of(

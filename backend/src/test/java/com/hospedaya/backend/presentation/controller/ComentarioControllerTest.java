@@ -11,6 +11,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,8 +24,17 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = ComentarioController.class)
-@Import({GlobalExceptionHandler.class, ComentarioMapper.class})
+@WebMvcTest(
+        controllers = ComentarioController.class,
+        excludeAutoConfiguration = {
+                org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class,
+                org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration.class
+        },
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+                com.hospedaya.backend.infraestructure.security.JwtAuthenticationFilter.class,
+                com.hospedaya.backend.infraestructure.security.JwtFilter.class
+        })
+)
 @org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc(addFilters = false)
 class ComentarioControllerTest {
 
@@ -35,6 +46,9 @@ class ComentarioControllerTest {
 
     @MockBean
     private ComentarioMapper comentarioMapper; // mocked to avoid mapping concerns
+
+    @MockBean
+    private com.hospedaya.backend.infraestructure.security.JwtUtil jwtUtil; // mock para evitar cargar seguridad
 
     @Test
     @DisplayName("Debe responder 404 cuando no hay comentarios para el alojamiento")

@@ -88,6 +88,18 @@ public class ComentarioServiceImpl implements ComentarioService {
     }
 
     @Override
+    public List<Comentario> listarComentariosPorAnfitrion(Long anfitrionId) {
+        List<Comentario> lista = comentarioRepository.findAllByAlojamiento_Anfitrion_Id(anfitrionId);
+        // Si no hay comentarios y existe usuario, devolvemos lista vacía; si no existe usuario, 404
+        if ((lista == null || lista.isEmpty()) && usuarioRepository != null && anfitrionId != null) {
+            if (!usuarioRepository.existsById(anfitrionId)) {
+                throw new ResourceNotFoundException("Anfitrión no encontrado con id: " + anfitrionId);
+            }
+        }
+        return lista;
+    }
+
+    @Override
     public void eliminarComentario(Long id) {
         Comentario comentario = comentarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Comentario no encontrado con id: " + id));

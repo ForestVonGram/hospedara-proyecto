@@ -131,8 +131,21 @@ public class UsuarioController {
         if (authentication == null || authentication.getName() == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
         }
-        return usuarioRepository.findByEmail(authentication.getName())
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
+        // Buscar por email sin sensibilidad a mayúsculas/minúsculas para evitar fallos por casing
+        return usuarioRepository.findByEmailIgnoreCase(authentication.getName())
+                .<ResponseEntity<?>>map(u -> {
+                    // Devolver un DTO plano para evitar ciclos de serialización y datos sensibles
+                    java.util.Map<String, Object> dto = new java.util.HashMap<>();
+                    dto.put("id", u.getId());
+                    dto.put("nombre", u.getNombre());
+                    dto.put("email", u.getEmail());
+                    dto.put("telefono", u.getTelefono());
+                    dto.put("fotoPerfilUrl", u.getFotoPerfilUrl());
+                    dto.put("rol", u.getRol() != null ? u.getRol().name() : null);
+                    dto.put("fechaRegistro", u.getFechaRegistro());
+                    dto.put("activo", u.getActivo());
+                    return ResponseEntity.ok(dto);
+                })
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado"));
     }
 }

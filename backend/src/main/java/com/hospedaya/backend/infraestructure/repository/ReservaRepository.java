@@ -6,9 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
@@ -20,4 +19,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     List<Reserva> findByEstado(EstadoReserva estado);
 
     List<Reserva> findByFechaInicioBetween(LocalDate fechaInicio, LocalDate fechaFin);
+
+    boolean existsByAlojamientoIdAndEstadoIn(Long alojamientoId, Collection<EstadoReserva> estados);
 }

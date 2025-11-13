@@ -35,12 +35,15 @@ public class ReservaController {
     private final UsuarioService usuarioService;
     private final AlojamientoService alojamientoService;
     private final ReservaMapper reservaMapper;
+    private final com.hospedaya.backend.application.service.integration.EmailService emailService;
 
-    public ReservaController(ReservaService reservaService, UsuarioService usuarioService, AlojamientoService alojamientoService, ReservaMapper reservaMapper) {
+    public ReservaController(ReservaService reservaService, UsuarioService usuarioService, AlojamientoService alojamientoService, ReservaMapper reservaMapper,
+                             com.hospedaya.backend.application.service.integration.EmailService emailService) {
         this.reservaService = reservaService;
         this.usuarioService = usuarioService;
         this.alojamientoService = alojamientoService;
         this.reservaMapper = reservaMapper;
+        this.emailService = emailService;
     }
 
     @Operation(summary = "Listar reservas")
@@ -112,6 +115,10 @@ public class ReservaController {
 
         LocalDate inicio = requestDTO.getFechaInicio();
         LocalDate fin = requestDTO.getFechaFin();
+        LocalDate hoy = LocalDate.now();
+        if (inicio.isBefore(hoy)) {
+            throw new BadRequestException("La fecha de inicio no puede ser anterior a hoy");
+        }
         if (!fin.isAfter(inicio)) {
             throw new BadRequestException("La fecha de fin debe ser posterior a la fecha de inicio");
         }
@@ -132,6 +139,13 @@ public class ReservaController {
         reserva.setAlojamiento(alojamiento);
 
         Reserva creada = reservaService.crearReserva(reserva);
+
+        // Notificar por email al anfitrión
+        try {
+            com.hospedaya.backend.domain.entity.Usuario anfitrion = alojamiento.getAnfitrion();
+            emailService.enviarCorreoNuevaReserva(anfitrion, usuario, alojamiento, creada);
+        } catch (Exception ignored) {}
+
         ReservaResponseDTO response = reservaMapper.toResponse(creada);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

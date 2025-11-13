@@ -1,0 +1,71 @@
+<div class="chat-container">
+  <div class="chat-header">
+    <h2 *ngIf="alojamiento">Chat - {{ alojamiento.nombre }}</h2>
+    <h2 *ngIf="!alojamiento">Mis Conversaciones</h2>
+  </div>
+
+  <div class="chat-content" *ngIf="alojamientoId && otroUsuarioId">
+    <div class="chat-info">
+      <div *ngIf="otroUsuario" class="user-info">
+        <img [src]="otroUsuario.fotoPerfilUrl || 'assets/images/default-user.png'" alt="Foto de perfil" class="profile-pic">
+        <div>
+          <h3>{{ otroUsuario.nombre }}</h3>
+          <p *ngIf="otroUsuario.rol === 'ANFITRION'">Anfitrión</p>
+          <p *ngIf="otroUsuario.rol === 'USUARIO'">Usuario</p>
+        </div>
+      </div>
+      <div *ngIf="alojamiento" class="alojamiento-info">
+        <h4>{{ alojamiento.nombre }}</h4>
+        <p>{{ alojamiento.direccion }}</p>
+      </div>
+    </div>
+
+    <div class="messages-container">
+      <div *ngIf="cargando" class="loading">
+        <p>Cargando mensajes...</p>
+      </div>
+
+      <div *ngIf="!cargando && mensajes.length === 0" class="no-messages">
+        <p>No hay mensajes en esta conversación. ¡Envía el primero!</p>
+      </div>
+
+      <div *ngIf="!cargando && mensajes.length > 0" class="messages">
+        <div *ngFor="let mensaje of mensajes"
+             [ngClass]="{'message': true, 'own-message': esMensajePropio(mensaje), 'other-message': !esMensajePropio(mensaje)}">
+          <div class="message-content">
+            <p>{{ mensaje.contenido }}</p>
+            <span class="message-time">{{ formatearFecha(mensaje.fechaEnvio) }}</span>
+            <span *ngIf="esMensajePropio(mensaje)" class="message-status">
+              <i class="fas" [ngClass]="{'fa-check': !mensaje.leido, 'fa-check-double': mensaje.leido}"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="message-input">
+      <textarea
+        [(ngModel)]="nuevoMensaje"
+        placeholder="Escribe un mensaje..."
+        (keyup.enter)="enviarMensaje()"
+      ></textarea>
+      <button (click)="enviarMensaje()" [disabled]="!nuevoMensaje.trim()">
+        <i class="fas fa-paper-plane"></i> Enviar
+      </button>
+    </div>
+  </div>
+
+  <div class="chat-list" *ngIf="!alojamientoId || !otroUsuarioId">
+    <p *ngIf="cargando">Cargando conversaciones...</p>
+
+    <div *ngIf="!cargando" class="conversations-list">
+      <p *ngIf="!cargando && mensajes.length === 0">
+        No tienes conversaciones activas.
+        Para iniciar una conversación, visita un alojamiento y contacta al anfitrión.
+      </p>
+
+      <!-- Aquí se mostraría la lista de conversaciones -->
+      <!-- Esta parte se implementaría en una fase posterior -->
+    </div>
+  </div>
+</div>

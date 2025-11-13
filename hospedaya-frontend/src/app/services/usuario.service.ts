@@ -21,7 +21,7 @@ export class UsuarioService {
 
   me(): Observable<UsuarioProfile> {
     return this.http.get<UsuarioProfile>(`${this.baseUrl}/me`);
-    
+
   }
 
   update(id: number, data: Partial<UsuarioProfile>): Observable<UsuarioProfile> {

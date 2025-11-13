@@ -29,11 +29,14 @@ public class AlojamientoController {
     private final AlojamientoService alojamientoService;
     private final UsuarioService usuarioService;
     private final AlojamientoMapper alojamientoMapper;
+    private final com.hospedaya.backend.infraestructure.repository.ReservaRepository reservaRepository;
 
-    public AlojamientoController(AlojamientoService alojamientoService, UsuarioService usuarioService, AlojamientoMapper alojamientoMapper) {
+    public AlojamientoController(AlojamientoService alojamientoService, UsuarioService usuarioService, AlojamientoMapper alojamientoMapper,
+                                 com.hospedaya.backend.infraestructure.repository.ReservaRepository reservaRepository) {
         this.alojamientoService = alojamientoService;
         this.usuarioService = usuarioService;
         this.alojamientoMapper = alojamientoMapper;
+        this.reservaRepository = reservaRepository;
     }
 
     @GetMapping 
@@ -43,6 +46,7 @@ public class AlojamientoController {
         List<AlojamientoResponseDTO> response = alojamientos.stream()
                 .filter(this::esValidoParaListado)
                 .map(alojamientoMapper::toResponse)
+                .peek(dto -> dto.setHasReservasActivas(tieneReservasActivas(dto.getId())))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }
@@ -74,6 +78,7 @@ public class AlojamientoController {
         List<AlojamientoResponseDTO> response = alojamientos.stream()
                 .filter(this::esValidoParaListado)
                 .map(alojamientoMapper::toResponse)
+                .peek(dto -> dto.setHasReservasActivas(tieneReservasActivas(dto.getId())))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }
@@ -154,23 +159,25 @@ public class AlojamientoController {
 
     @Operation(summary = "Eliminar alojamiento por ID")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Alojamiento eliminado correctamente"),
+            @ApiResponse(responseCode = "204", description = "Alojamiento eliminado correctamente"),
             @ApiResponse(responseCode = "404", description = "Alojamiento no encontrado")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarAlojamiento(@PathVariable Long id) { //Método correcto
+    public ResponseEntity<?> eliminarAlojamiento(@PathVariable Long id) { // Método RESTful: No Content
         System.out.println("Solicitando eliminación del alojamiento con id = " + id);
         try {
             alojamientoService.eliminarAlojamiento(id);
             System.out.println("Alojamiento eliminado correctamente con id = " + id);
-            return ResponseEntity.ok("Alojamiento eliminado correctamente");
+            return ResponseEntity.noContent().build();
+        } catch (com.hospedaya.backend.exception.BadRequestException e) {
+            // Conflicto de negocio (reservas activas)
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             System.out.println("Error inesperado al eliminar alojamiento: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error interno del servidor al eliminar alojamiento");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -181,6 +188,8 @@ public class AlojamientoController {
         if (estaVacia(a.getDescripcion())) return false;
         if (estaVacia(a.getDireccion())) return false;
         if (a.getPrecioPorNoche() == null || a.getPrecioPorNoche() < 0) return false;
+        // Solo alojamientos activos (publicados)
+        if (a.getEstado() == null || a.getEstado() != com.hospedaya.backend.domain.enums.EstadoAlojamiento.ACTIVO) return false;
         Usuario anfitrion = a.getAnfitrion();
         if (anfitrion == null || anfitrion.getRol() == null) return false;
         return "ANFITRION".equals(anfitrion.getRol().name());
@@ -188,5 +197,13 @@ public class AlojamientoController {
 
     private boolean estaVacia(String s) {
         return s == null || s.trim().isEmpty();
+    }
+    private boolean tieneReservasActivas(Long alojamientoId) {
+        java.util.List<com.hospedaya.backend.domain.enums.EstadoReserva> activas = java.util.List.of(
+                com.hospedaya.backend.domain.enums.EstadoReserva.PENDIENTE,
+                com.hospedaya.backend.domain.enums.EstadoReserva.CONFIRMADA,
+                com.hospedaya.backend.domain.enums.EstadoReserva.PAGADA
+        );
+        return reservaRepository.existsByAlojamientoIdAndEstadoIn(alojamientoId, activas);
     }
 }

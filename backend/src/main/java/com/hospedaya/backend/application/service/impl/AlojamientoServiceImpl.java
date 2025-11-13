@@ -4,9 +4,11 @@ import com.hospedaya.backend.application.service.base.AlojamientoService;
 import com.hospedaya.backend.domain.entity.Alojamiento;
 import com.hospedaya.backend.domain.entity.Usuario;
 import com.hospedaya.backend.domain.enums.Rol;
+import com.hospedaya.backend.domain.enums.EstadoReserva;
 import com.hospedaya.backend.exception.BadRequestException;
 import com.hospedaya.backend.exception.ResourceNotFoundException;
 import com.hospedaya.backend.infraestructure.repository.AlojamientoRepository;
+import com.hospedaya.backend.infraestructure.repository.ReservaRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +21,11 @@ import java.util.stream.Collectors;
 public class AlojamientoServiceImpl implements AlojamientoService {
 
     private final AlojamientoRepository alojamientoRepository;
+    private final ReservaRepository reservaRepository;
 
-    public AlojamientoServiceImpl(AlojamientoRepository alojamientoRepository) {
+    public AlojamientoServiceImpl(AlojamientoRepository alojamientoRepository, ReservaRepository reservaRepository) {
         this.alojamientoRepository = alojamientoRepository;
+        this.reservaRepository = reservaRepository;
     }
 
     @Override
@@ -67,6 +71,15 @@ public class AlojamientoServiceImpl implements AlojamientoService {
         if (!alojamientoRepository.existsById(id)) {
             throw new ResourceNotFoundException("Alojamiento no encontrado con ID: " + id);
         }
+        // No permitir eliminar si hay reservas activas (pendiente/confirmada/pagada)
+        java.util.List<EstadoReserva> activas = java.util.List.of(
+                EstadoReserva.PENDIENTE,
+                EstadoReserva.CONFIRMADA,
+                EstadoReserva.PAGADA
+        );
+        if (reservaRepository.existsByAlojamientoIdAndEstadoIn(id, activas)) {
+            throw new BadRequestException("No se puede eliminar el alojamiento porque tiene reservas activas");
+        }
         alojamientoRepository.deleteById(id);
     }
 
@@ -77,6 +90,7 @@ public class AlojamientoServiceImpl implements AlojamientoService {
         if (estaVacia(a.getDireccion())) throw new BadRequestException("La dirección no puede ser nula ni vacía");
         if (a.getPrecioPorNoche() == null) throw new BadRequestException("El precio por noche no puede ser nulo");
         if (a.getPrecioPorNoche() < 0) throw new BadRequestException("El precio por noche no puede ser negativo");
+        if (a.getMaxHuespedes() != null && a.getMaxHuespedes() <= 0) throw new BadRequestException("La capacidad máxima de huéspedes debe ser mayor a 0");
         Usuario anfitrion = a.getAnfitrion();
         if (anfitrion == null || anfitrion.getId() == null) {
             throw new BadRequestException("El anfitrión no puede ser nulo");

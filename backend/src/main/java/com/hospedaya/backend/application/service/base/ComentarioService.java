@@ -9,5 +9,6 @@ public interface ComentarioService {
     Comentario agregarComentario(Comentario comentario);
     Comentario obtenerComentarioPorId(Long id);
     List<Comentario> listarComentariosPorAlojamiento(Long alojamientoId);
+    List<Comentario> listarComentariosPorAnfitrion(Long anfitrionId);
     void eliminarComentario(Long id);
 }

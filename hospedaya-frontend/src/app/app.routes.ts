@@ -73,5 +73,17 @@ export const routes: Routes = [
     canActivate: [authGuard]  // Solo requiere estar autenticado
   },
 
+  // Chat (disponible para todos los usuarios autenticados)
+  {
+    path: 'chat',
+    loadComponent: () => import('./pages/chat/chat.component').then(m => m.ChatComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'chat/:alojamientoId/:usuarioId',
+    loadComponent: () => import('./pages/chat/chat.component').then(m => m.ChatComponent),
+    canActivate: [authGuard]
+  },
+
   { path: '**', redirectTo: '' }
 ];

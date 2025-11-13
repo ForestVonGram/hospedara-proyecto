@@ -21,6 +21,7 @@ public interface AlojamientoMapper {
     AlojamientoMapper INSTANCE = Mappers.getMapper(AlojamientoMapper.class);
 
     @Mapping(source = "precioPorNoche", target = "precioPorNoche", qualifiedByName = "bigDecimalToDouble")
+    @Mapping(source = "maxHuespedes", target = "maxHuespedes")
     Alojamiento toEntity(AlojamientoRequestDTO dto);
 
     @Mapping(source = "nombre", target = "titulo")
@@ -32,6 +33,7 @@ public interface AlojamientoMapper {
     @Mapping(source = "nombre", target = "nombre")
     @Mapping(source = "direccion", target = "direccion")
     @Mapping(source = "precioPorNoche", target = "precioPorNoche", qualifiedByName = "bigDecimalToDouble")
+    @Mapping(source = "maxHuespedes", target = "maxHuespedes")
     void updateEntityFromDto(AlojamientoUpdateDTO dto, @org.mapstruct.MappingTarget Alojamiento entity);
 
     @Named("imagenesToUrls")

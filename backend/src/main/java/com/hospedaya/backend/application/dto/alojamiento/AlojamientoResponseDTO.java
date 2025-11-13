@@ -13,7 +13,11 @@ public class AlojamientoResponseDTO {
     private String descripcion;
     private String direccion;
     private BigDecimal precioPorNoche;
+    private Integer maxHuespedes;
     private Long anfitrionId;
     private List<String> imagenes;
     private List<String> servicios;
+
+    // Indicador para UI: tiene reservas activas (PENDIENTE/CONFIRMADA/PAGADA)
+    private Boolean hasReservasActivas;
 }
