@@ -340,11 +340,12 @@ Este proyecto es de uso académico.
 
 Para problemas o dudas:
 1. Revisa la documentación en los archivos `.md`
-2. Verifica los logs del backend y frontend
-3. Consulta el archivo de troubleshooting correspondiente
+2. Verifica los logs del backend y frontend.
+3. Consulta el archivo de troubleshooting correspondiente.
+4. Contactar a los administradores del repositorio.
 
 ---
 
-**Última actualización:** 2025-11-10
+**Última actualización:** 13-11-2025
 
 **Estado:** ✅ LISTO PARA PRODUCCIÓN
