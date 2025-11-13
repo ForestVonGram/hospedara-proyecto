@@ -29,6 +29,17 @@ export class RealizarReservaComponent implements OnInit {
   error = '';
   exito = '';
 
+  maxHuespedes(): number {
+    const m = (this.alojamiento as any)?.maxHuespedes;
+    const val = typeof m === 'number' ? m : Number(m);
+    return Number.isFinite(val) && val > 0 ? val : 10; // default razonable si no viene definido
+  }
+
+  huespedesOpciones(): number[] {
+    const max = this.maxHuespedes();
+    return Array.from({ length: max }, (_, i) => i + 1);
+  }
+
   noches(): number {
     const i = this.form?.get('fechaInicio')?.value as string;
     const f = this.form?.get('fechaFin')?.value as string;
@@ -45,6 +56,42 @@ export class RealizarReservaComponent implements OnInit {
     const noches = this.noches();
     const precio = this.alojamiento?.precioPorNoche ?? 0;
     return noches * precio;
+  }
+
+  todayStr(): string {
+    const d = new Date();
+    d.setHours(0,0,0,0);
+    const m = (d.getMonth()+1).toString().padStart(2,'0');
+    const day = d.getDate().toString().padStart(2,'0');
+    return `${d.getFullYear()}-${m}-${day}`;
+  }
+
+  private getFechaInicioDate(): Date | null {
+    const i = this.form?.get('fechaInicio')?.value as string;
+    if (!i) return null;
+    const d = new Date(i + 'T00:00:00');
+    d.setHours(0,0,0,0);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  minCheckoutStr(): string {
+    const inicio = this.getFechaInicioDate();
+    const base = inicio && inicio.getTime() > 0 ? new Date(inicio) : new Date();
+    base.setHours(0,0,0,0);
+    // al menos un día después del inicio
+    base.setDate(base.getDate() + 1);
+    const m = (base.getMonth()+1).toString().padStart(2,'0');
+    const day = base.getDate().toString().padStart(2,'0');
+    return `${base.getFullYear()}-${m}-${day}`;
+  }
+
+  ajustarMinCheckout() {
+    const finCtrl = this.form?.get('fechaFin');
+    const finVal = finCtrl?.value as string;
+    const minFin = this.minCheckoutStr();
+    if (finVal && finVal < minFin) {
+      finCtrl?.setValue(minFin);
+    }
   }
 
   ngOnInit(): void {
@@ -69,7 +116,19 @@ export class RealizarReservaComponent implements OnInit {
 
     this.cargando = true;
     this.alojamientoService.obtenerPorId(id).subscribe({
-      next: (a) => (this.alojamiento = a),
+      next: (a) => {
+        this.alojamiento = a;
+        // ajustar validador de huéspedes según capacidad
+        const max = this.maxHuespedes();
+        const ctrl = this.form.get('huespedes');
+        if (ctrl) {
+          ctrl.setValidators([Validators.required, Validators.min(1), Validators.max(max)]);
+          ctrl.updateValueAndValidity();
+          // si el valor actual excede, ajustarlo
+          const v = Number(ctrl.value || 1);
+          if (v > max) ctrl.setValue(max);
+        }
+      },
       error: () => (this.error = 'No se pudo cargar el alojamiento'),
       complete: () => (this.cargando = false)
     });
@@ -97,6 +156,26 @@ export class RealizarReservaComponent implements OnInit {
 
     const fechaInicio: string = this.form.get('fechaInicio')?.value;
     const fechaFin: string = this.form.get('fechaFin')?.value;
+
+    // Validación extra: no permitir fechas pasadas y coherencia
+    const hoy = new Date(this.todayStr() + 'T00:00:00');
+    const inicioDate = new Date(fechaInicio + 'T00:00:00');
+    const finDate = new Date(fechaFin + 'T00:00:00');
+    if (inicioDate < hoy) {
+      this.error = 'La fecha de inicio no puede ser anterior a hoy.';
+      return;
+    }
+    if (!(finDate > inicioDate)) {
+      this.error = 'La fecha de fin debe ser posterior a la fecha de inicio.';
+      return;
+    }
+
+    // Validar huéspedes vs capacidad
+    const huespedes: number = Number(this.form.get('huespedes')?.value || 1);
+    if (huespedes > this.maxHuespedes()) {
+      this.error = 'La cantidad de huéspedes supera la capacidad máxima permitida.';
+      return;
+    }
 
     const payload: ReservaRequest = {
       usuarioId: Number(user.id),

@@ -13,7 +13,7 @@
         </div>
         <div class="meta">
           <span>${{ r.alojamiento?.precioPorNoche }}/noche</span>
-          <button>Ver detalles</button>
+          <a class="btn" [routerLink]="['/reservas', r.id]">Ver detalles</a>
         </div>
       </div>
     </article>

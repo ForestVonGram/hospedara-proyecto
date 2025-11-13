@@ -9,15 +9,15 @@
       </div>
       <div>
         <label>Check-in</label>
-        <input type="date" [(ngModel)]="checkin" />
+        <input type="date" [(ngModel)]="checkin" (ngModelChange)="aplicarFiltros()" />
       </div>
       <div>
         <label>Check-out</label>
-        <input type="date" [(ngModel)]="checkout" />
+        <input type="date" [(ngModel)]="checkout" (ngModelChange)="aplicarFiltros()" />
       </div>
       <div>
         <label>Huéspedes</label>
-        <select [(ngModel)]="huespedes">
+        <select [(ngModel)]="huespedes" (ngModelChange)="aplicarFiltros()">
           <option *ngFor="let n of [1,2,3,4,5,6,7,8]" [value]="n">{{n}}</option>
         </select>
       </div>
@@ -53,7 +53,6 @@
             <p>{{ a.direccion }}</p>
             <div class="meta">
               <span>{{ a.precioPorNoche | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}/noche</span>
-              <span>★ 4.7</span>
             </div>
             <div class="actions">
               <a class="btn" [routerLink]="['/alojamientos', a.id]">Ver detalles</a>

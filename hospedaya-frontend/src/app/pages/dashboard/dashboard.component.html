@@ -18,20 +18,23 @@
   </section>
 
   <section class="destacados">
-    <h3>Alojamientos Destacados</h3>
+    <h3>{{ (recomendados && recomendados.length) ? 'Recomendados para ti' : 'Alojamientos Destacados' }}</h3>
     <div *ngIf="loadingAlojamientos">Cargando alojamientos...</div>
     <div *ngIf="errorAlojamientos" class="error">{{ errorAlojamientos }}</div>
     <div class="grid" *ngIf="!loadingAlojamientos && !errorAlojamientos">
-      <ng-container *ngIf="alojamientos.length; else noAlojamientos">
-        <article class="card" *ngFor="let a of alojamientos">
-          <img [src]="imagenPrincipal(a)" alt="Imagen de {{ a.titulo }}" />
+      <ng-container *ngIf="(recomendados && recomendados.length) || alojamientos.length; else noAlojamientos">
+        <article class="card" *ngFor="let a of (recomendados.length ? recomendados : alojamientos)">
+          <img [src]="imagenPrincipal(a)" alt="Imagen de {{ a.titulo }}" (click)="verDetalle(a)" style="cursor:pointer" />
           <div class="info">
-            <h4>{{ a.titulo }}</h4>
+            <h4 (click)="verDetalle(a)" style="cursor:pointer">{{ a.titulo }}</h4>
             <p class="direccion">{{ a.direccion }}</p>
             <div class="meta">
               <span>${{ a.precioPorNoche }}/noche</span>
             </div>
-            <button (click)="reservar(a)">Reservar</button>
+            <div class="actions" style="display:flex; gap:8px;">
+              <button (click)="verDetalle(a)">Ver detalle</button>
+              <button (click)="reservar(a)">Reservar</button>
+            </div>
           </div>
         </article>
       </ng-container>

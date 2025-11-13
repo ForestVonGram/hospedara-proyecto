@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { UsuarioService, UsuarioProfile } from '../../services/usuario.service';
 import { AuthService } from '../../services/auth.service';
 import { Alojamiento, AlojamientoService } from '../../services/alojamiento.service';
+import { RecomendacionService } from '../../services/recomendacion.service';
 import {HeaderComponent} from '../../shared/components/header/header.component';
 import { DashboardMapComponent } from '../../mapbox/dashboard-map.component';
 
@@ -24,6 +25,7 @@ export class DashboardComponent implements OnInit {
   huespedes = 1;
 
   alojamientos: Alojamiento[] = [];
+  recomendados: Alojamiento[] = [];
   loadingAlojamientos = false;
   errorAlojamientos: string | null = null;
 
@@ -42,7 +44,8 @@ export class DashboardComponent implements OnInit {
     private usuarioService: UsuarioService,
     private router: Router,
     private auth: AuthService,
-    private alojService: AlojamientoService
+    private alojService: AlojamientoService,
+    private recService: RecomendacionService
   ) {}
 
   ngOnInit(): void {
@@ -56,6 +59,28 @@ export class DashboardComponent implements OnInit {
       next: (list) => {
         this.alojamientos = list || [];
         this.loadingAlojamientos = false;
+        // Cargar recomendaciones si hay usuario
+        const uid = this.user?.id ? Number(this.user.id) : null;
+        if (uid) {
+          this.recService.porUsuario(uid, 8).subscribe({
+            next: (recs) => {
+              // mapear DTO -> modelo UI si hiciera falta; aquí el dashboard usa modelo UI, así que convertimos rápido
+              this.recomendados = (recs || []).map(r => ({
+                id: Number(r.id),
+                titulo: r.titulo,
+                descripcion: r.descripcion,
+                direccion: r.direccion,
+                precioPorNoche: Number(r.precioPorNoche),
+                anfitrionId: (r as any).anfitrionId,
+                latitud: (r as any).latitud,
+                longitud: (r as any).longitud,
+                imagenes: (r as any).imagenes || [],
+                servicios: (r as any).servicios || []
+              }));
+            },
+            error: () => { this.recomendados = []; }
+          });
+        }
       },
       error: () => {
         this.errorAlojamientos = 'No se pudieron cargar los alojamientos.';
@@ -83,6 +108,10 @@ export class DashboardComponent implements OnInit {
   logout() {
     this.auth.logout();
     this.router.navigate(['/']);
+  }
+
+  verDetalle(a: Alojamiento) {
+    this.router.navigate(['/alojamientos', a.id]);
   }
 
   reservar(a: Alojamiento) {

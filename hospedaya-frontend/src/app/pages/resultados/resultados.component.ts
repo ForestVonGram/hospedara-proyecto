@@ -7,6 +7,7 @@ import { UsuarioService, UsuarioProfile } from '../../services/usuario.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
+import { ImagenAlojamientoService } from '../../services/imagen-alojamiento.service';
 
 @Component({
   selector: 'app-resultados',
@@ -28,7 +29,14 @@ export class ResultadosComponent implements OnInit {
   minPrecio: number | null = null;
   maxPrecio: number | null = null;
 
-  constructor(private route: ActivatedRoute, private alojService: AlojamientoService, private usuarioService: UsuarioService, private router: Router, private auth: AuthService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private alojService: AlojamientoService,
+    private usuarioService: UsuarioService,
+    private router: Router,
+    private auth: AuthService,
+    private imagenService: ImagenAlojamientoService
+  ) {}
 
   ngOnInit(): void {
     this.user = this.auth.getUser();
@@ -48,8 +56,24 @@ export class ResultadosComponent implements OnInit {
       // Asegurar que el precio sea numérico para mostrar con currency pipe
       this.alojamientos = (list || []).map(a => ({
         ...a,
-        precioPorNoche: Number(a.precioPorNoche)
+        precioPorNoche: Number(a.precioPorNoche),
+        imagenes: Array.isArray(a.imagenes) ? a.imagenes : []
       } as Alojamiento));
+
+      // Intentar hidratar previews con imágenes reales si vienen vacías
+      for (const a of this.alojamientos) {
+        if ((!a.imagenes || a.imagenes.length === 0) && a.id) {
+          this.imagenService.listarPorAlojamiento(Number(a.id)).subscribe({
+            next: (imgs) => {
+              const urls = (imgs || []).map(i => i.url);
+              if (urls.length > 0) {
+                a.imagenes = urls;
+              }
+            }
+          });
+        }
+      }
+
       // Mantener sin límite por defecto
       this.minPrecio = null;
       this.maxPrecio = null;

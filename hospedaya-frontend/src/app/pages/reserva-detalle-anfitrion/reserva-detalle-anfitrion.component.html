@@ -1,0 +1,39 @@
+<main class="container" *ngIf="!cargando">
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <section class="card" *ngIf="reserva">
+    <div class="header">
+      <img [src]="imagen()" alt="Alojamiento" />
+      <div class="info">
+        <h2>{{ alojamiento?.titulo || 'Alojamiento' }}</h2>
+        <p class="direccion">{{ alojamiento?.direccion }}</p>
+        <button class="btn" (click)="irAlojamiento()">Gestionar alojamiento</button>
+      </div>
+    </div>
+    <div class="detalle">
+      <div class="campo">
+        <label>Estado</label>
+        <span class="badge">{{ estadoVisual() }}</span>
+      </div>
+      <div class="campo">
+        <label>Check-in</label>
+        <span>{{ reserva.fechaInicio }}</span>
+      </div>
+      <div class="campo">
+        <label>Check-out</label>
+        <span>{{ reserva.fechaFin }}</span>
+      </div>
+      <div class="campo">
+        <label>Reserva ID</label>
+        <span>#{{ reserva.id }}</span>
+      </div>
+      <div class="campo">
+        <label>Huésped (ID)</label>
+        <span>#{{ reserva.usuarioId }}</span>
+      </div>
+      <div class="campo total">
+        <label>Total estimado</label>
+        <span>{{ totalEstimado() | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
+      </div>
+    </div>
+  </section>
+</main>

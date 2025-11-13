@@ -5,6 +5,7 @@ import { AuthService, Usuario } from '../../services/auth.service';
 import { AlojamientoService, AlojamientoResponseDTO } from '../../services/alojamiento.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { Reserva, ReservaService } from '../../services/reserva.service';
+import { ComentarioService, ComentarioResponse } from '../../services/comentario.service';
 
 @Component({
   selector: 'app-dashboard-anfitrion',
@@ -18,6 +19,7 @@ export class DashboardAnfitrionComponent implements OnInit {
     private auth: AuthService,
     private alojamientoService: AlojamientoService,
     private reservaService: ReservaService,
+    private comentarioService: ComentarioService,
     private router: Router
   ) {}
 
@@ -26,10 +28,18 @@ export class DashboardAnfitrionComponent implements OnInit {
   error = '';
   alojamientos: AlojamientoResponseDTO[] = [];
 
+  // Valoraciones
+  ratings: Record<number, { avg: number; count: number }> = {};
+
   // Sección reservas
   reservas: Reserva[] = [];
   cargandoReservas = false;
   errorReservas = '';
+
+  // Sección reseñas
+  resenas: Array<{ alojamientoId: number; alojamientoNombre?: string; usuarioId: number; usuarioNombre?: string; texto: string; calificacion: number }> = [];
+  cargandoResenas = false;
+  errorResenas = '';
 
   // KPIs básicos
   get totalAlojamientos(): number {
@@ -46,6 +56,17 @@ export class DashboardAnfitrionComponent implements OnInit {
     return this.alojamientos.reduce((acc, a) => acc + (a.precioPorNoche || 0), 0);
   }
 
+  get valoracionPromedio(): number {
+    const vals = Object.values(this.ratings);
+    if (vals.length === 0) return 0;
+    const sum = vals.reduce((acc, r) => acc + (r.avg || 0), 0);
+    return +(sum / vals.length).toFixed(1);
+  }
+
+  get totalResenas(): number {
+    return Object.values(this.ratings).reduce((acc, r) => acc + (r.count || 0), 0);
+  }
+
   ngOnInit(): void {
     const u = this.auth.getUser() as Usuario | null;
     if (!u) {
@@ -59,6 +80,26 @@ export class DashboardAnfitrionComponent implements OnInit {
 
     this.user = u;
     this.cargarAlojamientos(Number(u.id));
+  }
+
+  private fechaYMDaDate(ymd: string | undefined): Date | null {
+    if (!ymd) return null;
+    const d = new Date(ymd + 'T00:00:00');
+    d.setHours(0,0,0,0);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  estadoVisual(r: Reserva): string {
+    const estado = (r.estado || '').toUpperCase();
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    const ini = this.fechaYMDaDate(r.fechaInicio);
+    const fin = this.fechaYMDaDate(r.fechaFin);
+
+    if (estado === 'PAGADA' && ini && fin) {
+      if (ini <= hoy && hoy <= fin) return 'EN CURSO';
+      if (fin < hoy) return 'TERMINADA';
+    }
+    return r.estado || 'PENDIENTE';
   }
 
   private cargarReservasParaAlojamientos() {
@@ -93,6 +134,8 @@ export class DashboardAnfitrionComponent implements OnInit {
       next: (data) => {
         this.alojamientos = data || [];
         this.cargarReservasParaAlojamientos();
+        this.cargarValoraciones();
+        this.cargarResenas(Number(this.user?.id));
       },
       error: (err) => {
         // Si el backend devuelve 404 cuando no hay alojamientos, lo tratamos como lista vacía
@@ -130,6 +173,36 @@ export class DashboardAnfitrionComponent implements OnInit {
 
   alojamientoDeReserva(r: Reserva): AlojamientoResponseDTO | undefined {
     return this.alojamientos.find(a => Number(a.id) === Number(r.alojamientoId));
+  }
+
+  private cargarValoraciones() {
+    this.ratings = {};
+    for (const a of this.alojamientos) {
+      const id = Number(a.id);
+      this.comentarioService.porAlojamiento(id).subscribe({
+        next: (list: ComentarioResponse[]) => {
+          const count = (list || []).length;
+          const sum = (list || []).reduce((acc, c) => acc + (Number(c.calificacion) || 0), 0);
+          this.ratings[id] = { avg: count ? +(sum / count).toFixed(1) : 0, count };
+        },
+        error: () => { this.ratings[id] = { avg: 0, count: 0 }; }
+      });
+    }
+  }
+
+  private cargarResenas(anfitrionId: number) {
+    this.cargandoResenas = true;
+    this.errorResenas = '';
+    this.comentarioService.porAnfitrion(anfitrionId).subscribe({
+      next: (list: ComentarioResponse[]) => {
+        this.resenas = (list || []).map(c => ({ alojamientoId: Number(c.alojamientoId), alojamientoNombre: c.alojamientoNombre, usuarioId: Number(c.usuarioId), usuarioNombre: c.usuarioNombre, texto: c.texto, calificacion: Number(c.calificacion) }));
+      },
+      error: (err) => {
+        if (err?.status === 404) { this.resenas = []; this.errorResenas = ''; return; }
+        this.errorResenas = typeof err?.error === 'string' ? err.error : (err?.error?.message || 'No se pudieron cargar las reseñas.');
+      },
+      complete: () => this.cargandoResenas = false
+    });
   }
 
   resolverImg(a?: AlojamientoResponseDTO): string {

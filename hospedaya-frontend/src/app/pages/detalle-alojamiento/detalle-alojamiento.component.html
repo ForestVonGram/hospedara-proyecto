@@ -19,14 +19,17 @@
         {{ a.direccion }}
       </span>
       <span class="meta-item rating">
-        <span class="stars" aria-label="4.8 de 5">
-          <svg viewBox="0 0 20 20" width="16" height="16" fill="#f59e0b" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.464c.969 0 1.371 1.24.588 1.81l-2.803 2.036a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.538 1.118l-2.803-2.036a1 1 0 0 0-1.176 0l-2.803 2.036c-.783.57-1.838-.197-1.538-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.977 8.72c-.783-.57-.38-1.81.588-1.81H7.03a1 1 0 0 0 .95-.69l1.07-3.292Z"/></svg>
-          <svg viewBox="0 0 20 20" width="16" height="16" fill="#f59e0b" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.464c.969 0 1.371 1.24.588 1.81l-2.803 2.036a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.538 1.118l-2.803-2.036a1 1 0 0 0-1.176 0l-2.803 2.036c-.783.57-1.838-.197-1.538-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.977 8.72c-.783-.57-.38-1.81.588-1.81H7.03a1 1 0 0 0 .95-.69l1.07-3.292Z"/></svg>
-          <svg viewBox="0 0 20 20" width="16" height="16" fill="#f59e0b" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.464c.969 0 1.371 1.24.588 1.81l-2.803 2.036a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.538 1.118l-2.803-2.036a1 1 0 0 0-1.176 0l-2.803 2.036c-.783.57-1.838-.197-1.538-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.977 8.72c-.783-.57-.38-1.81.588-1.81H7.03a1 1 0 0 0 .95-.69l1.07-3.292Z"/></svg>
-          <svg viewBox="0 0 20 20" width="16" height="16" fill="#f59e0b" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.464c.969 0 1.371 1.24.588 1.81l-2.803 2.036a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.538 1.118l-2.803-2.036a1 1 0 0 0-1.176 0l-2.803 2.036c-.783.57-1.838-.197-1.538-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.977 8.72c-.783-.57-.38-1.81.588-1.81H7.03a1 1 0 0 0 .95-.69l1.07-3.292Z"/></svg>
-          <svg viewBox="0 0 20 20" width="16" height="16" fill="#f59e0b" aria-hidden="true"><defs><linearGradient id="half"><stop offset="50%" stop-color="#f59e0b"/><stop offset="50%" stop-color="#e5e7eb"/></linearGradient></defs><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.464c.969 0 1.371 1.24.588 1.81l-2.803 2.036a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.538 1.118l-2.803-2.036a1 1 0 0 0-1.176 0l-2.803 2.036c-.783.57-1.838-.197-1.538-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.977 8.72c-.783-.57-.38-1.81.588-1.81H7.03a1 1 0 0 0 .95-.69l1.07-3.292Z" fill="url(#half)"/></svg>
+        <span class="stars" aria-label="{{ avgRating || 0 }} de 5">
+          <ng-container *ngFor="let i of [1,2,3,4,5]">
+            <svg viewBox="0 0 20 20" width="16" height="16" [attr.fill]="i <= round(avgRating) ? '#f59e0b' : '#e5e7eb'" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.464c.969 0 1.371 1.24.588 1.81l-2.803 2.036a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.538 1.118l-2.803-2.036a1 1 0 0 0-1.176 0l-2.803 2.036c-.783.57-1.838-.197-1.538-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.977 8.72c-.783-.57-.38-1.81.588-1.81H7.03a1 1 0 0 0 .95-.69l1.07-3.292Z"/></svg>
+          </ng-container>
         </span>
-        <span class="rating-text">4.8 <span class="reviews">(120 reseñas)</span></span>
+        <span class="rating-text" *ngIf="comentarios.length > 0; else sinResenas">
+          {{ avgRating || 0 }} <span class="reviews">({{ comentarios.length }} reseña(s))</span>
+        </span>
+        <ng-template #sinResenas>
+          <span class="rating-text">Sin reseñas</span>
+        </ng-template>
       </span>
     </div>
   </header>
@@ -59,16 +62,56 @@
         </ul>
       </section>
 
-      <section class="card">
+      <section class="card" *ngIf="a.servicios as ss">
         <h3>Servicios incluidos</h3>
-        <ul class="services">
-          <li><span class="check"></span> Wi‑Fi</li>
-          <li><span class="check"></span> Cocina equipada</li>
-          <li><span class="check"></span> Aire acondicionado</li>
-          <li><span class="check"></span> TV</li>
-          <li><span class="check"></span> Ropa de cama</li>
-          <li><span class="check"></span> Toallas</li>
+        <ng-container *ngIf="ss.length > 0; else sinServicios">
+          <ul class="services">
+            <li *ngFor="let s of ss"><span class="check"></span> {{ s }}</li>
+          </ul>
+        </ng-container>
+        <ng-template #sinServicios>
+          <p class="hint">Este alojamiento no declaró servicios.</p>
+        </ng-template>
+      </section>
+
+      <section class="card">
+        <h3>Calificaciones y comentarios</h3>
+        <div class="rating-summary">
+          <span class="stars" aria-label="{{avgRating}} de 5">
+            <ng-container *ngFor="let i of [1,2,3,4,5]">
+              <svg viewBox="0 0 20 20" width="18" height="18" [attr.fill]="i <= round(avgRating) ? '#f59e0b' : '#e5e7eb'" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.464c.969 0 1.371 1.24.588 1.81l-2.803 2.036a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.538 1.118l-2.803-2.036a1 1 0 0 0-1.176 0l-2.803 2.036c-.783.57-1.838-.197-1.538-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.977 8.72c-.783-.57-.38-1.81.588-1.81H7.03a1 1 0 0 0 .95-.69l1.07-3.292Z"/></svg>
+            </ng-container>
+          </span>
+          <span class="rating-text">{{ avgRating || 0 }} / 5 • {{ comentarios.length }} reseña(s)</span>
+        </div>
+
+        <div class="comment-form" *ngIf="canComment(); else loginMsg">
+          <label>Tu calificación</label>
+          <div class="stars-input">
+            <label *ngFor="let i of [5,4,3,2,1]">
+              <input type="radio" name="rating" [value]="i" [(ngModel)]="newComment.calificacion">
+              <span>{{i}}★</span>
+            </label>
+          </div>
+          <label>Tu comentario</label>
+          <textarea rows="3" [(ngModel)]="newComment.texto" placeholder="Escribe tu experiencia..."></textarea>
+          <button class="btn" [disabled]="posting || !newComment.texto.trim()" (click)="enviarComentario()">Publicar</button>
+        </div>
+        <ng-template #loginMsg>
+          <p class="hint">Debes iniciar sesión para comentar. <a routerLink="/login">Inicia sesión</a></p>
+        </ng-template>
+
+        <ul class="comments" *ngIf="comentarios.length > 0; else noComments">
+          <li *ngFor="let c of comentarios" class="comment">
+            <div class="comment-header">
+              <span class="score">{{ c.calificacion }}★</span>
+            </div>
+            <p class="comment-text">{{ c.texto }}</p>
+          </li>
         </ul>
+        <ng-template #noComments>
+          <p class="hint">Aún no hay comentarios.</p>
+        </ng-template>
       </section>
 
       <section class="card">
@@ -82,7 +125,7 @@
     <aside class="right">
       <div class="booking card">
         <div class="price">
-          <span class="amount">${{ a.precioPorNoche }}</span>
+          <span class="amount">{{ a.precioPorNoche | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
           <span class="per">/ noche</span>
         </div>
         <div class="availability">

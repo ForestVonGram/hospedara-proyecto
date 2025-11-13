@@ -37,8 +37,8 @@
     <div class="card">
       <p class="label">Valoración Promedio</p>
       <div class="value">
-        <span class="stars">★★★★☆</span>
-        <span>4.8</span>
+        <span>{{ valoracionPromedio }}</span>
+        <span class="label" style="margin-left:8px; font-weight:400;">({{ totalResenas }} reseña(s))</span>
       </div>
     </div>
   </section>
@@ -64,7 +64,7 @@
           <p class="ubicacion">{{ a.direccion }}</p>
           <div class="detalle">
             <p class="precio">{{ a.precioPorNoche | currency:'USD':'symbol' }} <span>/noche</span></p>
-            <p class="valoracion">★ 4.8</p>
+            <p class="valoracion">★ {{ ratings[a.id]?.avg || 0 }} ({{ ratings[a.id]?.count || 0 }})</p>
           </div>
           <button class="btn-detalle" (click)="verDetalle(a)">Ver detalles</button>
         </div>
@@ -95,9 +95,37 @@
               <p class="precio">{{ a.precioPorNoche | currency:'USD':'symbol' }} <span>/noche</span></p>
               <p class="valoracion">Reserva: {{ r.fechaInicio }} → {{ r.fechaFin }}</p>
             </div>
-            <span class="badge" style="background:#eef2ff; color:#3730a3; padding:4px 8px; border-radius:6px; font-size:12px;">{{ r.estado || 'PENDIENTE' }}</span>
+            <span class="badge" [ngClass]="{
+              'en-curso': estadoVisual(r) === 'EN CURSO',
+              'terminada': estadoVisual(r) === 'TERMINADA',
+              'pendiente': estadoVisual(r) === 'PENDIENTE'
+            }" style="padding:4px 8px; border-radius:6px; font-size:12px;">{{ estadoVisual(r) }}</span>
           </div>
         </ng-container>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reseñas recibidas -->
+  <section class="listado" style="margin-top:24px;">
+    <div class="listado-header">
+      <h3>Reseñas recibidas</h3>
+    </div>
+
+    <div *ngIf="cargandoResenas" class="card" style="padding:16px;">Cargando reseñas...</div>
+    <div *ngIf="!cargandoResenas && errorResenas" class="card" style="padding:16px; color:#b91c1c;">{{ errorResenas }}</div>
+
+      <div class="alojamientos" *ngIf="!cargandoResenas && !errorResenas">
+      <div *ngIf="resenas.length === 0" class="card" style="padding:16px;">Aún no has recibido reseñas.</div>
+
+      <div class="alojamiento" *ngFor="let c of resenas">
+        <div class="info">
+          <h4>★ {{ c.calificacion }} — {{ c.alojamientoNombre || ('Alojamiento #' + c.alojamientoId) }}</h4>
+          <p class="ubicacion">{{ c.usuarioNombre || ('Usuario #' + c.usuarioId) }}</p>
+          <div class="detalle">
+            <p class="valoracion" style="margin:0;">“{{ c.texto }}”</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>

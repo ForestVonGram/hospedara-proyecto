@@ -42,6 +42,11 @@ export class ReservaService {
     return this.http.get<Reserva[]>(`${this.baseUrl}`);
   }
 
+  // Obtener una reserva por id
+  obtener(id: number): Observable<Reserva> {
+    return this.http.get<Reserva>(`${this.baseUrl}/${id}`);
+  }
+
   // Cancelar una reserva
   cancelar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);

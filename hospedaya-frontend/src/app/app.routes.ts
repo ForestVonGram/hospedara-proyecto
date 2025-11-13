@@ -29,6 +29,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/reservas/reservas.component').then(m => m.ReservasComponent),
     canActivate: [userGuard] // Solo huéspedes
   },
+  {
+    path: 'reservas/:id',
+    loadComponent: () => import('./pages/reserva-detalle/reserva-detalle.component').then(m => m.ReservaDetalleComponent),
+    canActivate: [userGuard]
+  },
 
   // Rutas protegidas - Anfitriones (ANFITRION)
   {
@@ -39,6 +44,11 @@ export const routes: Routes = [
   {
     path: 'alojamientos/gestion',
     loadComponent: () => import('./pages/gestion-alojamientos/gestion-alojamientos.component').then(m => m.GestionAlojamientosComponent),
+    canActivate: [hostGuard]
+  },
+  {
+    path: 'reservas-anfitrion/:id',
+    loadComponent: () => import('./pages/reserva-detalle-anfitrion/reserva-detalle-anfitrion.component').then(m => m.ReservaDetalleAnfitrionComponent),
     canActivate: [hostGuard]
   },
   {

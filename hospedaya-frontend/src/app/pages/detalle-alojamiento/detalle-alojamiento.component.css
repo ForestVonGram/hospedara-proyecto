@@ -72,6 +72,18 @@
 .check { width: 18px; height: 18px; border-radius: 50%; background: rgba(124,58,237,.12); border: 1px solid rgba(124,58,237,.25); display: inline-flex; align-items: center; justify-content: center; }
 .check:before { content: ''; width: 10px; height: 10px; border-right: 2px solid var(--brand); border-bottom: 2px solid var(--brand); transform: rotate(45deg); display: block; margin-top: -2px; }
 
+/* Comentarios */
+.rating-summary { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.rating-summary .rating-text { color: #334155; font-weight: 600; }
+.comment-form { display: grid; gap: 8px; margin-bottom: 12px; }
+.comment-form textarea { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+.comment-form .btn { align-self: start; background: var(--brand); color: #fff; border: 0; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+.comments { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.comment { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; background: #fff; }
+.comment .comment-header { display: flex; align-items: center; gap: 8px; color: #0f172a; font-weight: 700; }
+.comment .score { background: #fffbeb; border: 1px solid #fde68a; padding: 2px 8px; border-radius: 999px; }
+.hint { color: #64748b; }
+
 /* Tarjeta de reserva */
 .right { position: relative; }
 .booking { position: sticky; top: 20px; }

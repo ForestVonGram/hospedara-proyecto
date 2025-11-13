@@ -29,7 +29,8 @@
       <p class="fecha">📅 {{ r.fechaInicio }} – {{ r.fechaFin }}</p>
     </div>
     <div class="estado">
-      <span [ngClass]="estadoClase(r.estado)">{{ r.estado || 'PENDIENTE' }}</span>
+      <span [ngClass]="estadoClase(estadoVisual(r))">{{ estadoVisual(r) }}</span>
+      <a class="btn" [routerLink]="['/reservas-anfitrion', r.id]">ℹ Ver detalles</a>
       <button class="btn confirmar" (click)="confirmar(r)" [disabled]="(r.estado || '').toUpperCase() !== 'PENDIENTE'">✔ Confirmar</button>
       <button class="btn rechazar" (click)="cancelar(r)" [disabled]="(r.estado || '').toUpperCase() === 'CANCELADA'">✖ Rechazar</button>
     </div>

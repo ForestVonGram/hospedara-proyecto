@@ -20,23 +20,21 @@
     <div class="fechas">
       <div class="campo">
         <label for="entrada">Fecha de entrada</label>
-        <input type="date" id="entrada" formControlName="fechaInicio">
+        <input type="date" id="entrada" formControlName="fechaInicio" [min]="todayStr()" (change)="ajustarMinCheckout()">
       </div>
 
       <div class="campo">
         <label for="salida">Fecha de salida</label>
-        <input type="date" id="salida" formControlName="fechaFin">
+        <input type="date" id="salida" formControlName="fechaFin" [min]="minCheckoutStr()">
       </div>
     </div>
 
     <div class="campo">
       <label for="huespedes">Número de huéspedes</label>
       <select id="huespedes" formControlName="huespedes">
-        <option [value]="1">1 huésped</option>
-        <option [value]="2">2 huéspedes</option>
-        <option [value]="3">3 huéspedes</option>
-        <option [value]="4">4 huéspedes</option>
+        <option *ngFor="let n of huespedesOpciones()" [value]="n">{{ n }} huésped{{ n>1 ? 'es' : '' }}</option>
       </select>
+      <small class="error" *ngIf="form.get('huespedes')?.touched && form.get('huespedes')?.invalid">Cantidad de huéspedes inválida.</small>
     </div>
 
     <div class="campo resumen">

@@ -32,7 +32,7 @@
 <main>
   <!-- Hero Section -->
   <section class="hero">
-    <div class="hero-bg" style="background-image: url('assets/images/hero.jpg')"></div>
+    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1800&auto=format&fit=crop')"></div>
     <div class="hero-overlay"></div>
     <div class="container hero-inner">
       <h1 class="hero-title">Encuentra el hospedaje perfecto para tu próxima aventura</h1>
@@ -64,20 +64,59 @@
   <!-- Features Section -->
   <section class="features container">
     <div class="feature">
-      <img src="assets/images/icon-home.svg" alt="" />
+      <div class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12l9-9 9 9" />
+          <path d="M5 10v10h4v-6h6v6h4V10" />
+        </svg>
+      </div>
       <h4>Variedad de hospedajes</h4>
       <p>Casas, apartamentos y fincas para todos los gustos y presupuestos.</p>
     </div>
     <div class="feature">
-      <img src="assets/images/icon-lock.svg" alt="" />
+      <div class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="10" rx="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
       <h4>Reservas seguras</h4>
       <p>Proceso de reserva confiable con protección para huéspedes y anfitriones.</p>
     </div>
     <div class="feature">
-      <img src="assets/images/icon-speech.svg" alt="" />
+      <div class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8z"/>
+        </svg>
+      </div>
       <h4>Comentarios reales</h4>
       <p>Lee opiniones verificadas de otros viajeros antes de reservar.</p>
     </div>
+  </section>
+
+  <!-- Showcase Section -->
+  <section class="showcase container" aria-label="Inspiración">
+    <article class="shot">
+      <img [attr.referrerpolicy]="'no-referrer'"
+           src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1400&auto=format&fit=crop"
+           alt="Playa tropical con agua turquesa y arena blanca"
+           (error)="$event.target['src']='https://images.unsplash.com/photo-1493558103817-58b2924bce98?q=80&w=1400&auto=format&fit=crop'; $event.target['onerror']=null"/>
+      <div class="overlay"><h4>Playa</h4></div>
+    </article>
+    <article class="shot">
+      <img [attr.referrerpolicy]="'no-referrer'"
+           src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1400&auto=format&fit=crop"
+           alt="Cabaña acogedora en la montaña rodeada de bosques"
+           (error)="$event.target['src']='https://images.unsplash.com/photo-1500048993953-d23a436266cf?q=80&w=1400&auto=format&fit=crop'; $event.target['onerror']=null"/>
+      <div class="overlay"><h4>Montaña</h4></div>
+    </article>
+    <article class="shot">
+      <img [attr.referrerpolicy]="'no-referrer'"
+           src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=1400&auto=format&fit=crop"
+           alt="Skyline urbano nocturno con luces de la ciudad"
+           (error)="$event.target['src']='https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1400&auto=format&fit=crop'; $event.target['onerror']=null"/>
+      <div class="overlay"><h4>Ciudad</h4></div>
+    </article>
   </section>
 
   <!-- Host CTA Section -->

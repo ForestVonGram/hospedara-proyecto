@@ -163,6 +163,35 @@ textarea { resize: vertical; }
 .btn-primary:hover { filter: brightness(.98); transform: translateY(-1px); }
 .btn-primary:active { transform: translateY(0); }
 
+/* Servicios */
+.servicios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px 14px;
+  margin-bottom: 10px;
+}
+.servicio-item {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 8px 10px;
+  align-items: start;
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fafafa;
+}
+.servicio-item .nombre { font-weight: 600; color: #111827; }
+.servicio-item .desc { grid-column: 2; color: #6b7280; }
+
+.nuevo-servicio {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.nuevo-servicio input {
+  flex: 1 1 220px;
+}
+
 /* Responsive */
 @media (max-width: 880px) {
   .form-row { flex-direction: column; }

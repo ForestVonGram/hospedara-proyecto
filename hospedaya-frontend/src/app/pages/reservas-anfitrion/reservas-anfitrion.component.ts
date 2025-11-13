@@ -88,12 +88,33 @@ export class ReservasAnfitrionComponent implements OnInit {
     alert('La confirmación de reservas aún no está disponible en el backend.');
   }
 
-  estadoClase(estado?: string): string {
-    switch ((estado || '').toUpperCase()) {
-      case 'CONFIRMADA': return 'confirmada';
-      case 'CANCELADA': return 'cancelada';
-      default: return 'pendiente';
+  private fechaYMDaDate(ymd?: string): Date | null {
+    if (!ymd) return null;
+    const d = new Date(ymd + 'T00:00:00');
+    d.setHours(0,0,0,0);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  estadoVisual(r: Reserva): string {
+    const estado = (r.estado || '').toUpperCase();
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    const ini = this.fechaYMDaDate(r.fechaInicio);
+    const fin = this.fechaYMDaDate(r.fechaFin);
+
+    if (estado === 'PAGADA' && ini && fin) {
+      if (ini <= hoy && hoy <= fin) return 'EN CURSO';
+      if (fin < hoy) return 'TERMINADA';
     }
+    return r.estado || 'PENDIENTE';
+  }
+
+  estadoClase(estado?: string): string {
+    const e = (estado || '').toUpperCase();
+    if (e === 'EN CURSO') return 'en-curso';
+    if (e === 'TERMINADA') return 'terminada';
+    if (e === 'CONFIRMADA') return 'confirmada';
+    if (e === 'CANCELADA') return 'cancelada';
+    return 'pendiente';
   }
 
   private extraerMensajeError(err: any, generico: string): string {

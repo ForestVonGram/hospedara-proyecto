@@ -8,6 +8,7 @@ export interface AlojamientoCreateRequest {
   descripcion: string;
   direccion: string;
   precioPorNoche: number;
+  maxHuespedes?: number;
   anfitrionId: number;
   latitud?: number;
   longitud?: number;
@@ -20,11 +21,13 @@ export interface AlojamientoResponseDTO {
   descripcion: string;
   direccion: string;
   precioPorNoche: number;
+  maxHuespedes?: number;
   anfitrionId?: number;
   latitud?: number;
   longitud?: number;
   // El backend podría no devolver imágenes aquí, pero lo mantenemos por compatibilidad si existiera
   imagenes?: string[];
+  servicios?: string[];
 }
 
 export interface AlojamientoUpdateRequest {
@@ -32,6 +35,7 @@ export interface AlojamientoUpdateRequest {
   descripcion?: string;
   direccion?: string;
   precioPorNoche?: number;
+  maxHuespedes?: number;
   latitud?: number;
   longitud?: number;
 }
@@ -47,6 +51,7 @@ export interface Alojamiento {
   latitud?: number;
   longitud?: number;
   imagenes?: string[];
+  servicios?: string[];
 }
 
 function coerceNumber(value: any): number | undefined {
@@ -76,7 +81,8 @@ function dtoToAlojamiento(dto: AlojamientoResponseDTO): Alojamiento {
     anfitrionId: dto.anfitrionId,
     latitud: latNum,
     longitud: lngNum,
-    imagenes: dto.imagenes || []
+    imagenes: dto.imagenes || [],
+    servicios: Array.isArray(dto.servicios) ? dto.servicios : []
   };
 }
 
