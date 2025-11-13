@@ -6,11 +6,12 @@ import { UsuarioService, UsuarioProfile } from '../../services/usuario.service';
 import { AuthService } from '../../services/auth.service';
 import { Alojamiento, AlojamientoService } from '../../services/alojamiento.service';
 import {HeaderComponent} from '../../shared/components/header/header.component';
+import { DashboardMapComponent } from '../../mapbox/dashboard-map.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, HeaderComponent],
+  imports: [CommonModule, RouterModule, FormsModule, HeaderComponent, DashboardMapComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -25,6 +26,17 @@ export class DashboardComponent implements OnInit {
   alojamientos: Alojamiento[] = [];
   loadingAlojamientos = false;
   errorAlojamientos: string | null = null;
+
+  // Marcadores para el mapa (solo alojamientos con coordenadas)
+  get mapMarkers() {
+    return (this.alojamientos || [])
+      .map(a => ({
+        lng: a.longitud != null ? Number(a.longitud) : NaN,
+        lat: a.latitud != null ? Number(a.latitud) : NaN,
+        popup: a.titulo
+      }))
+      .filter(m => Number.isFinite(m.lat) && Number.isFinite(m.lng));
+  }
 
   constructor(
     private usuarioService: UsuarioService,

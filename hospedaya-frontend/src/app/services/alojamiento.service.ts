@@ -9,6 +9,8 @@ export interface AlojamientoCreateRequest {
   direccion: string;
   precioPorNoche: number;
   anfitrionId: number;
+  latitud?: number;
+  longitud?: number;
 }
 
 // DTO tal como lo entrega el backend
@@ -19,6 +21,8 @@ export interface AlojamientoResponseDTO {
   direccion: string;
   precioPorNoche: number;
   anfitrionId?: number;
+  latitud?: number;
+  longitud?: number;
   // El backend podría no devolver imágenes aquí, pero lo mantenemos por compatibilidad si existiera
   imagenes?: string[];
 }
@@ -28,6 +32,8 @@ export interface AlojamientoUpdateRequest {
   descripcion?: string;
   direccion?: string;
   precioPorNoche?: number;
+  latitud?: number;
+  longitud?: number;
 }
 
 // Modelo de dominio usado en la UI
@@ -38,10 +44,29 @@ export interface Alojamiento {
   direccion: string;
   precioPorNoche: number | string; // algunas vistas lo tratan como string
   anfitrionId?: number;
+  latitud?: number;
+  longitud?: number;
   imagenes?: string[];
 }
 
+function coerceNumber(value: any): number | undefined {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : undefined;
+  if (typeof value === 'string' && value.trim() !== '') {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : undefined;
+  }
+  return undefined;
+}
+
 function dtoToAlojamiento(dto: AlojamientoResponseDTO): Alojamiento {
+  // Aceptar múltiples alias de coordenadas desde el backend
+  const anyDto = dto as any;
+  const latRaw = anyDto.latitud ?? anyDto.latitude ?? anyDto.lat;
+  const lngRaw = anyDto.longitud ?? anyDto.longitude ?? anyDto.lng ?? anyDto.lon;
+
+  const latNum = coerceNumber(latRaw);
+  const lngNum = coerceNumber(lngRaw);
+
   return {
     id: dto.id,
     titulo: dto.titulo,
@@ -49,6 +74,8 @@ function dtoToAlojamiento(dto: AlojamientoResponseDTO): Alojamiento {
     direccion: dto.direccion,
     precioPorNoche: dto.precioPorNoche,
     anfitrionId: dto.anfitrionId,
+    latitud: latNum,
+    longitud: lngNum,
     imagenes: dto.imagenes || []
   };
 }

@@ -10,7 +10,7 @@
     <div class="header-actions">
       <ng-container *ngIf="user; else authLinks">
         <div class="user-menu" [class.open]="showMenu">
-          <div class="avatar" (click)="toggleMenu()" [style.background-image]="avatarUrl() ? 'url(' + (avatarUrl() + '?v=' + (user?.fotoPerfilUrl ? '' : '')) + ')' : 'none'"></div>
+          <div class="avatar" (click)="toggleMenu()" [style.background-image]="avatarUrl() ? 'url(' + (avatarUrl() + '?v=' + (user.fotoPerfilUrl ? '' : '')) + ')' : 'none'"></div>
           <nav class="dropdown" *ngIf="showMenu">
             <a routerLink="/">Inicio</a>
             <a routerLink="/reservas">Mis Reservas</a>

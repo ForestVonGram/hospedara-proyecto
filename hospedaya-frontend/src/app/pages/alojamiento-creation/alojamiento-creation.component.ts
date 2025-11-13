@@ -9,11 +9,13 @@ import { AlojamientoService, AlojamientoCreateRequest, AlojamientoResponseDTO, A
 import { ImagenAlojamientoService, ImagenAlojamientoCreateRequest, ImagenAlojamientoResponseDTO } from '../../services/imagen-alojamiento.service';
 import { ImageUploadService, ImageUploadResult } from '../../services/image-upload.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
+import { MapboxMapComponent } from '../../mapbox/mapbox-map.component';
+import { MarkerComponent } from '../../mapbox/marker.component';
 
 @Component({
   selector: 'app-alojamiento-creation',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, FormsModule, HeaderComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, FormsModule, HeaderComponent, MapboxMapComponent, MarkerComponent],
   templateUrl: './alojamiento-creation.component.html',
   styleUrl: './alojamiento-creation.component.css'
 })
@@ -24,6 +26,9 @@ export class AlojamientoCreationComponent implements OnInit {
   successMessage = '';
   isEdit = false;
   editId: number | null = null;
+
+  // Mapa: selección de ubicación
+  selectedLngLat: [number, number] | null = null;
 
   // Gestión de imágenes (URLs + id cuando existen en backend)
   nuevaImagenUrl = '';
@@ -60,7 +65,9 @@ export class AlojamientoCreationComponent implements OnInit {
       nombre: ['', [Validators.required, Validators.maxLength(120)]],
       descripcion: ['', [Validators.required, Validators.maxLength(1000)]],
       direccion: ['', [Validators.required, Validators.maxLength(200)]],
-      precioPorNoche: [null, [Validators.required, Validators.min(0)]]
+      precioPorNoche: [null, [Validators.required, Validators.min(0)]],
+      latitud: [null],
+      longitud: [null]
     });
 
     // Detectar modo edición por query param ?editId=123
@@ -78,8 +85,13 @@ export class AlojamientoCreationComponent implements OnInit {
                 nombre: dto.titulo,
                 descripcion: dto.descripcion,
                 direccion: dto.direccion,
-                precioPorNoche: dto.precioPorNoche
+                precioPorNoche: dto.precioPorNoche,
+                latitud: (dto as any).latitud ?? null,
+                longitud: (dto as any).longitud ?? null
               });
+              if (typeof (dto as any).longitud === 'number' && typeof (dto as any).latitud === 'number') {
+                this.selectedLngLat = [Number((dto as any).longitud), Number((dto as any).latitud)];
+              }
               // Cargar imágenes desde servicio dedicado para obtener IDs
               this.imagenService.listarPorAlojamiento(id).subscribe({
                 next: (imgs) => {
@@ -121,6 +133,12 @@ export class AlojamientoCreationComponent implements OnInit {
       return;
     }
 
+    // Sincronizar coordenadas seleccionadas con el formulario, si aplica
+    if (this.selectedLngLat) {
+      const [lng, lat] = this.selectedLngLat;
+      this.form.patchValue({ latitud: lat, longitud: lng });
+    }
+
     this.isSubmitting = true;
 
     if (this.isEdit && this.editId != null) {
@@ -128,7 +146,9 @@ export class AlojamientoCreationComponent implements OnInit {
         nombre: this.f['nombre'].value,
         descripcion: this.f['descripcion'].value,
         direccion: this.f['direccion'].value,
-        precioPorNoche: Number(this.f['precioPorNoche'].value)
+        precioPorNoche: Number(this.f['precioPorNoche'].value),
+        latitud: this.form.value.latitud ?? undefined,
+        longitud: this.form.value.longitud ?? undefined
       };
 
       this.alojamientoService.actualizarAlojamiento(this.editId, update).subscribe({
@@ -163,7 +183,9 @@ export class AlojamientoCreationComponent implements OnInit {
       descripcion: this.f['descripcion'].value,
       direccion: this.f['direccion'].value,
       precioPorNoche: Number(this.f['precioPorNoche'].value),
-      anfitrionId: Number(user.id)
+      anfitrionId: Number(user.id),
+      latitud: this.form.value.latitud ?? undefined,
+      longitud: this.form.value.longitud ?? undefined
     };
 
     this.alojamientoService.crearAlojamiento(payload).subscribe({
@@ -214,6 +236,26 @@ export class AlojamientoCreationComponent implements OnInit {
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
       this.uploadProgress = 0;
+    }
+  }
+
+  onMapSelection(lngLat: [number, number] | null) {
+    this.selectedLngLat = lngLat;
+    if (lngLat) {
+      const [lng, lat] = lngLat;
+      this.form.patchValue({ latitud: lat, longitud: lng });
+    } else {
+      this.form.patchValue({ latitud: null, longitud: null });
+    }
+  }
+
+  onManualCoordsChange() {
+    const lat = this.form.value.latitud;
+    const lng = this.form.value.longitud;
+    if (typeof lat === 'number' && typeof lng === 'number') {
+      this.selectedLngLat = [lng, lat];
+    } else {
+      this.selectedLngLat = null;
     }
   }
 

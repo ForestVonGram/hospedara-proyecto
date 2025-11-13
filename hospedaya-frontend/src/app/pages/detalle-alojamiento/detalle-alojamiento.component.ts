@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Alojamiento, AlojamientoService } from '../../services/alojamiento.service';
+import { DetalleAlojamientoMapComponent } from '../../mapbox/detalle-alojamiento-map.component';
 
 @Component({
   selector: 'app-detalle-alojamiento',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, DetalleAlojamientoMapComponent],
   templateUrl: './detalle-alojamiento.component.html',
   styleUrl: './detalle-alojamiento.component.css'
 })
@@ -16,6 +17,7 @@ export class DetalleAlojamientoComponent implements OnInit, OnDestroy {
   alojamiento?: Alojamiento;
   loading = true;
   error?: string;
+
 
   private sub?: Subscription;
 
@@ -45,7 +47,10 @@ export class DetalleAlojamientoComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = undefined;
     this.alojService.obtener(id).subscribe({
-      next: (a) => { this.alojamiento = a; this.loading = false; },
+      next: (a) => {
+        this.alojamiento = a;
+        this.loading = false;
+      },
       error: (e) => { console.error(e); this.error = 'No se pudo cargar el alojamiento'; this.loading = false; }
     });
   }
