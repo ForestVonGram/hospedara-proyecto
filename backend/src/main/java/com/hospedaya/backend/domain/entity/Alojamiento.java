@@ -31,6 +31,12 @@ public class Alojamiento {
     @Column(nullable = false)
     private Double precioPorNoche;
 
+    @Column
+    private Double latitud;
+
+    @Column
+    private Double longitud;
+
     @Enumerated(EnumType.STRING)
     private EstadoAlojamiento estado = EstadoAlojamiento.ACTIVO;
 

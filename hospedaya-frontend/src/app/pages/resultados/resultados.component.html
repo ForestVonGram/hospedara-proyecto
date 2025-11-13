@@ -42,8 +42,20 @@
     </aside>
 
     <section class="destacados">
-      <h3>{{ filtrados.length }} alojamientos encontrados</h3>
-      <div class="grid">
+      <div class="results-header">
+        <h3>{{ filtrados.length }} alojamientos encontrados</h3>
+        <button class="btn-toggle-map" (click)="toggleMapView()">
+          {{ showMap ? '📋 Mostrar lista' : '🗺️ Mostrar mapa' }}
+        </button>
+      </div>
+
+      <!-- Mapa -->
+      <div *ngIf="showMap" class="map-container">
+        <div id="map-resultados" class="map-resultados"></div>
+      </div>
+
+      <!-- Grid de alojamientos -->
+      <div class="grid" *ngIf="!showMap">
         <article class="card" *ngFor="let a of filtrados">
           <a [routerLink]="['/alojamientos', a.id]">
             <img [src]="resolverImg(a)" alt="Imagen del alojamiento" />

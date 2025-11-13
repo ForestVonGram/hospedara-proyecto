@@ -14,6 +14,8 @@ public class AlojamientoResponseDTO {
     private String direccion;
     private BigDecimal precioPorNoche;
     private Long anfitrionId;
+    private Double latitud;
+    private Double longitud;
     private List<String> imagenes;
     private List<String> servicios;
 }

@@ -25,3 +25,40 @@
 .card .info { padding: 12px; display: grid; gap: 6px; }
 .card .meta { display: flex; justify-content: space-between; color: #6b7280; }
 .card button { margin-top: 6px; background: #5b6cff; color: #fff; border: 0; border-radius: 8px; padding: 8px; }
+
+/* Estilos para el mapa */
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.btn-toggle-map {
+  background: linear-gradient(90deg, #7c3aed, #d946ef);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, .35);
+  transition: transform 0.2s;
+}
+
+.btn-toggle-map:hover {
+  transform: translateY(-2px);
+}
+
+.map-container {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.map-resultados {
+  width: 100%;
+  height: 600px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}

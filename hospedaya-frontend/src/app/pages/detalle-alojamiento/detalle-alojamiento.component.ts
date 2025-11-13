@@ -3,12 +3,11 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Alojamiento, AlojamientoService } from '../../services/alojamiento.service';
-import { DetalleAlojamientoMapComponent } from '../../mapbox/detalle-alojamiento-map.component';
 
 @Component({
   selector: 'app-detalle-alojamiento',
   standalone: true,
-  imports: [CommonModule, RouterModule, DetalleAlojamientoMapComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './detalle-alojamiento.component.html',
   styleUrl: './detalle-alojamiento.component.css'
 })

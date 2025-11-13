@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -6,16 +6,19 @@ import { UsuarioService, UsuarioProfile } from '../../services/usuario.service';
 import { AuthService } from '../../services/auth.service';
 import { Alojamiento, AlojamientoService } from '../../services/alojamiento.service';
 import {HeaderComponent} from '../../shared/components/header/header.component';
-import { DashboardMapComponent } from '../../mapbox/dashboard-map.component';
+import {MapService} from '../../mapbox/map-service';
+import {PlacesService} from '../../mapbox/places/places-service';
+import {PlaceDTO} from '../../mapbox/places/places-dto';
+import {MarkerDTO} from '../../mapbox/marker-dto';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, HeaderComponent, DashboardMapComponent],
+  imports: [CommonModule, RouterModule, FormsModule, HeaderComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
   user?: UsuarioProfile;
 
   destino = '';
@@ -42,13 +45,24 @@ export class DashboardComponent implements OnInit {
     private usuarioService: UsuarioService,
     private router: Router,
     private auth: AuthService,
-    private alojService: AlojamientoService
+    private alojService: AlojamientoService,
+    private mapService: MapService,
+    private placesService: PlacesService
   ) {}
 
   ngOnInit(): void {
     // Cargar rápido desde cache y luego confirmar con backend
     this.user = this.auth.getUser();
     this.usuarioService.me().subscribe({ next: (u) => (this.user = u), error: () => (this.user = undefined) });
+
+    // Inicializa el mapa con la configuración predeterminada
+    this.mapService.create();
+    // Obtiene todos los alojamientos de prueba
+    const places = this.placesService.getAll();
+    // Mapea los alojamientos a marcadores y los dibuja en el mapa
+    const markers = this.mapItemToMarker(places);
+    // Dibuja los marcadores en el mapa
+    this.mapService.drawMarkers(markers);
 
     // Cargar alojamientos reales
     this.loadingAlojamientos = true;
@@ -99,5 +113,17 @@ export class DashboardComponent implements OnInit {
         huespedes: this.huespedes
       }
     });
+  }
+
+  public mapItemToMarker(places: PlaceDTO[]): MarkerDTO[] {
+    return places.map((item) => ({
+      id: item.id,
+      location: item.address.location,
+      title: item.title,
+      photoUrl: item.images[0] || "",
+    }));
+  }
+  ngAfterViewInit(): void {
+    // El mapa se inicializa en ngOnInit
   }
 }

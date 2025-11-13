@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -7,6 +7,8 @@ import { UsuarioService, UsuarioProfile } from '../../services/usuario.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
+import { MapService } from '../../mapbox/map-service';
+import { MarkerDTO } from '../../mapbox/marker-dto';
 
 @Component({
   selector: 'app-resultados',
@@ -15,7 +17,7 @@ import { HeaderComponent } from '../../shared/components/header/header.component
   templateUrl: './resultados.component.html',
   styleUrl: './resultados.component.css'
 })
-export class ResultadosComponent implements OnInit {
+export class ResultadosComponent implements OnInit, AfterViewInit {
   user?: UsuarioProfile;
   destino = '';
   checkin = '';
@@ -28,7 +30,16 @@ export class ResultadosComponent implements OnInit {
   minPrecio: number | null = null;
   maxPrecio: number | null = null;
 
-  constructor(private route: ActivatedRoute, private alojService: AlojamientoService, private usuarioService: UsuarioService, private router: Router, private auth: AuthService) {}
+  showMap = false;
+
+  constructor(
+    private route: ActivatedRoute,
+    private alojService: AlojamientoService,
+    private usuarioService: UsuarioService,
+    private router: Router,
+    private auth: AuthService,
+    private mapService: MapService
+  ) {}
 
   ngOnInit(): void {
     this.user = this.auth.getUser();
@@ -41,6 +52,42 @@ export class ResultadosComponent implements OnInit {
       this.huespedes = +(params.get('huespedes') || '1');
       this.cargar();
     });
+  }
+
+  ngAfterViewInit(): void {
+    if (this.showMap) {
+      this.initializeMap();
+    }
+  }
+
+  toggleMapView(): void {
+    this.showMap = !this.showMap;
+    if (this.showMap) {
+      setTimeout(() => this.initializeMap(), 100);
+    }
+  }
+
+  private initializeMap(): void {
+    this.mapService.create('map-resultados');
+    this.drawAlojamientosOnMap();
+  }
+
+  private drawAlojamientosOnMap(): void {
+    const markers: MarkerDTO[] = this.filtrados
+      .filter(a => a.latitud != null && a.longitud != null)
+      .map(a => ({
+        id: a.id,
+        title: a.titulo,
+        photoUrl: this.resolverImg(a),
+        location: {
+          latitud: a.latitud!,
+          longitud: a.longitud!
+        }
+      }));
+
+    if (markers.length > 0) {
+      this.mapService.drawMarkers(markers);
+    }
   }
 
   cargar() {
@@ -70,6 +117,11 @@ export class ResultadosComponent implements OnInit {
       // Si ambos están definidos y min > max, no filtra por rango (o podríamos intercambiar). Aquí normalizamos: si min>max, intercambiamos.
       return matchDestino && okMin && okMax;
     });
+
+    // Actualizar marcadores si el mapa está visible
+    if (this.showMap) {
+      this.drawAlojamientosOnMap();
+    }
   }
 
   resolverImg(a: Alojamiento): string {

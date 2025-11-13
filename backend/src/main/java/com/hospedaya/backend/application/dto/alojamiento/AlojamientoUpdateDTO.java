@@ -16,4 +16,6 @@ public class AlojamientoUpdateDTO {
     private String descripcion;
     private String direccion;
     private BigDecimal precioPorNoche;
+    private Double latitud;
+    private Double longitud;
 }

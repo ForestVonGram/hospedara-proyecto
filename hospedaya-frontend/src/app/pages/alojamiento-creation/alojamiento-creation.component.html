@@ -69,40 +69,17 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label for="direccion">Ubicación</label>
-          <input id="direccion" type="text" placeholder="Ciudad, dirección" formControlName="direccion" />
-          <small class="error" *ngIf="f['direccion'].touched && f['direccion'].invalid">La dirección es obligatoria</small>
-        </div>
-
-        <div class="form-group">
           <label for="precioPorNoche">Precio por noche</label>
           <input id="precioPorNoche" type="number" min="0" step="0.01" placeholder="$0.00" formControlName="precioPorNoche" />
           <small class="error" *ngIf="f['precioPorNoche'].touched && f['precioPorNoche'].invalid">Ingresa un precio válido</small>
         </div>
       </div>
 
-
-      <!-- Ubicación en el mapa -->
-      <div class="form-row">
-        <div class="form-group" style="flex:1 1 100%">
-          <label>Ubicación en el mapa</label>
-          <app-mapbox-map
-            [selectable]="true"
-            [selectedLngLat]="selectedLngLat"
-            (selectedLngLatChange)="onMapSelection($event)"
-            [center]="selectedLngLat || [-74.0817, 4.6097]"
-            [zoom]="selectedLngLat ? 14 : 10"
-          >
-            <app-marker *ngIf="selectedLngLat" [lng]="selectedLngLat[0]" [lat]="selectedLngLat[1]" popup="Ubicación seleccionada" color="#7c3aed" [scale]="1.2"></app-marker>
-          </app-mapbox-map>
-          <small class="hint">Haz clic en el mapa para establecer la ubicación exacta del alojamiento.</small>
-          <div style="display:flex; gap:12px; margin-top:8px; align-items:center;">
-            <label style="margin:0">Lat:</label>
-            <input type="number" step="0.000001" [ngModel]="form.value.latitud" (ngModelChange)="form.patchValue({latitud: $event}); onManualCoordsChange()" name="latitud" style="max-width:180px">
-            <label style="margin:0">Lng:</label>
-            <input type="number" step="0.000001" [ngModel]="form.value.longitud" (ngModelChange)="form.patchValue({longitud: $event}); onManualCoordsChange()" name="longitud" style="max-width:180px">
-          </div>
-        </div>
+      <div class="form-group">
+        <label class="form-label">Ubicación en el mapa (haz clic para seleccionar) *</label>
+        <div id="map" class="map"></div>
+        <small class="info" *ngIf="selectedAddress">📍 {{ selectedAddress }}</small>
+        <small class="error" *ngIf="!selectedLngLat && form.touched">Debes seleccionar una ubicación en el mapa</small>
       </div>
 
       <div class="messages">
