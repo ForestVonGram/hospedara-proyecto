@@ -199,6 +199,61 @@ public class EmailService {
         }
     }
 
+    public void enviarCorreoCancelacionReserva(com.hospedaya.backend.domain.entity.Usuario anfitrion,
+                                               com.hospedaya.backend.domain.entity.Usuario huesped,
+                                               com.hospedaya.backend.domain.entity.Alojamiento alojamiento,
+                                               com.hospedaya.backend.domain.entity.Reserva reserva) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(anfitrion.getEmail());
+            helper.setSubject("Reserva cancelada - " + (alojamiento.getNombre() != null ? alojamiento.getNombre() : "Tu alojamiento"));
+
+            String html = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                  <style>
+                    body { font-family: Arial, sans-serif; background:#f6f8fa; margin:0; padding:0; }
+                    .box { max-width:600px; margin:24px auto; background:#fff; border:1px solid #e5e7eb; border-radius:10px; overflow:hidden; }
+                    .hdr { background:#ef4444; color:#fff; padding:16px 20px; font-weight:700; }
+                    .cnt { padding:20px; color:#111827; }
+                    .muted { color:#6b7280; }
+                  </style>
+                </head>
+                <body>
+                  <div class=\"box\">
+                    <div class=\"hdr\">Reserva cancelada</div>
+                    <div class=\"cnt\">
+                      <p>Hola %s,</p>
+                      <p>El huésped <strong>%s</strong> (%s) ha cancelado su reserva en <strong>%s</strong>.</p>
+                      <ul>
+                        <li><strong>Fechas reservadas:</strong> %s → %s</li>
+                        <li><strong>ID de reserva:</strong> #%s</li>
+                      </ul>
+                      <p class=\"muted\">Puedes volver a poner disponible estas fechas si corresponde.</p>
+                      <p class=\"muted\">HospedaYa</p>
+                    </div>
+                  </div>
+                </body>
+                </html>
+            """.formatted(
+                anfitrion.getNombre() != null ? anfitrion.getNombre() : anfitrion.getEmail(),
+                huesped.getNombre() != null ? huesped.getNombre() : huesped.getEmail(),
+                huesped.getEmail(),
+                alojamiento.getNombre(),
+                reserva.getFechaInicio() != null ? reserva.getFechaInicio().toString() : "",
+                reserva.getFechaFin() != null ? reserva.getFechaFin().toString() : "",
+                String.valueOf(reserva.getId())
+            );
+            helper.setText(html, true);
+            mailSender.send(message);
+            log.info("Correo de cancelación enviado a anfitrión {}", anfitrion.getEmail());
+        } catch (MessagingException e) {
+            log.error("Error al enviar correo de cancelación a {}: {}", anfitrion.getEmail(), e.getMessage());
+        }
+    }
+
     public void enviarCorreoNuevaResena(com.hospedaya.backend.domain.entity.Usuario anfitrion,
                                         com.hospedaya.backend.domain.entity.Usuario autor,
                                         com.hospedaya.backend.domain.entity.Alojamiento alojamiento,

@@ -157,7 +157,17 @@ public class ReservaController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> cancelarReserva(@PathVariable Long id) {
+        // Obtener la reserva antes de cancelar para extraer relaciones
+        Reserva reserva = reservaService.obtenerReservaPorId(id);
         reservaService.cancelarReserva(id);
+        try {
+            com.hospedaya.backend.domain.entity.Alojamiento alojamiento = reserva.getAlojamiento();
+            com.hospedaya.backend.domain.entity.Usuario anfitrion = alojamiento != null ? alojamiento.getAnfitrion() : null;
+            com.hospedaya.backend.domain.entity.Usuario huesped = reserva.getUsuario();
+            if (anfitrion != null && huesped != null && alojamiento != null) {
+                emailService.enviarCorreoCancelacionReserva(anfitrion, huesped, alojamiento, reserva);
+            }
+        } catch (Exception ignored) {}
         return ResponseEntity.noContent().build();
     }
 }
