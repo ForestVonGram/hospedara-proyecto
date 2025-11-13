@@ -1,16 +1,8 @@
-<!-- NAVBAR -->
-<header class="navbar">
-  <div class="logo">
-    <img src="https://cdn-icons-png.flaticon.com/512/1046/1046857.png" alt="Logo HospedaYa">
-    <span>HospedaYa</span>
-  </div>
-  <nav>
-    <a routerLink="/">Inicio</a>
-    <a routerLink="/dashboard">Mis Reservas</a>
-    <a routerLink="/profile-setup">Perfil</a>
-    <a routerLink="/login" class="cerrar">Cerrar sesión</a>
-  </nav>
-</header>
+<app-header></app-header>
+
+<div style="padding: 12px 16px;">
+  <a [routerLink]="['/alojamientos', alojamientoId]" class="btn btn-primary" *ngIf="alojamientoId">Volver al detalle</a>
+</div>
 
 <!-- CONTENIDO PRINCIPAL -->
 <main class="contenedor" *ngIf="!cargando">

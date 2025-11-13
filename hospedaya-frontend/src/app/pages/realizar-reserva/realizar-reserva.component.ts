@@ -6,16 +6,19 @@ import { AlojamientoResponseDTO, AlojamientoService } from '../../services/aloja
 import { AuthService } from '../../services/auth.service';
 import { ReservaRequest, ReservaService } from '../../services/reserva.service';
 import { PagoService } from '../../services/pago.service';
+import { HeaderComponent } from '../../shared/components/header/header.component';
 
 @Component({
   selector: 'app-realizar-reserva',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, HeaderComponent],
   templateUrl: './realizar-reserva.component.html',
   styleUrls: ['./realizar-reserva.component.css']
 })
 export class RealizarReservaComponent implements OnInit {
   private route = inject(ActivatedRoute);
+
+  alojamientoId?: number;
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private alojamientoService = inject(AlojamientoService);
@@ -103,6 +106,7 @@ export class RealizarReservaComponent implements OnInit {
 
     const idStr = this.route.snapshot.paramMap.get('id');
     const id = idStr ? Number(idStr) : NaN;
+    this.alojamientoId = Number.isFinite(id) ? id : undefined;
     if (!id || isNaN(id)) {
       this.error = 'Alojamiento inválido';
       return;

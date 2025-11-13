@@ -10,6 +10,22 @@ body {
   color: #1f1f1f;
 }
 
+/* Botón superior (volver) con color de marca como el header */
+.btn {
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+.btn-primary {
+  background: #ff5a5f;
+  color: #ffffff;
+}
+.btn-primary:hover { background: #e04e53; }
+
 /* NAVBAR */
 .navbar {
   display: flex;
