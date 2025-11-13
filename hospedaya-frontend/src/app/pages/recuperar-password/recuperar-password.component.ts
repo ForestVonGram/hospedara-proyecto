@@ -9,7 +9,7 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './recuperar-password.component.html',
-  styleUrl: './recuperar-password.component.css'
+  styleUrls: ['./recuperar-password.component.css']
 })
 export class RecuperarPasswordComponent {
   email: string = '';

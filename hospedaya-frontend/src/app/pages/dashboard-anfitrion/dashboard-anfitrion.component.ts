@@ -12,7 +12,7 @@ import { ComentarioService, ComentarioResponse } from '../../services/comentario
   standalone: true,
   imports: [CommonModule, RouterModule, HeaderComponent],
   templateUrl: './dashboard-anfitrion.component.html',
-  styleUrl: './dashboard-anfitrion.component.css'
+  styleUrls: ['./dashboard-anfitrion.component.css']
 })
 export class DashboardAnfitrionComponent implements OnInit {
   constructor(

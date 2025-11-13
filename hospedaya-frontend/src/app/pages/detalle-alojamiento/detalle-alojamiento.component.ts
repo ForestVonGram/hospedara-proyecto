@@ -13,7 +13,7 @@ import { HeaderComponent } from '../../shared/components/header/header.component
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule, HeaderComponent],
   templateUrl: './detalle-alojamiento.component.html',
-  styleUrl: './detalle-alojamiento.component.css'
+  styleUrls: ['./detalle-alojamiento.component.css']
 })
 export class DetalleAlojamientoComponent implements OnInit, OnDestroy, AfterViewInit {
   id?: number;

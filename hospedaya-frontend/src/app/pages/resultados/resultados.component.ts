@@ -16,7 +16,7 @@ import { MarkerDTO } from '../../mapbox/marker-dto';
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule, HeaderComponent],
   templateUrl: './resultados.component.html',
-  styleUrl: './resultados.component.css'
+  styleUrls: ['./resultados.component.css']
 })
 export class ResultadosComponent implements OnInit, AfterViewInit {
   user?: UsuarioProfile;

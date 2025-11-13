@@ -17,7 +17,7 @@ interface ReservaVista extends Reserva {
   standalone: true,
   imports: [CommonModule, RouterModule, HeaderComponent],
   templateUrl: './reservas.component.html',
-  styleUrl: './reservas.component.css'
+  styleUrls: ['./reservas.component.css']
 })
 export class ReservasComponent implements OnInit {
   user?: UsuarioProfile;

@@ -12,7 +12,7 @@ import { ToastService } from '../../shared/toast/toast.service';
   standalone: true,
   imports: [CommonModule, RouterModule, HeaderComponent, ToastsComponent],
   templateUrl: './gestion-alojamientos.component.html',
-  styleUrl: './gestion-alojamientos.component.css'
+  styleUrls: ['./gestion-alojamientos.component.css']
 })
 export class GestionAlojamientosComponent implements OnInit {
   cargando = false;

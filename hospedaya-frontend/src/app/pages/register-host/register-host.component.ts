@@ -17,7 +17,7 @@ interface RegisterHostRequest {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './register-host.component.html',
-  styleUrl: './register-host.component.css'
+  styleUrls: ['./register-host.component.css']
 })
 export class RegisterHostComponent {
   registerData: RegisterHostRequest = {

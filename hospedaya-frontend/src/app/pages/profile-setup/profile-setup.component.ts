@@ -11,7 +11,7 @@ import { ImagenService } from '../../services/imagen.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './profile-setup.component.html',
-  styleUrl: './profile-setup.component.css'
+  styleUrls: ['./profile-setup.component.css']
 })
 export class ProfileSetupComponent implements OnInit {
   user?: UsuarioProfile;
@@ -23,8 +23,8 @@ export class ProfileSetupComponent implements OnInit {
   error = '';
 
   constructor(
-    private usuarioService: UsuarioService, 
-    private auth: AuthService, 
+    private usuarioService: UsuarioService,
+    private auth: AuthService,
     private router: Router,
     private imagenService: ImagenService
   ) {}
@@ -35,7 +35,10 @@ export class ProfileSetupComponent implements OnInit {
         this.user = u;
         this.nombre = u.nombre || '';
         this.telefono = u.telefono || '';
-        this.previewUrl = u.fotoPerfilUrl ? (u.fotoPerfilUrl.startsWith('http') ? u.fotoPerfilUrl : 'http://localhost:8080' + u.fotoPerfilUrl) : null;
+        const url = u.fotoPerfilUrl || '';
+        this.previewUrl = url
+          ? (url.startsWith('http') ? url : `http://localhost:8080${url}`)
+          : null;
       },
       error: () => {
         this.error = 'No se pudo cargar tu perfil';
@@ -68,7 +71,7 @@ export class ProfileSetupComponent implements OnInit {
             this.saving = false;
             return;
           }
-          
+
           if (!this.imagenService.isValidImageSize(this.selectedFile, 5)) {
             this.error = 'La imagen no puede superar 5MB';
             this.saving = false;
@@ -81,7 +84,7 @@ export class ProfileSetupComponent implements OnInit {
               // Actualizar vista y cache con la URL de Cloudinary
               this.previewUrl = response.url;
               if (this.user) this.user.fotoPerfilUrl = response.url;
-              
+
               // Refrescar perfil desde el backend
               this.usuarioService.me().subscribe({
                 next: (u) => {
@@ -118,9 +121,9 @@ export class ProfileSetupComponent implements OnInit {
           });
         }
       },
-      error: () => {
+      error: (err) => {
         this.saving = false;
-        this.error = 'No se pudo guardar tu información';
+        this.error = err?.error?.message || 'No se pudo guardar tu información';
       }
     });
   }

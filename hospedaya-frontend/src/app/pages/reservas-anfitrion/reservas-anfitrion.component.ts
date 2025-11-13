@@ -14,7 +14,7 @@ interface ReservaHostVista extends Reserva {
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './reservas-anfitrion.component.html',
-  styleUrl: './reservas-anfitrion.component.css'
+  styleUrls: ['./reservas-anfitrion.component.css']
 })
 export class ReservasAnfitrionComponent implements OnInit {
   usuario: Usuario | null = null;

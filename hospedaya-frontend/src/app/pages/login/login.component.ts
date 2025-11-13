@@ -10,7 +10,7 @@ import { UsuarioService } from '../../services/usuario.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   loginData: LoginRequest = {

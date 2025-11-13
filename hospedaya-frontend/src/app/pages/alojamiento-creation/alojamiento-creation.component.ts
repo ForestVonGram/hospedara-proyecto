@@ -18,7 +18,7 @@ import { AlojamientoServicioService } from '../../services/alojamiento-servicio.
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule, FormsModule, HeaderComponent],
   templateUrl: './alojamiento-creation.component.html',
-  styleUrl: './alojamiento-creation.component.css'
+  styleUrls: ['./alojamiento-creation.component.css']
 })
 export class AlojamientoCreationComponent implements OnInit {
   form!: FormGroup;
