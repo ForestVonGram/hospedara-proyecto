@@ -45,11 +45,13 @@ export class MapService implements OnDestroy{
 
     places.forEach(({ id, title, photoUrl, location }) => {
       const popupHtml = `
-        <strong>${title}</strong>
-        <div>
-          <img src="${photoUrl}" alt="Imagen" style="width: 100px; height: 100px;">
+        <div style="text-align: center; padding: 8px;">
+          <strong style="font-size: 14px; display: block; margin-bottom: 8px;">${title}</strong>
+          <div style="margin-bottom: 8px;">
+            <img src="${photoUrl}" alt="Imagen" style="width: 100%; height: 100px; object-fit: cover; border-radius: 8px;">
+          </div>
+          <a href="/alojamientos/${id}" style="display: inline-block; background: linear-gradient(90deg, #7c3aed, #d946ef); color: white; padding: 8px 16px; text-decoration: none; border-radius: 20px; font-weight: 600; font-size: 13px;">Ver detalles</a>
         </div>
-        <a href="/place/${id}">Ver más</a>
       `;
 
       new mapboxgl.Marker({ color: 'red' })
