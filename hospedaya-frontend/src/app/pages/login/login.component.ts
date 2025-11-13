@@ -36,6 +36,9 @@ export class LoginComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
+    // Asegurar que no quede sesión previa (evita usar token viejo en /usuarios/me)
+    this.authService.logout();
+
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
         console.log('Login exitoso', response);
@@ -45,6 +48,17 @@ export class LoginComponent {
           // Cargar y cachear el perfil completo para tener foto/telefono en toda la app
           this.usuarioService.me().subscribe({
             next: (u) => {
+              // Validar que el perfil corresponda al email que inició sesión
+              const loggedEmail = this.loginData.email.trim().toLowerCase();
+              const profileEmail = (u.email || '').trim().toLowerCase();
+              if (loggedEmail && profileEmail && loggedEmail !== profileEmail) {
+                console.error('Email de perfil no coincide con el login. Previniendo mezcla de sesión.', { loggedEmail, profileEmail });
+                this.authService.logout();
+                this.errorMessage = 'Hubo un problema con la sesión. Intenta iniciar sesión nuevamente.';
+                this.router.navigate(['/login']);
+                return;
+              }
+
               this.authService.saveUser(u);
               // Redirigir según el rol del usuario
               if (u.rol === 'ANFITRION') {

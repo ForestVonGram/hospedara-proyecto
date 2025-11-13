@@ -61,6 +61,12 @@ export class RealizarReservaComponent implements OnInit {
       return;
     }
 
+    // Prefill desde query params si vienen del detalle
+    const qi = this.route.snapshot.queryParamMap.get('fechaInicio');
+    const qf = this.route.snapshot.queryParamMap.get('fechaFin');
+    if (qi) this.form.get('fechaInicio')?.setValue(qi);
+    if (qf) this.form.get('fechaFin')?.setValue(qf);
+
     this.cargando = true;
     this.alojamientoService.obtenerPorId(id).subscribe({
       next: (a) => (this.alojamiento = a),

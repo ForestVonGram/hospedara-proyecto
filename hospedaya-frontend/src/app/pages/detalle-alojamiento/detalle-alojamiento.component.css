@@ -80,10 +80,18 @@
 .per { color: var(--muted); }
 .availability h4 { margin: 0 0 8px; font-size: 14px; color: #1f2937; }
 .dates { display: grid; grid-template-columns: 1fr; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-.date { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; }
+.date { display: grid; grid-template-columns: 1fr; gap: 6px; padding: 10px 12px; background: #f8fafc; }
 .date + .date { border-top: 1px solid var(--border); }
 .label { color: var(--muted); font-size: 12px; }
-.value { font-weight: 600; }
+.date input[type="date"] { 
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 600;
+  color: #0f172a;
+}
 
 .reserve-btn {
   margin-top: 14px; width: 100%; display: inline-flex; gap: 8px; align-items: center; justify-content: center;

@@ -89,16 +89,18 @@
           <h4>Disponibilidad</h4>
           <div class="dates">
             <div class="date">
-              <span class="label">Check-in</span>
-              <span class="value">Seleccione fecha</span>
+              <label class="label" for="checkin">Check-in</label>
+              <input id="checkin" type="date" [min]="today()" [(ngModel)]="checkIn" (ngModelChange)="onCheckInChange($event)" />
             </div>
             <div class="date">
-              <span class="label">Check-out</span>
-              <span class="value">Seleccione fecha</span>
+              <label class="label" for="checkout">Check-out</label>
+              <input id="checkout" type="date" [min]="minCheckout()" [(ngModel)]="checkOut" />
             </div>
           </div>
         </div>
-        <button class="reserve-btn" type="button" [routerLink]="['/alojamientos', a.id, 'reservar']">
+        <button class="reserve-btn" type="button"
+                [routerLink]="['/alojamientos', a.id, 'reservar']"
+                [queryParams]="{ fechaInicio: checkIn || null, fechaFin: checkOut || null }">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Reservar ahora
         </button>
