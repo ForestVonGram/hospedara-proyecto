@@ -22,6 +22,7 @@ export class ReservaDetalleComponent implements OnInit {
   alojamiento?: Alojamiento;
   cargando = false;
   error = '';
+  mensaje = '';
 
   ngOnInit(): void {
     const idStr = this.route.snapshot.paramMap.get('id');
@@ -79,5 +80,32 @@ export class ReservaDetalleComponent implements OnInit {
 
   irAlojamiento() {
     if (this.alojamiento?.id) this.router.navigate(['/alojamientos', this.alojamiento.id]);
+  }
+
+  puedeCancelar(): boolean {
+    const r = this.reserva; if (!r) return false;
+    const estado = (r.estado || '').toUpperCase();
+    if (estado === 'CANCELADA') return false;
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    const ini = new Date(r.fechaInicio + 'T00:00:00'); ini.setHours(0,0,0,0);
+    return hoy < ini; // permitir cancelar solo antes del check-in
+  }
+
+  cancelarReserva() {
+    const r = this.reserva; if (!r) return;
+    if (!this.puedeCancelar()) { this.error = 'La reserva no puede ser cancelada en este momento.'; return; }
+    if (!confirm('¿Deseas cancelar esta reserva? Esta acción no se puede deshacer.')) return;
+    this.cargando = true; this.error = ''; this.mensaje = '';
+    this.reservaService.cancelar(Number(r.id)).subscribe({
+      next: () => {
+        // Actualiza estado local para reflejar cancelación
+        if (this.reserva) this.reserva.estado = 'CANCELADA';
+        this.mensaje = 'Reserva cancelada correctamente.';
+      },
+      error: (e) => {
+        this.error = typeof e?.error === 'string' && e.error.trim() ? e.error : 'No se pudo cancelar la reserva.';
+      },
+      complete: () => this.cargando = false
+    });
   }
 }
