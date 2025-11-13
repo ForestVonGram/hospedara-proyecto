@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -7,16 +7,19 @@ import { AuthService } from '../../services/auth.service';
 import { Alojamiento, AlojamientoService } from '../../services/alojamiento.service';
 import { RecomendacionService } from '../../services/recomendacion.service';
 import {HeaderComponent} from '../../shared/components/header/header.component';
-import { DashboardMapComponent } from '../../mapbox/dashboard-map.component';
+import {MapService} from '../../mapbox/map-service';
+import {PlacesService} from '../../mapbox/places/places-service';
+import {PlaceDTO} from '../../mapbox/places/places-dto';
+import {MarkerDTO} from '../../mapbox/marker-dto';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, HeaderComponent, DashboardMapComponent],
+  imports: [CommonModule, RouterModule, FormsModule, HeaderComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
   user?: UsuarioProfile;
 
   destino = '';
@@ -45,7 +48,9 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private auth: AuthService,
     private alojService: AlojamientoService,
-    private recService: RecomendacionService
+    private recService: RecomendacionService,
+    private mapService: MapService,
+    private placesService: PlacesService
   ) {}
 
   ngOnInit(): void {
@@ -53,12 +58,17 @@ export class DashboardComponent implements OnInit {
     this.user = this.auth.getUser();
     this.usuarioService.me().subscribe({ next: (u) => (this.user = u), error: () => (this.user = undefined) });
 
+    // Inicializa el mapa con la configuración predeterminada
+    this.mapService.create();
+
     // Cargar alojamientos reales
     this.loadingAlojamientos = true;
     this.alojService.listar().subscribe({
       next: (list) => {
         this.alojamientos = list || [];
         this.loadingAlojamientos = false;
+        // Dibujar marcadores de alojamientos reales en el mapa
+        this.drawAlojamientosOnMap();
         // Cargar recomendaciones si hay usuario
         const uid = this.user?.id ? Number(this.user.id) : null;
         if (uid) {
@@ -128,5 +138,36 @@ export class DashboardComponent implements OnInit {
         huespedes: this.huespedes
       }
     });
+  }
+
+  private drawAlojamientosOnMap(): void {
+    const markers: MarkerDTO[] = this.alojamientos
+      .filter(a => a.latitud != null && a.longitud != null)
+      .map(a => ({
+        id: a.id,
+        title: a.titulo,
+        photoUrl: this.imagenPrincipal(a),
+        location: {
+          latitud: a.latitud!,
+          longitud: a.longitud!
+        }
+      }));
+
+    if (markers.length > 0) {
+      this.mapService.drawMarkers(markers);
+    }
+  }
+
+  public mapItemToMarker(places: PlaceDTO[]): MarkerDTO[] {
+    return places.map((item) => ({
+      id: item.id,
+      location: item.address.location,
+      title: item.title,
+      photoUrl: item.images[0] || "",
+    }));
+  }
+
+  ngAfterViewInit(): void {
+    // El mapa se inicializa en ngOnInit
   }
 }

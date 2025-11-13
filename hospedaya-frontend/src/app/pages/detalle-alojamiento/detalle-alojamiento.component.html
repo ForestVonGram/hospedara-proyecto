@@ -118,11 +118,13 @@
         </ng-template>
       </section>
 
-      <section class="card">
+      <!-- Sección del mapa -->
+      <section class="card" *ngIf="a.latitud != null && a.longitud != null">
         <h3>Ubicación</h3>
-        <p class="location-address">{{ a.direccion }}</p>
-        <app-detalle-alojamiento-map [alojamientoId]="id"></app-detalle-alojamiento-map>
+        <p class="location-info">📍 {{ a.direccion }}</p>
+        <div id="map-detalle" class="map-detalle"></div>
       </section>
+
     </div>
 
     <!-- Columna derecha -->

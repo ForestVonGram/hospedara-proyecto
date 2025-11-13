@@ -31,6 +31,12 @@ public class Alojamiento {
     @Column(nullable = false)
     private Double precioPorNoche;
 
+    @Column
+    private Double latitud;
+
+    @Column
+    private Double longitud;
+
     @Column(name = "max_huespedes")
     private Integer maxHuespedes; // capacidad máxima de huéspedes
 

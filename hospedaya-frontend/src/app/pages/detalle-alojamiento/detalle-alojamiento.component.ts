@@ -1,20 +1,21 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Alojamiento, AlojamientoService } from '../../services/alojamiento.service';
-import { DetalleAlojamientoMapComponent } from '../../mapbox/detalle-alojamiento-map.component';
+import { MapService } from '../../mapbox/map-service';
 import { ComentarioService, ComentarioResponse } from '../../services/comentario.service';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../../shared/components/header/header.component';
+
 @Component({
   selector: 'app-detalle-alojamiento',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, HeaderComponent, DetalleAlojamientoMapComponent],
+  imports: [CommonModule, RouterModule, FormsModule, HeaderComponent],
   templateUrl: './detalle-alojamiento.component.html',
   styleUrl: './detalle-alojamiento.component.css'
 })
-export class DetalleAlojamientoComponent implements OnInit, OnDestroy {
+export class DetalleAlojamientoComponent implements OnInit, OnDestroy, AfterViewInit {
   id?: number;
   alojamiento?: Alojamiento;
   loading = true;
@@ -32,10 +33,13 @@ export class DetalleAlojamientoComponent implements OnInit, OnDestroy {
 
   private sub?: Subscription;
 
+  private mapInitialized = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private alojService: AlojamientoService,
+    private mapService: MapService,
     private comentarioService: ComentarioService
   ) {}
 
@@ -54,6 +58,10 @@ export class DetalleAlojamientoComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit(): void {
+    // El mapa se inicializará cuando se cargue el alojamiento
+  }
+
   ngOnDestroy(): void { this.sub?.unsubscribe(); }
 
   cargar(id: number) {
@@ -65,6 +73,10 @@ export class DetalleAlojamientoComponent implements OnInit, OnDestroy {
         const precio = Number((a as any).precioPorNoche);
         this.alojamiento = { ...a, precioPorNoche: isNaN(precio) ? 0 : precio } as any;
         this.loading = false;
+        // Inicializar el mapa si el alojamiento tiene coordenadas
+        if (a.latitud != null && a.longitud != null) {
+          this.initializeMap();
+        }
       },
       error: (e) => { console.error(e); this.error = 'No se pudo cargar el alojamiento'; this.loading = false; }
     });
@@ -112,6 +124,19 @@ export class DetalleAlojamientoComponent implements OnInit, OnDestroy {
       complete: () => { this.posting = false; }
     });
   }
+
+  private initializeMap(): void {
+    if (this.mapInitialized || !this.alojamiento) return;
+
+    setTimeout(() => {
+      this.mapService.create('map-detalle');
+      if (this.alojamiento?.latitud != null && this.alojamiento?.longitud != null) {
+        this.mapService.setMarker(this.alojamiento.longitud, this.alojamiento.latitud);
+      }
+      this.mapInitialized = true;
+    }, 100);
+  }
+
 
   resolverImg(url?: string): string {
     if (!url) return 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?q=80&w=1200&auto=format&fit=crop';

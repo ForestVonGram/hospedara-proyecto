@@ -9,15 +9,14 @@ import { AlojamientoService, AlojamientoCreateRequest, AlojamientoResponseDTO, A
 import { ImagenAlojamientoService, ImagenAlojamientoCreateRequest, ImagenAlojamientoResponseDTO } from '../../services/imagen-alojamiento.service';
 import { ImageUploadService, ImageUploadResult } from '../../services/image-upload.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
-import { MapboxMapComponent } from '../../mapbox/mapbox-map.component';
-import { MarkerComponent } from '../../mapbox/marker.component';
+import { MapService } from '../../mapbox/map-service';
 import { ServicioDTO, ServicioService } from '../../services/servicio.service';
 import { AlojamientoServicioService } from '../../services/alojamiento-servicio.service';
 
 @Component({
   selector: 'app-alojamiento-creation',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, FormsModule, HeaderComponent, MapboxMapComponent, MarkerComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, FormsModule, HeaderComponent],
   templateUrl: './alojamiento-creation.component.html',
   styleUrl: './alojamiento-creation.component.css'
 })
@@ -31,6 +30,7 @@ export class AlojamientoCreationComponent implements OnInit {
 
   // Mapa: selección de ubicación
   selectedLngLat: [number, number] | null = null;
+  selectedAddress: string = '';
 
   // Gestión de imágenes (URLs + id cuando existen en backend)
   nuevaImagenUrl = '';
@@ -56,6 +56,7 @@ export class AlojamientoCreationComponent implements OnInit {
     private imageUpload: ImageUploadService,
     private router: Router,
     private route: ActivatedRoute,
+    private mapService: MapService,
     private servicioService: ServicioService,
     private alojamientoServicioService: AlojamientoServicioService
   ) {}
@@ -79,13 +80,25 @@ export class AlojamientoCreationComponent implements OnInit {
     this.form = this.fb.group({
       nombre: ['', [Validators.required, Validators.maxLength(120)]],
       descripcion: ['', [Validators.required, Validators.maxLength(1000)]],
-      direccion: ['', [Validators.required, Validators.maxLength(200)]],
       precioPorNoche: [null, [Validators.required, Validators.min(0)]],
       maxHuespedes: [null, [Validators.min(1)]],
       habitaciones: [null, [Validators.min(0)]],
       banos: [null, [Validators.min(0)]],
-      latitud: [null],
-      longitud: [null]
+      latitud: [null, [Validators.required]],
+      longitud: [null, [Validators.required]]
+    });
+
+    // Inicializa el mapa con la configuración predeterminada
+    this.mapService.create();
+    // Se suscribe al evento de agregar marcador y actualiza el formulario
+    this.mapService.addMarker().subscribe(async (marker) => {
+      this.form.patchValue({
+        latitud: marker.lat,
+        longitud: marker.lng
+      });
+      this.selectedLngLat = [marker.lng, marker.lat];
+      // Obtener dirección mediante geocodificación inversa
+      await this.getAddressFromCoordinates(marker.lng, marker.lat);
     });
 
     // Detectar modo edición por query param ?editId=123
@@ -111,8 +124,13 @@ export class AlojamientoCreationComponent implements OnInit {
                 latitud: (dto as any).latitud ?? null,
                 longitud: (dto as any).longitud ?? null
               });
+              this.selectedAddress = dto.direccion || '';
               if (typeof (dto as any).longitud === 'number' && typeof (dto as any).latitud === 'number') {
                 this.selectedLngLat = [Number((dto as any).longitud), Number((dto as any).latitud)];
+                // Mostrar el marcador en el mapa con un pequeño delay para asegurar que el mapa esté listo
+                setTimeout(() => {
+                  this.mapService.setMarker(Number((dto as any).longitud), Number((dto as any).latitud));
+                }, 500);
               }
               // Cargar imágenes desde servicio dedicado para obtener IDs
               this.imagenService.listarPorAlojamiento(id).subscribe({
@@ -156,6 +174,12 @@ export class AlojamientoCreationComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
+    if (!this.selectedLngLat) {
+      this.errorMessage = 'Debes seleccionar una ubicación en el mapa.';
+      this.form.markAllAsTouched();
+      return;
+    }
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -184,10 +208,9 @@ export class AlojamientoCreationComponent implements OnInit {
 
       const update: AlojamientoUpdateRequest = {
         nombre: this.f['nombre'].value,
-        descripcion: (descBaseE + descExtraE).trim(),
-        direccion: this.f['direccion'].value,
-        // Normalizar precio admitiendo formatos "es-CO" (500.000,50)
-        precioPorNoche: this.parsePrecio(this.f['precioPorNoche'].value),
+        descripcion: this.f['descripcion'].value,
+        direccion: this.selectedAddress || 'Ubicación no especificada',
+        precioPorNoche: Number(this.f['precioPorNoche'].value),
         maxHuespedes: this.form.value.maxHuespedes ?? undefined,
         latitud: this.form.value.latitud ?? undefined,
         longitud: this.form.value.longitud ?? undefined
@@ -495,4 +518,24 @@ export class AlojamientoCreationComponent implements OnInit {
     // Quitar de la lista local
     this.imagenesList = this.imagenesList.filter(i => i !== item);
   }
+
+  private async getAddressFromCoordinates(lng: number, lat: number): Promise<void> {
+    const MAPBOX_TOKEN = 'pk.eyJ1IjoiaG9zcGVkYXlhZG1pbiIsImEiOiJjbWh3Zmp5dWgwNmIwMnJwcWUzczNzY20yIn0.7eSUoU-uS-rYu5S18X_OQA';
+    try {
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_TOKEN}&language=es`
+      );
+      const data = await response.json();
+      if (data.features && data.features.length > 0) {
+        // Usar el primer resultado (el más específico)
+        this.selectedAddress = data.features[0].place_name;
+      } else {
+        this.selectedAddress = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      }
+    } catch (error) {
+      console.error('Error al obtener la dirección:', error);
+      this.selectedAddress = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    }
+  }
+
 }
