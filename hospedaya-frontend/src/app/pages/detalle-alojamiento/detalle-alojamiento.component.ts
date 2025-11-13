@@ -6,10 +6,11 @@ import { Alojamiento, AlojamientoService } from '../../services/alojamiento.serv
 import { DetalleAlojamientoMapComponent } from '../../mapbox/detalle-alojamiento-map.component';
 import { ComentarioService, ComentarioResponse } from '../../services/comentario.service';
 import { FormsModule } from '@angular/forms';
+import { HeaderComponent } from '../../shared/components/header/header.component';
 @Component({
   selector: 'app-detalle-alojamiento',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, DetalleAlojamientoMapComponent],
+  imports: [CommonModule, RouterModule, FormsModule, HeaderComponent, DetalleAlojamientoMapComponent],
   templateUrl: './detalle-alojamiento.component.html',
   styleUrl: './detalle-alojamiento.component.css'
 })
@@ -149,4 +150,5 @@ export class DetalleAlojamientoComponent implements OnInit, OnDestroy {
       this.checkOut = null;
     }
   }
+
 }
