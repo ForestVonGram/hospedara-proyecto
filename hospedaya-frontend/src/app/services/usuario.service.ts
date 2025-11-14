@@ -39,7 +39,19 @@ export class UsuarioService {
 
   // Obtener un usuario por id (uso administrativo)
   obtener(id: number): Observable<UsuarioProfile> {
-    return this.http.get<UsuarioProfile>(`${this.baseUrl}/${id}`);
+    return this.http.get<any>(`${this.baseUrl}/${id}`).pipe(
+      map(u => ({
+        id: u.id,
+        nombre: u.nombre,
+        email: u.email,
+        telefono: u.telefono,
+        fotoPerfilUrl: u.fotoPerfilUrl,
+        // Normalizar rol para que siempre sea un string plano (HUESPED/ANFITRION/ADMIN)
+        rol: typeof u.rol === 'string' ? u.rol : (u.rol?.name ?? u.rol),
+        fechaRegistro: u.fechaRegistro,
+        activo: u.activo,
+      }) as UsuarioProfile)
+    );
   }
 
   // Listar todos los usuarios (uso administrativo)

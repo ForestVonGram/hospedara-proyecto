@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { UsuarioProfile, UsuarioService } from '../../../services/usuario.service';
+import { Reserva, ReservaService } from '../../../services/reserva.service';
+import { ComentarioResponse, ComentarioService } from '../../../services/comentario.service';
 
 @Component({
   selector: 'app-usuario-detalle-admin',
@@ -16,6 +18,8 @@ export class UsuarioDetalleAdminComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private usuarioService = inject(UsuarioService);
+  private reservaService = inject(ReservaService);
+  private comentarioService = inject(ComentarioService);
 
   usuario?: UsuarioProfile;
   cargando = false;
@@ -23,6 +27,13 @@ export class UsuarioDetalleAdminComponent implements OnInit {
   eliminando = false;
   error: string | null = null;
   mensaje: string | null = null;
+
+  reservas: Reserva[] = [];
+  comentarios: ComentarioResponse[] = [];
+
+  get esAdmin(): boolean {
+    return (this.usuario?.rol || '').toUpperCase() === 'ADMIN';
+  }
 
   ngOnInit(): void {
     const idStr = this.route.snapshot.paramMap.get('id');
@@ -41,6 +52,8 @@ export class UsuarioDetalleAdminComponent implements OnInit {
     this.usuarioService.obtener(id).subscribe({
       next: (u) => {
         this.usuario = u;
+        // Cargar reservas y comentarios del usuario
+        this.cargarActividadUsuario(id);
       },
       error: () => {
         this.error = 'No se pudo cargar la información del usuario.';
@@ -51,8 +64,35 @@ export class UsuarioDetalleAdminComponent implements OnInit {
     });
   }
 
+  private cargarActividadUsuario(idUsuario: number): void {
+    // Reservas del usuario (endpoint dedicado)
+    this.reservaService.porUsuario(idUsuario).subscribe({
+      next: (rs) => {
+        this.reservas = rs || [];
+      },
+      error: () => {
+        // No rompemos la pantalla si falla, solo dejamos la lista vacía
+        this.reservas = [];
+      }
+    });
+
+    // Comentarios del usuario (no hay endpoint dedicado, se filtra en frontend)
+    this.comentarioService.listarTodos().subscribe({
+      next: (cs) => {
+        this.comentarios = (cs || []).filter(c => c.usuarioId === idUsuario);
+      },
+      error: () => {
+        this.comentarios = [];
+      }
+    });
+  }
+
   guardarCambios(): void {
     if (!this.usuario) return;
+    if (this.esAdmin) {
+      this.mensaje = 'Los usuarios administradores no se pueden editar desde este panel.';
+      return;
+    }
     this.guardando = true;
     this.error = null;
     this.mensaje = null;
@@ -79,6 +119,10 @@ export class UsuarioDetalleAdminComponent implements OnInit {
 
   toggleActivo(): void {
     if (!this.usuario) return;
+    if (this.esAdmin) {
+      this.mensaje = 'No se puede bloquear ni activar usuarios administradores.';
+      return;
+    }
     const id = this.usuario.id;
     const activar = !this.usuario.activo;
     this.guardando = true;
@@ -105,6 +149,10 @@ export class UsuarioDetalleAdminComponent implements OnInit {
 
   eliminarUsuario(): void {
     if (!this.usuario) return;
+    if (this.esAdmin) {
+      this.mensaje = 'Los usuarios administradores no se pueden eliminar.';
+      return;
+    }
     const confirmar = window.confirm('¿Seguro que deseas eliminar este usuario? Esta acción no se puede deshacer.');
     if (!confirmar) return;
 

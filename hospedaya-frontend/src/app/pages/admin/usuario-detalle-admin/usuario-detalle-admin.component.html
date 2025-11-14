@@ -13,28 +13,32 @@
 
     <div class="alerta" *ngIf="mensaje">{{ mensaje }}</div>
     <div class="alerta alerta-error" *ngIf="error">{{ error }}</div>
+    <div class="alerta" *ngIf="esAdmin">
+      Este usuario es administrador del sistema y no puede ser editado ni eliminado desde este panel.
+    </div>
 
     <form class="usuario-form" (ngSubmit)="guardarCambios()">
       <div class="usuario-form__grid">
         <div class="campo">
           <label>Nombre</label>
-          <input type="text" [(ngModel)]="usuario.nombre" name="nombre" />
+          <input type="text" [(ngModel)]="usuario.nombre" name="nombre" [disabled]="esAdmin" />
         </div>
 
         <div class="campo">
           <label>Email</label>
-          <input type="email" [(ngModel)]="usuario.email" name="email" />
+          <input type="email" [(ngModel)]="usuario.email" name="email" [disabled]="esAdmin" />
         </div>
 
         <div class="campo">
           <label>Teléfono</label>
-          <input type="text" [(ngModel)]="usuario.telefono" name="telefono" />
+          <input type="text" [(ngModel)]="usuario.telefono" name="telefono" [disabled]="esAdmin" />
         </div>
 
         <div class="campo">
           <label>Rol</label>
-          <select [(ngModel)]="usuario.rol" name="rol">
-            <option value="HUESPED">Huésped</option>
+          <select [(ngModel)]="usuario.rol" name="rol" [disabled]="esAdmin">
+            <!-- El backend usa HUESPED, ANFITRION, ADMIN, pero mostramos etiquetas amigables -->
+            <option value="USUARIO">Usuario</option>
             <option value="ANFITRION">Anfitrión</option>
             <option value="ADMIN">Admin</option>
           </select>
@@ -54,23 +58,60 @@
       </div>
 
       <div class="acciones">
-        <button type="submit" class="btn-primary" [disabled]="guardando">Guardar cambios</button>
+        <button type="submit" class="btn-primary" [disabled]="guardando || esAdmin">Guardar cambios</button>
 
         <button type="button"
                 class="btn-secondary"
                 (click)="toggleActivo()"
-                [disabled]="guardando">
+                [disabled]="guardando || esAdmin">
           {{ usuario.activo ? 'Bloquear usuario' : 'Activar usuario' }}
         </button>
 
         <button type="button"
                 class="btn-danger"
                 (click)="eliminarUsuario()"
-                [disabled]="eliminando">
+                [disabled]="eliminando || esAdmin">
           Eliminar usuario
         </button>
       </div>
     </form>
+
+    <section class="usuario-actividad">
+      <div class="actividad-col">
+        <h2>Reservas del usuario</h2>
+        <p *ngIf="reservas.length === 0" class="actividad-empty">Este usuario no tiene reservas registradas.</p>
+        <ul *ngIf="reservas.length > 0" class="actividad-list">
+          <li *ngFor="let r of reservas">
+            <div class="actividad-item">
+              <div>
+                <span class="actividad-label">Reserva #{{ r.id }}</span>
+                <span class="actividad-sub">Alojamiento #{{ r.alojamientoId }}</span>
+              </div>
+              <div class="actividad-fechas">
+                <span>{{ r.fechaInicio }} → {{ r.fechaFin }}</span>
+                <span *ngIf="r.estado" class="actividad-estado">{{ r.estado }}</span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="actividad-col">
+        <h2>Reseñas del usuario</h2>
+        <p *ngIf="comentarios.length === 0" class="actividad-empty">Este usuario no ha dejado reseñas.</p>
+        <ul *ngIf="comentarios.length > 0" class="actividad-list">
+          <li *ngFor="let c of comentarios">
+            <div class="actividad-item">
+              <div>
+                <span class="actividad-label">{{ c.alojamientoNombre || ('Alojamiento #' + c.alojamientoId) }}</span>
+                <span class="actividad-sub">Calificación: {{ c.calificacion }}/5</span>
+              </div>
+              <p class="actividad-texto">{{ c.texto }}</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
   </section>
 </main>
 
