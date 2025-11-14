@@ -37,7 +37,7 @@ export class AlojamientoCreationComponent implements OnInit {
   imagenesList: { id?: number; url: string; isNew?: boolean }[] = [];
 
   // Subida de archivos
-  selectedFile: File | null = null;
+  selectedFiles: File[] = [];
   uploadProgress = 0;
 
   // Servicios
@@ -116,7 +116,6 @@ export class AlojamientoCreationComponent implements OnInit {
               this.form.patchValue({
                 nombre: dto.titulo,
                 descripcion: parsed.base,
-                direccion: dto.direccion,
                 precioPorNoche: dto.precioPorNoche,
                 maxHuespedes: (dto as any).maxHuespedes ?? null,
                 habitaciones: parsed.habitaciones,
@@ -254,7 +253,7 @@ export class AlojamientoCreationComponent implements OnInit {
     const payload: AlojamientoCreateRequest = {
       nombre: this.f['nombre'].value,
       descripcion: (descBase + descExtra).trim(),
-      direccion: this.f['direccion'].value,
+      direccion: this.selectedAddress || 'Ubicación no especificada',
       // Normalizar precio admitiendo formatos "es-CO" (500.000,50)
       precioPorNoche: this.parsePrecio(this.f['precioPorNoche'].value),
       maxHuespedes: this.form.value.maxHuespedes ?? undefined,
@@ -455,8 +454,10 @@ export class AlojamientoCreationComponent implements OnInit {
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
+      this.selectedFiles = Array.from(input.files);
       this.uploadProgress = 0;
+    } else {
+      this.selectedFiles = [];
     }
   }
 
@@ -481,20 +482,28 @@ export class AlojamientoCreationComponent implements OnInit {
   }
 
   async uploadSelectedImage() {
-    if (!this.selectedFile) return;
+    if (!this.selectedFiles || this.selectedFiles.length === 0) return;
     this.errorMessage = '';
     this.uploadProgress = 0;
-    try {
-      const { result } = await lastValueFrom(this.imageUpload.uploadWithProgress(this.selectedFile, 'alojamientos'));
-      if (result?.url) {
-        this.imagenesList = [...this.imagenesList, { url: result.url, isNew: true }];
+
+    const total = this.selectedFiles.length;
+    let uploaded = 0;
+
+    for (const file of this.selectedFiles) {
+      try {
+        const { result } = await lastValueFrom(this.imageUpload.uploadWithProgress(file, 'alojamientos'));
+        if (result?.url) {
+          this.imagenesList = [...this.imagenesList, { url: result.url, isNew: true }];
+        }
+        uploaded++;
+        this.uploadProgress = Math.round((uploaded / total) * 100);
+      } catch (err: any) {
+        // Si una imagen falla, continuamos con las demás pero mostramos mensaje genérico
+        this.errorMessage = err?.error?.message || 'No se pudo subir una o más imágenes.';
       }
-      this.selectedFile = null;
-      this.uploadProgress = 100;
-    } catch (err: any) {
-      this.errorMessage = err?.error?.message || 'No se pudo subir la imagen.';
-      this.uploadProgress = 0;
     }
+
+    this.selectedFiles = [];
   }
 
   agregarImagenUrl() {

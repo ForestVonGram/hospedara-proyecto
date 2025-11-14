@@ -3,13 +3,53 @@
 <main class="admin-page">
   <header class="admin-page__header">
     <h1>Gestión de alojamientos</h1>
-    <p>Revisa, aprueba o rechaza los alojamientos publicados.</p>
+    <p>Consulta información detallada de todos los alojamientos del sistema.</p>
   </header>
 
   <section class="admin-page__content">
-    <p class="placeholder">
-      Vista base para moderación de alojamientos (pendientes, reportados, etc.).
-      Aquí podrás conectar los endpoints de administración de alojamientos.
-    </p>
+    <div class="toolbar">
+      <input
+        type="text"
+        placeholder="Buscar por título, dirección o anfitrión..."
+        [(ngModel)]="filtro"
+      />
+    </div>
+
+    <div *ngIf="cargando" class="info">Cargando alojamientos...</div>
+    <div *ngIf="error" class="info error">{{ error }}</div>
+
+    <div class="alojamientos-grid" *ngIf="!cargando && !error">
+      <article class="alojamiento-card" *ngFor="let a of alojamientosFiltrados">
+        <div class="alojamiento-card__header">
+          <div class="alojamiento-main">
+            <h2>{{ a.titulo }}</h2>
+            <p class="direccion">{{ a.direccion }}</p>
+            <p class="anfitrion">Administrado por: <strong>{{ a.anfitrionNombre || '—' }}</strong></p>
+          </div>
+        </div>
+
+        <div class="alojamiento-meta">
+          <div>
+            <span class="label">Precio por noche</span>
+            <span>{{ a.precioPorNoche }} €</span>
+          </div>
+          <div *ngIf="a.maxHuespedes">
+            <span class="label">Capacidad</span>
+            <span>{{ a.maxHuespedes }} huésped(es)</span>
+          </div>
+        </div>
+
+        <div class="alojamiento-stats">
+          <div>
+            <span class="label">Reservas</span>
+            <span class="value">{{ a.reservasCount }}</span>
+          </div>
+          <div>
+            <span class="label">Reseñas</span>
+            <span class="value">{{ a.comentariosCount }}</span>
+          </div>
+        </div>
+      </article>
+    </div>
   </section>
 </main>

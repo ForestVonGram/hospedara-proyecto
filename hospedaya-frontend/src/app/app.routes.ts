@@ -95,11 +95,6 @@ export const routes: Routes = [
     canActivate: [adminGuard]
   },
   {
-    path: 'admin/anfitriones',
-    loadComponent: () => import('./pages/admin/anfitriones-admin/anfitriones-admin.component').then(m => m.AnfitrionesAdminComponent),
-    canActivate: [adminGuard]
-  },
-  {
     path: 'admin/reservas',
     loadComponent: () => import('./pages/admin/reservas-admin/reservas-admin.component').then(m => m.ReservasAdminComponent),
     canActivate: [adminGuard]

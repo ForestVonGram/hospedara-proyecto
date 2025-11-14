@@ -28,20 +28,21 @@
       </div>
       <p class="upload-copy">Sube archivos o pega URLs (ahora el backend usa Cloudinary)</p>
       <div class="upload-controls" style="display:flex; gap:8px; flex-wrap: wrap; align-items:center;">
-        <input type="file" accept="image/*" (change)="onFileSelected($event)" />
-        <button class="btn btn-primary" type="button" (click)="uploadSelectedImage()" [disabled]="!selectedFile">Subir archivo</button>
+        <input type="file" accept="image/*" multiple (change)="onFileSelected($event)" />
+        <button class="btn btn-primary" type="button" (click)="uploadSelectedImage()" [disabled]="!selectedFiles || selectedFiles.length === 0">Subir imágenes</button>
         <span *ngIf="uploadProgress > 0 && uploadProgress < 100">Subiendo: {{uploadProgress}}%</span>
         <div style="flex:1"></div>
         <input type="url" placeholder="https://..." [(ngModel)]="nuevaImagenUrl" name="nuevaImagenUrl" />
         <button class="btn btn-secondary" type="button" (click)="agregarImagenUrl()">Agregar URL</button>
       </div>
-      <ul class="preview-list" *ngIf="imagenesList.length > 0">
-        <li *ngFor="let item of imagenesList">
-          <img [src]="item.url" alt="preview" style="width:80px;height:60px;object-fit:cover;border-radius:6px;margin-right:8px;" />
-          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:360px;">{{ item.url }}</span>
-          <button type="button" class="btn" (click)="quitarImagen(item)">Quitar</button>
-        </li>
-      </ul>
+      <div class="image-previews" *ngIf="imagenesList.length > 0">
+        <div class="preview-item" *ngFor="let item of imagenesList">
+          <img [src]="item.url" alt="Imagen del alojamiento" />
+          <button type="button" class="remove-btn" (click)="quitarImagen(item)">
+            ×
+          </button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -68,12 +69,6 @@
       <small class="error" *ngIf="f['descripcion'].touched && f['descripcion'].invalid">La descripción es obligatoria</small>
 
       <div class="form-row">
-        <div class="form-group">
-          <label for="direccion">Ubicación</label>
-          <input id="direccion" type="text" placeholder="Ciudad, dirección" formControlName="direccion" />
-          <small class="error" *ngIf="f['direccion'].touched && f['direccion'].invalid">La dirección es obligatoria</small>
-        </div>
-
         <div class="form-group">
           <label for="precioPorNoche">Precio por noche</label>
           <input id="precioPorNoche" type="number" min="0" step="0.01" placeholder="$0.00" formControlName="precioPorNoche" />

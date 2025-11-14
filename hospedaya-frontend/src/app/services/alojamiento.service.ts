@@ -47,6 +47,7 @@ export interface Alojamiento {
   descripcion: string;
   direccion: string;
   precioPorNoche: number | string; // algunas vistas lo tratan como string
+  maxHuespedes?: number;
   anfitrionId?: number;
   latitud?: number;
   longitud?: number;
@@ -78,6 +79,7 @@ function dtoToAlojamiento(dto: AlojamientoResponseDTO): Alojamiento {
     descripcion: dto.descripcion,
     direccion: dto.direccion,
     precioPorNoche: dto.precioPorNoche,
+    maxHuespedes: dto.maxHuespedes,
     anfitrionId: dto.anfitrionId,
     latitud: latNum,
     longitud: lngNum,
