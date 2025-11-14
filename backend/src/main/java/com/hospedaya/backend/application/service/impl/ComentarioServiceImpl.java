@@ -100,6 +100,11 @@ public class ComentarioServiceImpl implements ComentarioService {
     }
 
     @Override
+    public List<Comentario> listarTodos() {
+        return comentarioRepository.findAll();
+    }
+
+    @Override
     public void eliminarComentario(Long id) {
         Comentario comentario = comentarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Comentario no encontrado con id: " + id));

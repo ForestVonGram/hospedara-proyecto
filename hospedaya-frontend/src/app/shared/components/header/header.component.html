@@ -27,6 +27,15 @@
           <a [routerLink]="['/alojamientos/gestion']" routerLinkActive="active">Mis Alojamientos</a>
           <a [routerLink]="['/alojamientos/nuevo']" routerLinkActive="active" class="btn-create">+ Crear alojamiento</a>
         }
+
+        <!-- Links para ADMINISTRADORES -->
+        @if (isAdmin) {
+          <a [routerLink]="['/admin']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Panel admin</a>
+          <a [routerLink]="['/admin/usuarios']" routerLinkActive="active">Usuarios</a>
+          <a [routerLink]="['/admin/anfitriones']" routerLinkActive="active">Anfitriones</a>
+          <a [routerLink]="['/admin/alojamientos']" routerLinkActive="active">Alojamientos</a>
+          <a [routerLink]="['/admin/reservas']" routerLinkActive="active">Reservas</a>
+        }
       </nav>
 
       <!-- Botones de acción -->
@@ -51,7 +60,9 @@
                 <div class="user-info">
                   <p class="user-name">{{ user?.nombre }}</p>
                   <p class="user-email">{{ user?.email }}</p>
-                  <span class="user-role">{{ isAnfitrion ? 'Anfitrión' : 'Huésped' }}</span>
+                  <span class="user-role">
+                    {{ isAdmin ? 'Administrador' : (isAnfitrion ? 'Anfitrión' : 'Huésped') }}
+                  </span>
                 </div>
                 <div class="menu-divider"></div>
                 <a [routerLink]="['/profile-setup']" class="menu-item">
@@ -61,7 +72,13 @@
                   <a [routerLink]="['/alojamientos/gestion']" class="menu-item">
                     <span>Gestionar Alojamientos</span>
                   </a>
-                } @else {
+                }
+                @if (isAdmin) {
+                  <a [routerLink]="['/admin']" class="menu-item">
+                    <span>Panel de administración</span>
+                  </a>
+                }
+                @if (isHuesped) {
                   <a [routerLink]="['/reservas']" class="menu-item">
                     <span>Mis Reservas</span>
                   </a>

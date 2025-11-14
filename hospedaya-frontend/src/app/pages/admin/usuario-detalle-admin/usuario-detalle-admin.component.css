@@ -1,0 +1,119 @@
+.admin-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.admin-page__header {
+  margin-bottom: 1.5rem;
+}
+
+.admin-page__content {
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  padding: 1.5rem;
+}
+
+.acciones-superiores {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.usuario-form__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem 1.5rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.campo label {
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.campo input,
+.campo select {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  border: 1px solid #e5e7eb;
+}
+
+.badge.estado-activo {
+  background: #ecfdf5;
+  border-color: #22c55e;
+  color: #15803d;
+}
+
+.badge.estado-inactivo {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  color: #4b5563;
+}
+
+.acciones {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.btn-link {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: white;
+}
+
+.btn-link {
+  background: transparent;
+  color: #2563eb;
+  padding-left: 0;
+}
+
+.alerta {
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: #ecfeff;
+  color: #0e7490;
+  font-size: 0.85rem;
+}
+
+.alerta-error {
+  background: #fee2e2;
+  color: #b91c1c;
+}

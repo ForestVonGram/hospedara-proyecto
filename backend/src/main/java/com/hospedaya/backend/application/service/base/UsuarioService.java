@@ -13,4 +13,6 @@ public interface UsuarioService {
     Usuario findById(Long idUsuario);
     List<Usuario> listarUsuarios();
     Usuario asignarRol(Long idUsuario, Rol nuevoRol);
+    Usuario activarUsuario(Long idUsuario);
+    Usuario desactivarUsuario(Long idUsuario);
 }

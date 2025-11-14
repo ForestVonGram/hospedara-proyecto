@@ -41,6 +41,19 @@ public class ComentarioController {
         this.alojamientoService = alojamientoService;
     }
 
+    @Operation(summary = "Listar todos los comentarios")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Comentarios obtenidos")
+    })
+    @GetMapping
+    public ResponseEntity<List<ComentarioResponseDTO>> listarComentarios() {
+        List<Comentario> comentarios = comentarioService.listarTodos();
+        List<ComentarioResponseDTO> response = comentarios.stream()
+                .map(comentarioMapper::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
+
     @Operation(summary = "Listar comentarios por alojamiento")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Comentarios obtenidos"),

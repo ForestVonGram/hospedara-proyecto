@@ -45,6 +45,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

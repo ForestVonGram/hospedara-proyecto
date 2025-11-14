@@ -1,0 +1,82 @@
+<app-header></app-header>
+
+<main class="admin-page" *ngIf="!cargando">
+  <section class="admin-page__header">
+    <h1>Detalle de usuario</h1>
+    <p>Consulta y edita la información del usuario, o bloquea / elimina su cuenta.</p>
+  </section>
+
+  <section class="admin-page__content" *ngIf="usuario; else errorTpl">
+    <div class="acciones-superiores">
+      <button class="btn-link" (click)="volverListado()">← Volver al listado</button>
+    </div>
+
+    <div class="alerta" *ngIf="mensaje">{{ mensaje }}</div>
+    <div class="alerta alerta-error" *ngIf="error">{{ error }}</div>
+
+    <form class="usuario-form" (ngSubmit)="guardarCambios()">
+      <div class="usuario-form__grid">
+        <div class="campo">
+          <label>Nombre</label>
+          <input type="text" [(ngModel)]="usuario.nombre" name="nombre" />
+        </div>
+
+        <div class="campo">
+          <label>Email</label>
+          <input type="email" [(ngModel)]="usuario.email" name="email" />
+        </div>
+
+        <div class="campo">
+          <label>Teléfono</label>
+          <input type="text" [(ngModel)]="usuario.telefono" name="telefono" />
+        </div>
+
+        <div class="campo">
+          <label>Rol</label>
+          <select [(ngModel)]="usuario.rol" name="rol">
+            <option value="HUESPED">Huésped</option>
+            <option value="ANFITRION">Anfitrión</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label>Estado</label>
+          <span class="badge" [ngClass]="usuario.activo ? 'estado-activo' : 'estado-inactivo'">
+            {{ usuario.activo ? 'Activo' : 'Bloqueado' }}
+          </span>
+        </div>
+
+        <div class="campo">
+          <label>Fecha de registro</label>
+          <span>{{ usuario.fechaRegistro || '—' }}</span>
+        </div>
+      </div>
+
+      <div class="acciones">
+        <button type="submit" class="btn-primary" [disabled]="guardando">Guardar cambios</button>
+
+        <button type="button"
+                class="btn-secondary"
+                (click)="toggleActivo()"
+                [disabled]="guardando">
+          {{ usuario.activo ? 'Bloquear usuario' : 'Activar usuario' }}
+        </button>
+
+        <button type="button"
+                class="btn-danger"
+                (click)="eliminarUsuario()"
+                [disabled]="eliminando">
+          Eliminar usuario
+        </button>
+      </div>
+    </form>
+  </section>
+</main>
+
+<ng-template #errorTpl>
+  <section class="admin-page__content">
+    <p class="alerta alerta-error">{{ error || 'Usuario no encontrado.' }}</p>
+    <button class="btn-link" (click)="volverListado()">Volver al listado</button>
+  </section>
+</ng-template>

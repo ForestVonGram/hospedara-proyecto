@@ -1,0 +1,48 @@
+<app-header></app-header>
+
+<main class="admin-page">
+  <section class="admin-page__header">
+    <h1>Panel de administración</h1>
+    <p>Gestiona usuarios, anfitriones, alojamientos y reservas desde un solo lugar.</p>
+  </section>
+
+  <section class="admin-page__content">
+    <div class="admin-grid">
+      <article class="admin-card">
+        <div class="icon-circle usuarios">
+          <span>👤</span>
+        </div>
+        <h3>Usuarios</h3>
+        <p>Visualiza y administra las cuentas de todos los usuarios de la plataforma.</p>
+        <button class="btn-primary" [routerLink]="['/admin/usuarios']">Gestionar usuarios</button>
+      </article>
+
+      <article class="admin-card">
+        <div class="icon-circle anfitriones">
+          <span>🏠</span>
+        </div>
+        <h3>Anfitriones</h3>
+        <p>Revisa la información de anfitriones y controla su actividad.</p>
+        <button class="btn-primary" [routerLink]="['/admin/anfitriones']">Gestionar anfitriones</button>
+      </article>
+
+      <article class="admin-card">
+        <div class="icon-circle alojamientos">
+          <span>🛏️</span>
+        </div>
+        <h3>Alojamientos</h3>
+        <p>Gestiona todos los alojamientos publicados y su estado.</p>
+        <button class="btn-primary" [routerLink]="['/admin/alojamientos']">Gestionar alojamientos</button>
+      </article>
+
+      <article class="admin-card">
+        <div class="icon-circle reservas">
+          <span>📅</span>
+        </div>
+        <h3>Reservas</h3>
+        <p>Supervisa las reservas activas, pasadas y canceladas.</p>
+        <button class="btn-primary" [routerLink]="['/admin/reservas']">Gestionar reservas</button>
+      </article>
+    </div>
+  </section>
+</main>

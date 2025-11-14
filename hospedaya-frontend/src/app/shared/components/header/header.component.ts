@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, DoCheck, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
@@ -10,13 +10,14 @@ import { AuthService } from '../../../services/auth.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, DoCheck {
   @Input() variant: 'default' | 'host' = 'default';
 
   user: any = null;
   showMenu = false;
   isAnfitrion = false;
   isHuesped = false;
+  isAdmin = false;
 
   constructor(
     private authService: AuthService,
@@ -24,10 +25,24 @@ export class HeaderComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.user = this.authService.getUser();
-    if (this.user) {
-      this.isAnfitrion = this.user.rol === 'ANFITRION';
-      this.isHuesped = this.user.rol === 'HUESPED';
+    this.syncUserFromAuth();
+  }
+
+  ngDoCheck(): void {
+    // Re-sincroniza el usuario en cada ciclo de detección de cambios por si cambió tras el login
+    this.syncUserFromAuth();
+  }
+
+  private syncUserFromAuth(): void {
+    const current = this.authService.getUser();
+    if (!current && !this.user) {
+      return;
+    }
+    if (!this.user || current?.id !== this.user.id || current?.rol !== this.user.rol) {
+      this.user = current;
+      this.isAnfitrion = this.user?.rol === 'ANFITRION';
+      this.isHuesped = this.user?.rol === 'HUESPED';
+      this.isAdmin = this.user?.rol === 'ADMIN';
     }
   }
 

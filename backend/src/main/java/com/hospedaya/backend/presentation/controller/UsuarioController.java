@@ -3,6 +3,7 @@ package com.hospedaya.backend.presentation.controller;
 import com.hospedaya.backend.application.dto.login.LoginRequest;
 import com.hospedaya.backend.application.service.base.UsuarioService;
 import com.hospedaya.backend.domain.entity.Usuario;
+import com.hospedaya.backend.exception.ResourceNotFoundException;
 import com.hospedaya.backend.infraestructure.repository.UsuarioRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -43,6 +44,24 @@ public class UsuarioController {
     public ResponseEntity<List<Usuario>> listarUsuarios() {
         List<Usuario> usuarios = usuarioRepository.findAll();
         return ResponseEntity.ok(usuarios);
+    }
+
+    @Operation(summary = "Obtener un usuario por ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Usuario obtenido correctamente"),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
+            @ApiResponse(responseCode = "400", description = "ID inválido")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable Long id) {
+        try {
+            Usuario usuario = usuarioService.findById(id);
+            return ResponseEntity.ok(usuario);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @Operation(

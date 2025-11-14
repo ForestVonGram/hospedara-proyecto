@@ -30,7 +30,7 @@ export const hostGuard: CanActivateFn = (route, state) => {
   return true;
 };
 
-// Solo huésped/usuario autenticado (no anfitrión)
+// Solo huésped/usuario autenticado (no anfitrión ni admin)
 export const userGuard: CanActivateFn = (route, state) => {
   const auth = inject(AuthService);
   const router = inject(Router);
@@ -46,6 +46,31 @@ export const userGuard: CanActivateFn = (route, state) => {
   }
   if (user.rol === 'ANFITRION') {
     router.navigate(['/dashboard-anfitrion']);
+    return false;
+  }
+  if (user.rol === 'ADMIN') {
+    router.navigate(['/admin']);
+    return false;
+  }
+  return true;
+};
+
+// Solo administrador (ADMIN)
+export const adminGuard: CanActivateFn = (route, state) => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  const token = auth.getToken();
+  if (!token) {
+    router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+    return false;
+  }
+  const user = auth.getUser();
+  if (!user || user.rol !== 'ADMIN') {
+    if (user?.rol === 'ANFITRION') {
+      router.navigate(['/dashboard-anfitrion']);
+    } else {
+      router.navigate(['/dashboard']);
+    }
     return false;
   }
   return true;

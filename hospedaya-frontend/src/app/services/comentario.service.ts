@@ -25,6 +25,10 @@ export class ComentarioService {
 
   constructor(private http: HttpClient) {}
 
+  listarTodos(): Observable<ComentarioResponse[]> {
+    return this.http.get<ComentarioResponse[]>(`${this.baseUrl}`);
+  }
+
   porAlojamiento(alojamientoId: number): Observable<ComentarioResponse[]> {
     return this.http.get<ComentarioResponse[]>(`${this.baseUrl}/alojamiento/${alojamientoId}`);
   }

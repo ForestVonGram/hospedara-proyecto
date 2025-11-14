@@ -1,0 +1,88 @@
+<app-header></app-header>
+
+<main class="admin-page">
+  <header class="admin-page__header">
+    <h1>Gestión de usuarios</h1>
+    <p>Consulta información detallada de todos los usuarios del sistema.</p>
+  </header>
+
+  <section class="admin-page__content">
+    <div class="toolbar">
+      <input
+        type="text"
+        placeholder="Buscar por nombre o email..."
+        [(ngModel)]="filtro"
+      />
+    </div>
+
+    <div *ngIf="cargando" class="info">Cargando usuarios...</div>
+    <div *ngIf="error" class="info error">{{ error }}</div>
+
+    <div class="usuarios-grid" *ngIf="!cargando && !error">
+      <article class="usuario-card" *ngFor="let u of usuariosFiltrados">
+        <div class="usuario-card__header">
+          <div class="usuario-avatar">
+            <img *ngIf="avatarUrl(u); else initials" [src]="avatarUrl(u)" [alt]="u.nombre" />
+            <ng-template #initials>
+              <span>{{ u.nombre?.slice(0, 1) || 'U' }}</span>
+            </ng-template>
+          </div>
+          <div class="usuario-main">
+            <h2>{{ u.nombre }}</h2>
+            <p class="email">{{ u.email }}</p>
+            <div class="chips">
+              <span class="chip" [ngClass]="'rol-' + (u.rol || '').toLowerCase()">{{ u.rol || 'SIN ROL' }}</span>
+              <span class="chip" [ngClass]="u.activo ? 'estado-activo' : 'estado-inactivo'">
+                {{ u.activo ? 'Activo' : 'Inactivo' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="usuario-meta">
+          <div>
+            <span class="label">Teléfono</span>
+            <span>{{ u.telefono || '—' }}</span>
+          </div>
+          <div>
+            <span class="label">Desde</span>
+            <span>{{ u.fechaRegistro || '—' }}</span>
+          </div>
+        </div>
+
+        <div class="usuario-stats">
+          <div>
+            <span class="label">Reservas</span>
+            <span class="value">{{ u.reservasCount }}</span>
+          </div>
+          <div>
+            <span class="label">Reseñas</span>
+            <span class="value">{{ u.comentariosCount }}</span>
+          </div>
+        </div>
+
+        <div class="usuario-detail-lists" *ngIf="u.reservasCount || u.comentariosCount">
+          <div *ngIf="u.reservasCount">
+            <h3>Reservas (alojamiento ID)</h3>
+            <ul>
+              <li *ngFor="let r of u.reservasDetalle">Alojamiento #{{ r.alojamientoId }}</li>
+            </ul>
+          </div>
+
+          <div *ngIf="u.comentariosCount">
+            <h3>Reseñas</h3>
+            <ul>
+              <li *ngFor="let c of u.comentariosDetalle">
+                {{ c.alojamientoNombre || ('Alojamiento #' + c.alojamientoId) }}
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="usuario-acciones">
+          <button class="btn-primary" [routerLink]="['/admin/usuarios', u.id]">Editar</button>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>

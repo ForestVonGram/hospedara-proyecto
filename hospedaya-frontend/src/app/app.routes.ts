@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { LandingComponent } from './pages/landing/landing.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
-import { authGuard, hostGuard, userGuard, guestOnlyGuard } from './services/role-guards';
+import { authGuard, hostGuard, userGuard, guestOnlyGuard, adminGuard } from './services/role-guards';
 
 export const routes: Routes = [
   // Rutas públicas
@@ -73,6 +73,37 @@ export const routes: Routes = [
     canActivate: [authGuard]  // Solo requiere estar autenticado
   },
 
+// Rutas protegidas - Administrador (ADMIN)
+  {
+    path: 'admin',
+    loadComponent: () => import('./pages/admin/dashboard-admin/dashboard-admin.component').then(m => m.DashboardAdminComponent),
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/usuarios',
+    loadComponent: () => import('./pages/admin/usuarios-admin/usuarios-admin.component').then(m => m.UsuariosAdminComponent),
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/usuarios/:id',
+    loadComponent: () => import('./pages/admin/usuario-detalle-admin/usuario-detalle-admin.component').then(m => m.UsuarioDetalleAdminComponent),
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/alojamientos',
+    loadComponent: () => import('./pages/admin/alojamientos-admin/alojamientos-admin.component').then(m => m.AlojamientosAdminComponent),
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/anfitriones',
+    loadComponent: () => import('./pages/admin/anfitriones-admin/anfitriones-admin.component').then(m => m.AnfitrionesAdminComponent),
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/reservas',
+    loadComponent: () => import('./pages/admin/reservas-admin/reservas-admin.component').then(m => m.ReservasAdminComponent),
+    canActivate: [adminGuard]
+  },
 
   { path: '**', redirectTo: '' }
 ];

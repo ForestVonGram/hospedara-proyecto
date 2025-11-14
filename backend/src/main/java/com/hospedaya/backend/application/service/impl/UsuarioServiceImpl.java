@@ -161,4 +161,20 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setRol(nuevoRol);
         return usuarioRepository.save(usuario);
     }
+
+    @Override
+    public Usuario activarUsuario(Long idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con ID: " + idUsuario));
+        usuario.setActivo(true);
+        return usuarioRepository.save(usuario);
+    }
+
+    @Override
+    public Usuario desactivarUsuario(Long idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con ID: " + idUsuario));
+        usuario.setActivo(false);
+        return usuarioRepository.save(usuario);
+    }
 }

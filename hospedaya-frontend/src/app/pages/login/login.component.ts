@@ -63,6 +63,8 @@ export class LoginComponent {
               // Redirigir según el rol del usuario
               if (u.rol === 'ANFITRION') {
                 this.router.navigate(['/dashboard-anfitrion']);
+              } else if (u.rol === 'ADMIN') {
+                this.router.navigate(['/admin']);
               } else {
                 this.router.navigate(['/dashboard']);
               }
