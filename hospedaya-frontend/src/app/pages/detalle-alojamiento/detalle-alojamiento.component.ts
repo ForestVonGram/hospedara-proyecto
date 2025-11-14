@@ -35,6 +35,9 @@ export class DetalleAlojamientoComponent implements OnInit, OnDestroy, AfterView
 
   private mapInitialized = false;
 
+  // Imagen seleccionada para el visor ampliado
+  selectedImageUrl?: string;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -137,7 +140,7 @@ export class DetalleAlojamientoComponent implements OnInit, OnDestroy, AfterView
     }, 100);
   }
 
-
+  // Resuelve la URL absoluta de una imagen
   resolverImg(url?: string): string {
     if (!url) return 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?q=80&w=1200&auto=format&fit=crop';
     return url.startsWith('http') ? url : `http://localhost:8080${url}`;
@@ -174,6 +177,15 @@ export class DetalleAlojamientoComponent implements OnInit, OnDestroy, AfterView
     if (this.checkOut && this.checkOut < this.minCheckout()) {
       this.checkOut = null;
     }
+  }
+
+  // ---- Visor de imágenes ----
+  openImage(url?: string): void {
+    this.selectedImageUrl = this.resolverImg(url);
+  }
+
+  closeImage(): void {
+    this.selectedImageUrl = undefined;
   }
 
 }

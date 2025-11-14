@@ -134,6 +134,9 @@
 /* Menú de usuario */
 .user-menu {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .user-avatar {

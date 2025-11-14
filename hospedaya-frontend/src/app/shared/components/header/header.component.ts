@@ -40,9 +40,14 @@ export class HeaderComponent implements OnInit, DoCheck {
     }
     if (!this.user || current?.id !== this.user.id || current?.rol !== this.user.rol) {
       this.user = current;
-      this.isAnfitrion = this.user?.rol === 'ANFITRION';
-      this.isHuesped = this.user?.rol === 'HUESPED';
-      this.isAdmin = this.user?.rol === 'ADMIN';
+
+      // Normalizamos el rol por si viene con espacios o diferente casing
+      const rol = (this.user?.rol || '').toUpperCase().trim();
+
+      this.isAnfitrion = rol === 'ANFITRION';
+      this.isAdmin = rol === 'ADMIN';
+      // Consideramos huésped si el rol es HUESPED o si no es ni admin ni anfitrión
+      this.isHuesped = rol === 'HUESPED' || (!this.isAdmin && !this.isAnfitrion && !!rol);
     }
   }
 

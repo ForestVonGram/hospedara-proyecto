@@ -7,10 +7,17 @@
   <!-- Galería -->
   <div class="gallery" *ngIf="alojamiento as a">
     <figure class="gallery__main">
-      <img [src]="resolverImg(a.imagenes && a.imagenes[0])" alt="Foto principal del alojamiento" />
+      <img [src]="resolverImg(a.imagenes && a.imagenes[0])"
+           alt="Foto principal del alojamiento"
+           class="clickable-image"
+           (click)="openImage(a.imagenes && a.imagenes[0])" />
     </figure>
     <div class="gallery__thumbs" *ngIf="a.imagenes && a.imagenes.length > 1">
-      <img *ngFor="let img of a.imagenes.slice(1,5)" [src]="resolverImg(img)" alt="Imagen del alojamiento" />
+      <img *ngFor="let img of a.imagenes.slice(1,5)"
+           [src]="resolverImg(img)"
+           alt="Imagen del alojamiento"
+           class="clickable-image"
+           (click)="openImage(img)" />
     </div>
   </div>
 
@@ -158,6 +165,13 @@
     </aside>
   </div>
 </section>
+
+<!-- Modal / visor de imagen ampliada -->
+<div class="image-modal" *ngIf="selectedImageUrl" (click)="closeImage()">
+  <div class="image-modal__backdrop"></div>
+  <img class="image-modal__img" [src]="selectedImageUrl" alt="Imagen ampliada del alojamiento" (click)="$event.stopPropagation()" />
+  <button type="button" class="image-modal__close" (click)="closeImage(); $event.stopPropagation()">×</button>
+</div>
 
 <ng-template #estado>
   <div class="listing-detail">

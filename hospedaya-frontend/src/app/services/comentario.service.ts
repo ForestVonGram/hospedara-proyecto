@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 export interface ComentarioResponse {
   id: number;
@@ -30,7 +31,17 @@ export class ComentarioService {
   }
 
   porAlojamiento(alojamientoId: number): Observable<ComentarioResponse[]> {
-    return this.http.get<ComentarioResponse[]>(`${this.baseUrl}/alojamiento/${alojamientoId}`);
+    return this.http
+      .get<ComentarioResponse[]>(`${this.baseUrl}/alojamiento/${alojamientoId}`)
+      .pipe(
+        catchError(err => {
+          // Si no hay comentarios, el backend puede devolver 404; lo tratamos como lista vacía
+          if (err.status === 404) {
+            return of([] as ComentarioResponse[]);
+          }
+          throw err;
+        })
+      );
   }
 
   crear(payload: ComentarioCreateRequest): Observable<ComentarioResponse> {
@@ -38,7 +49,16 @@ export class ComentarioService {
   }
 
   porAnfitrion(anfitrionId: number): Observable<ComentarioResponse[]> {
-    return this.http.get<ComentarioResponse[]>(`${this.baseUrl}/anfitrion/${anfitrionId}`);
+    return this.http
+      .get<ComentarioResponse[]>(`${this.baseUrl}/anfitrion/${anfitrionId}`)
+      .pipe(
+        catchError(err => {
+          if (err.status === 404) {
+            return of([] as ComentarioResponse[]);
+          }
+          throw err;
+        })
+      );
   }
 
   eliminar(id: number): Observable<void> {

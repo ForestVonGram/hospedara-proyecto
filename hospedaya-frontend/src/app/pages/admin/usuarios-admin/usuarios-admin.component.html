@@ -24,7 +24,7 @@
           <div class="usuario-avatar">
             <img *ngIf="avatarUrl(u); else initials" [src]="avatarUrl(u)" [alt]="u.nombre" />
             <ng-template #initials>
-              <span>{{ u.nombre?.slice(0, 1) || 'U' }}</span>
+              <span>{{ u.nombre.slice(0, 1) || 'U' }}</span>
             </ng-template>
           </div>
           <div class="usuario-main">
