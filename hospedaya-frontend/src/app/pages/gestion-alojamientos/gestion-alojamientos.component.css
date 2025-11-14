@@ -1,64 +1,20 @@
-* {
-  box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  padding: 0;
+:root {
+  --purple: #9333ea;
+  --text-light: #6b7280;
 }
 
 body {
-  background-color: #f9fafc;
-  color: #1f1f1f;
+  font-family: 'Inter', sans-serif;
+  background-color: #ffffff;
+  color: #1f2937;
+  margin: 0;
 }
 
-/* NAVBAR */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #1e2a78;
-  color: white;
-  padding: 1rem 2rem;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 700;
-  font-size: 1.2rem;
-}
-
-.logo img {
-  width: 28px;
-}
-
-.navbar nav a {
-  color: #dbe1ff;
-  text-decoration: none;
-  margin: 0 1rem;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.navbar nav a.active {
-  text-decoration: underline;
-  color: white;
-}
-
-.navbar nav a:hover {
-  color: #fff;
-}
-
-.perfil i {
-  background: #fff;
-  color: #1e2a78;
-  border-radius: 50%;
-  padding: 0.5rem;
-}
-
-/* CONTENEDOR PRINCIPAL */
-.contenedor {
-  padding: 2rem 4rem;
+/* CONTENEDOR PRINCIPAL (alineado con otras páginas de anfitrión) */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 2rem auto;
 }
 
 h1 {
@@ -68,7 +24,7 @@ h1 {
 }
 
 .subtitulo {
-  color: #6b7280;
+  color: var(--text-light);
   margin-bottom: 2rem;
 }
 
@@ -80,15 +36,17 @@ h1 {
 }
 
 .alojamiento-card {
-  background: #fff;
+  background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border: 1px solid #eeeeee;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   overflow: hidden;
-  transition: transform 0.2s ease;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .alojamiento-card:hover {
-  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-3px);
 }
 
 .alojamiento-card img {
@@ -109,26 +67,8 @@ h1 {
 
 .ubicacion {
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--text-light);
   margin-bottom: 0.5rem;
-}
-
-.estado {
-  display: inline-block;
-  padding: 0.3rem 0.7rem;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.estado.activo {
-  background-color: #e0ebff;
-  color: #1e40af;
-}
-
-.estado.inactivo {
-  background-color: #f0f0f0;
-  color: #555;
 }
 
 .acciones {
@@ -174,3 +114,4 @@ h1 {
 .btn-flotante:hover {
   background-color: #1d4ed8;
 }
+

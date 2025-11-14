@@ -42,6 +42,11 @@ export const routes: Routes = [
     canActivate: [hostGuard]
   },
   {
+    path: 'reservas-anfitrion',
+    loadComponent: () => import('./pages/reservas-anfitrion/reservas-anfitrion.component').then(m => m.ReservasAnfitrionComponent),
+    canActivate: [hostGuard]
+  },
+  {
     path: 'alojamientos/gestion',
     loadComponent: () => import('./pages/gestion-alojamientos/gestion-alojamientos.component').then(m => m.GestionAlojamientosComponent),
     canActivate: [hostGuard]
@@ -92,6 +97,11 @@ export const routes: Routes = [
   {
     path: 'admin/alojamientos',
     loadComponent: () => import('./pages/admin/alojamientos-admin/alojamientos-admin.component').then(m => m.AlojamientosAdminComponent),
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/alojamientos/:id',
+    loadComponent: () => import('./pages/admin/alojamiento-detalle-admin/alojamiento-detalle-admin.component').then(m => m.AlojamientoDetalleAdminComponent),
     canActivate: [adminGuard]
   },
   {

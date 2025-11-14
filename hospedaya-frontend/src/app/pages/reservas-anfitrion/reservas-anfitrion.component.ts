@@ -4,15 +4,20 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService, Usuario } from '../../services/auth.service';
 import { AlojamientoResponseDTO, AlojamientoService } from '../../services/alojamiento.service';
 import { Reserva, ReservaService } from '../../services/reserva.service';
+import { UsuarioProfile, UsuarioService } from '../../services/usuario.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import {HeaderComponent} from '../../shared/components/header/header.component';
 
 interface ReservaHostVista extends Reserva {
   alojamiento?: AlojamientoResponseDTO;
+  huesped?: UsuarioProfile;
 }
 
 @Component({
   selector: 'app-reservas-anfitrion',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, HeaderComponent],
   templateUrl: './reservas-anfitrion.component.html',
   styleUrls: ['./reservas-anfitrion.component.css']
 })
@@ -26,7 +31,8 @@ export class ReservasAnfitrionComponent implements OnInit {
     private auth: AuthService,
     private router: Router,
     private alojamientoService: AlojamientoService,
-    private reservaService: ReservaService
+    private reservaService: ReservaService,
+    private usuarioService: UsuarioService
   ) {}
 
   ngOnInit(): void {
@@ -59,10 +65,68 @@ export class ReservasAnfitrionComponent implements OnInit {
         this.reservaService.listarTodas().subscribe({
           next: (todas) => {
             const propias = (todas || []).filter(r => idsPropios.has(Number(r.alojamientoId)));
-            this.reservas = propias.map(r => ({ ...r, alojamiento: alojMap.get(Number(r.alojamientoId)) }));
+
+            if (!propias.length) {
+              this.reservas = [];
+              this.cargando = false;
+              return;
+            }
+
+            // IDs únicos de huéspedes
+            const usuarioIds = Array.from(new Set(propias
+              .map(r => Number(r.usuarioId))
+              .filter(id => !!id)
+            ));
+
+            // Si por alguna razón no hay IDs de usuario, al menos mostramos las reservas
+            if (!usuarioIds.length) {
+              this.reservas = propias.map(r => ({
+                ...r,
+                alojamiento: alojMap.get(Number(r.alojamientoId))
+              }));
+              this.cargando = false;
+              return;
+            }
+
+            // 3) Cargar los perfiles de los huéspedes
+            forkJoin(usuarioIds.map(id =>
+              this.usuarioService.obtener(id).pipe(
+                // Si falla un usuario en particular, devolvemos null para no romper todo
+                catchError(() => of(null))
+              )
+            )).subscribe({
+              next: (perfiles) => {
+                const mapaUsuarios = new Map<number, UsuarioProfile>();
+                perfiles.forEach((u, index) => {
+                  const id = usuarioIds[index];
+                  if (u && id) {
+                    mapaUsuarios.set(id, u as UsuarioProfile);
+                  }
+                });
+
+                this.reservas = propias.map(r => ({
+                  ...r,
+                  alojamiento: alojMap.get(Number(r.alojamientoId)),
+                  huesped: mapaUsuarios.get(Number(r.usuarioId))
+                }));
+              },
+              error: (err) => {
+                // Si falla la carga de usuarios, mostramos reservas sin datos de huésped
+                this.error = this.extraerMensajeError(err, 'No se pudieron cargar los datos de los huéspedes.');
+                this.reservas = propias.map(r => ({
+                  ...r,
+                  alojamiento: alojMap.get(Number(r.alojamientoId))
+                }));
+              },
+              complete: () => {
+                this.cargando = false;
+              }
+            });
           },
-          error: (err) => this.error = this.extraerMensajeError(err, 'No se pudieron cargar las reservas.'),
-          complete: () => this.cargando = false
+          error: (err) => {
+            this.error = this.extraerMensajeError(err, 'No se pudieron cargar las reservas.');
+            this.cargando = false;
+          }
         });
       },
       error: (err) => {

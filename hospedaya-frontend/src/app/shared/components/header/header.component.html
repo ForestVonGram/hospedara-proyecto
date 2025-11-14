@@ -25,6 +25,7 @@
         @if (isAnfitrion) {
           <a [routerLink]="['/dashboard-anfitrion']" routerLinkActive="active">Dashboard</a>
           <a [routerLink]="['/alojamientos/gestion']" routerLinkActive="active">Mis Alojamientos</a>
+          <a [routerLink]="['/reservas-anfitrion']" routerLinkActive="active">Reservas recibidas</a>
           <a [routerLink]="['/alojamientos/nuevo']" routerLinkActive="active" class="btn-create">+ Crear alojamiento</a>
         }
 
@@ -70,6 +71,9 @@
                 @if (isAnfitrion) {
                   <a [routerLink]="['/alojamientos/gestion']" class="menu-item">
                     <span>Gestionar Alojamientos</span>
+                  </a>
+                  <a [routerLink]="['/reservas-anfitrion']" class="menu-item">
+                    <span>Reservas recibidas</span>
                   </a>
                 }
                 @if (isAdmin) {

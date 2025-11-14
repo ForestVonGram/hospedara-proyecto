@@ -1,19 +1,4 @@
-<header class="navbar">
-  <div class="logo">
-    <span class="icon">🏠</span>
-    <h1>HospedaYa</h1>
-  </div>
-
-  <nav>
-    <ul>
-      <li><a routerLink="/dashboard-anfitrion">Dashboard Anfitrión</a></li>
-      <li><a routerLink="/alojamientos/gestion">Gestión de Propiedades</a></li>
-      <li><a class="active">Reservas Recibidas</a></li>
-    </ul>
-  </nav>
-
-  <div class="user-icon">👤</div>
-</header>
+<app-header></app-header>
 
 <main class="container">
   <h2>Reservas Recibidas</h2>
@@ -27,10 +12,16 @@
     <div class="reserva-info">
       <h3>{{ r.alojamiento?.titulo || ('Alojamiento #' + r.alojamientoId) }}</h3>
       <p class="fecha">📅 {{ r.fechaInicio }} – {{ r.fechaFin }}</p>
+      <p class="huesped" *ngIf="r.huesped">
+        👤 {{ r.huesped.nombre }} · {{ r.huesped.email }}<span *ngIf="r.huesped.telefono"> · {{ r.huesped.telefono }}</span>
+      </p>
+      <p class="huesped" *ngIf="!r.huesped">
+        👤 Huésped #{{ r.usuarioId }}
+      </p>
     </div>
     <div class="estado">
       <span [ngClass]="estadoClase(estadoVisual(r))">{{ estadoVisual(r) }}</span>
-      <a class="btn" [routerLink]="['/reservas-anfitrion', r.id]">ℹ Ver detalles</a>
+      <button class="btn" [routerLink]="['/reservas-anfitrion', r.id]">ℹ Ver detalles</button>
       <button class="btn confirmar" (click)="confirmar(r)" [disabled]="(r.estado || '').toUpperCase() !== 'PENDIENTE'">✔ Confirmar</button>
       <button class="btn rechazar" (click)="cancelar(r)" [disabled]="(r.estado || '').toUpperCase() === 'CANCELADA'">✖ Rechazar</button>
     </div>

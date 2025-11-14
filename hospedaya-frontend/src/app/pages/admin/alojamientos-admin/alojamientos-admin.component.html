@@ -23,6 +23,7 @@
         <div class="alojamiento-card__header">
           <div class="alojamiento-main">
             <h2>{{ a.titulo }}</h2>
+            <p class="alojamiento-id">ID: #{{ a.id }}</p>
             <p class="direccion">{{ a.direccion }}</p>
             <p class="anfitrion">Administrado por: <strong>{{ a.anfitrionNombre || '—' }}</strong></p>
           </div>
@@ -48,6 +49,10 @@
             <span class="label">Reseñas</span>
             <span class="value">{{ a.comentariosCount }}</span>
           </div>
+        </div>
+
+        <div class="alojamiento-actions">
+          <a [routerLink]="['/admin/alojamientos', a.id]">Ver detalles</a>
         </div>
       </article>
     </div>

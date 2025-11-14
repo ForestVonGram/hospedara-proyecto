@@ -1,0 +1,204 @@
+<app-header></app-header>
+
+<main class="admin-page">
+  <section class="admin-page__header">
+    <h1>Detalle de alojamiento</h1>
+    <p>Revisa todos los datos del alojamiento, sus servicios, fotos, ubicación y actividad.</p>
+  </section>
+
+  <section class="admin-page__content" *ngIf="!cargando; else loadingTpl">
+    <ng-container *ngIf="alojamiento as a; else errorTpl">
+      <div class="acciones-superiores">
+        <button class="btn-link" (click)="volverListado()">← Volver al listado</button>
+        <span class="badge">ID: {{ a.id }}</span>
+      </div>
+
+      <!-- Galería de imágenes -->
+      <section class="card gallery-card" *ngIf="a.imagenes && a.imagenes.length > 0">
+        <div class="gallery">
+          <figure class="gallery__main">
+            <img [src]="resolverImg(a.imagenes[0])"
+                 alt="Foto principal del alojamiento"
+                 class="clickable-image"
+                 (click)="openImage(a.imagenes[0])" />
+          </figure>
+          <div class="gallery__thumbs" *ngIf="a.imagenes.length > 1">
+            <img *ngFor="let img of a.imagenes.slice(1,5)"
+                 [src]="resolverImg(img)"
+                 alt="Imagen del alojamiento"
+                 class="clickable-image"
+                 (click)="openImage(img)" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Datos principales -->
+      <section class="card">
+        <h2>
+          <input
+            type="text"
+            [(ngModel)]="a.titulo"
+            class="input-text titulo-input"
+            placeholder="Título del alojamiento"
+          />
+        </h2>
+        <label class="label">Dirección</label>
+        <input
+          type="text"
+          [(ngModel)]="a.direccion"
+          class="input-text"
+          placeholder="Dirección completa"
+        />
+
+        <div class="detalle-grid">
+          <div>
+            <span class="label">Precio por noche</span>
+            <input
+              type="number"
+              [(ngModel)]="a.precioPorNoche"
+              class="input-text"
+              min="0"
+            />
+          </div>
+          <div>
+            <span class="label">Capacidad máxima</span>
+            <input
+              type="number"
+              [(ngModel)]="a.maxHuespedes"
+              class="input-text"
+              min="1"
+            />
+          </div>
+          <div *ngIf="a.anfitrionId">
+            <span class="label">ID anfitrión</span>
+            <div class="valor">#{{ a.anfitrionId }}</div>
+          </div>
+          <div>
+            <span class="label">Coordenadas</span>
+            <div class="coords-grid">
+              <input
+                type="number"
+                [(ngModel)]="a.latitud"
+                class="input-text"
+                placeholder="Latitud"
+                step="0.000001"
+              />
+              <input
+                type="number"
+                [(ngModel)]="a.longitud"
+                class="input-text"
+                placeholder="Longitud"
+                step="0.000001"
+              />
+            </div>
+          </div>
+        </div>
+
+        <h3>Descripción</h3>
+        <textarea
+          rows="4"
+          [(ngModel)]="a.descripcion"
+          class="textarea"
+          placeholder="Descripción del alojamiento"
+        ></textarea>
+      </section>
+
+      <!-- Servicios (editables) -->
+      <section class="card">
+        <h3>Servicios</h3>
+        <p class="hint">Marca los servicios que ofrece este alojamiento.</p>
+        <ng-container *ngIf="serviciosCatalogo.length > 0; else sinServiciosCatalogo">
+          <ul class="services">
+            <li *ngFor="let s of serviciosCatalogo">
+              <label class="service-item">
+                <input
+                  type="checkbox"
+                  [checked]="selectedServicios.has(s.id)"
+                  (change)="toggleServicio(s.id, $event.target.checked)"
+                />
+                <span>{{ s.nombre }}</span>
+              </label>
+            </li>
+          </ul>
+        </ng-container>
+        <ng-template #sinServiciosCatalogo>
+          <p class="hint">No hay servicios configurados en el sistema.</p>
+        </ng-template>
+      </section>
+
+      <!-- Ubicación en el mapa (editable con clic) -->
+      <section class="card">
+        <h3>Ubicación en el mapa</h3>
+        <p class="location-info">📍 {{ a.direccion || 'Haz clic en el mapa para establecer la ubicación' }}</p>
+        <div id="map-alojamiento-admin" class="map-detalle"></div>
+      </section>
+
+      <!-- Botón de guardado general -->
+      <section class="card acciones-guardado">
+        <button type="button" class="btn-primary" (click)="guardarCambios()" [disabled]="guardando">
+          {{ guardando ? 'Guardando…' : 'Guardar cambios' }}
+        </button>
+        <span *ngIf="mensaje" class="mensaje-ok">{{ mensaje }}</span>
+        <span *ngIf="error" class="mensaje-error">{{ error }}</span>
+      </section>
+
+      <!-- Actividad: reservas y comentarios -->
+      <section class="actividad-grid">
+        <div class="actividad-col">
+          <h3>Reservas del alojamiento</h3>
+          <p *ngIf="reservas.length === 0" class="actividad-empty">No hay reservas registradas para este alojamiento.</p>
+          <ul *ngIf="reservas.length > 0" class="actividad-list">
+            <li *ngFor="let r of reservas">
+              <div class="actividad-item">
+                <div class="actividad-header">
+                  <span class="actividad-label">Reserva #{{ r.id }}</span>
+                  <span class="actividad-sub">Usuario #{{ r.usuarioId }}</span>
+                </div>
+                <div class="actividad-fechas">
+                  <span>{{ r.fechaInicio }} → {{ r.fechaFin }}</span>
+                  <span *ngIf="r.estado" class="actividad-estado">{{ r.estado }}</span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="actividad-col">
+          <h3>Comentarios y calificaciones</h3>
+          <p *ngIf="comentarios.length === 0" class="actividad-empty">Este alojamiento aún no tiene comentarios.</p>
+          <ul *ngIf="comentarios.length > 0" class="actividad-list">
+            <li *ngFor="let c of comentarios">
+              <div class="actividad-item">
+                <div class="actividad-header">
+                  <span class="actividad-label">{{ c.usuarioNombre || ('Usuario #' + c.usuarioId) }}</span>
+                  <span class="actividad-sub">Calificación: {{ c.calificacion }}/5</span>
+                </div>
+                <p class="actividad-texto">{{ c.texto }}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </ng-container>
+  </section>
+</main>
+
+<ng-template #loadingTpl>
+  <section class="admin-page__content">
+    <p>Cargando alojamiento...</p>
+  </section>
+</ng-template>
+
+<ng-template #errorTpl>
+  <section class="admin-page__content">
+    <p class="alerta alerta-error">{{ error || 'Alojamiento no encontrado.' }}</p>
+    <button class="btn-link" (click)="volverListado()">Volver al listado</button>
+  </section>
+</ng-template>
+
+<!-- Modal de imagen ampliada -->
+<div class="image-modal" *ngIf="selectedImageUrl" (click)="closeImage()">
+  <div class="image-modal__backdrop"></div>
+  <img class="image-modal__img" [src]="selectedImageUrl" alt="Imagen ampliada del alojamiento" (click)="$event.stopPropagation()" />
+  <button type="button" class="image-modal__close" (click)="closeImage(); $event.stopPropagation()">×</button>
+</div>

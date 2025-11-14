@@ -1,6 +1,9 @@
 package com.hospedaya.backend.presentation.controller;
 
 import com.hospedaya.backend.application.dto.login.LoginRequest;
+import com.hospedaya.backend.application.dto.usuario.UsuarioResponseDTO;
+import com.hospedaya.backend.application.dto.usuario.UsuarioUpdateDTO;
+import com.hospedaya.backend.application.mapper.UsuarioMapper;
 import com.hospedaya.backend.application.service.base.UsuarioService;
 import com.hospedaya.backend.domain.entity.Usuario;
 import com.hospedaya.backend.exception.ResourceNotFoundException;
@@ -33,6 +36,8 @@ public class UsuarioController {
     private UsuarioRepository usuarioRepository;
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private UsuarioMapper usuarioMapper;
 
     @Operation(summary = "Listar usuarios")
     @ApiResponses({
@@ -41,9 +46,13 @@ public class UsuarioController {
             @ApiResponse(responseCode = "404", description = "Usuarios no encontrados")
     })
     @GetMapping
-    public ResponseEntity<List<Usuario>> listarUsuarios() {
-        List<Usuario> usuarios = usuarioRepository.findAll();
-        return ResponseEntity.ok(usuarios);
+    public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
+        // Importante: devolvemos DTOs planos para evitar ciclos de serialización
+        List<Usuario> usuarios = usuarioService.listarUsuarios();
+        List<UsuarioResponseDTO> response = usuarios.stream()
+                .map(usuarioMapper::toResponse)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Obtener un usuario por ID")
@@ -56,7 +65,8 @@ public class UsuarioController {
     public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable Long id) {
         try {
             Usuario usuario = usuarioService.findById(id);
-            return ResponseEntity.ok(usuario);
+            UsuarioResponseDTO responseDTO = usuarioMapper.toResponse(usuario);
+            return ResponseEntity.ok(responseDTO);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -96,10 +106,32 @@ public class UsuarioController {
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos")
     })
-    public ResponseEntity<?> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+    public ResponseEntity<?> actualizarUsuario(
+            @PathVariable Long id,
+            @RequestBody @jakarta.validation.Valid UsuarioUpdateDTO dto) {
         try {
-            Usuario actualizado = usuarioService.actualizarUsuario(id, usuario);
-            return ResponseEntity.ok(actualizado);
+            // Construimos un Usuario parcial con los campos presentes en el DTO
+            Usuario cambios = new Usuario();
+            cambios.setNombre(dto.getNombre());
+            cambios.setEmail(dto.getEmail());
+            cambios.setPassword(dto.getPassword());
+            cambios.setTelefono(dto.getTelefono());
+            cambios.setFotoPerfilUrl(dto.getFotoPerfilUrl());
+
+            Usuario actualizado = usuarioService.actualizarUsuario(id, cambios);
+
+            // Respuesta plana, similar a /usuarios/me
+            java.util.Map<String, Object> body = new java.util.HashMap<>();
+            body.put("id", actualizado.getId());
+            body.put("nombre", actualizado.getNombre());
+            body.put("email", actualizado.getEmail());
+            body.put("telefono", actualizado.getTelefono());
+            body.put("fotoPerfilUrl", actualizado.getFotoPerfilUrl());
+            body.put("rol", actualizado.getRol() != null ? actualizado.getRol().name() : null);
+            body.put("fechaRegistro", actualizado.getFechaRegistro());
+            body.put("activo", actualizado.getActivo());
+
+            return ResponseEntity.ok(body);
         } catch (com.hospedaya.backend.exception.ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {

@@ -1,3 +1,5 @@
+<app-header></app-header>
+
 <main class="container" *ngIf="!cargando">
   <div *ngIf="error" class="error">{{ error }}</div>
   <section class="card" *ngIf="reserva">
@@ -27,8 +29,14 @@
         <span>#{{ reserva.id }}</span>
       </div>
       <div class="campo">
-        <label>Huésped (ID)</label>
-        <span>#{{ reserva.usuarioId }}</span>
+        <label>Huésped</label>
+        <span *ngIf="huesped; else soloId">
+          {{ huesped.nombre }}  {{ huesped.email }}
+          <span *ngIf="huesped.telefono">  {{ huesped.telefono }}</span>
+        </span>
+        <ng-template #soloId>
+          <span>#{{ reserva.usuarioId }}</span>
+        </ng-template>
       </div>
       <div class="campo total">
         <label>Total estimado</label>

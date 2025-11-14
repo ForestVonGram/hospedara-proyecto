@@ -15,4 +15,7 @@ public class UsuarioUpdateDTO {
     private String password;
 
     private String telefono;
+
+    // URL pública de la foto de perfil
+    private String fotoPerfilUrl;
 }

@@ -49,8 +49,24 @@ public class AdminController {
 
     @GetMapping("/usuarios")
     @Operation(summary = "Listar todos los usuarios")
-    public ResponseEntity<List<Usuario>> listarUsuarios() {
-        return ResponseEntity.ok(usuarioRepository.findAll());
+    public ResponseEntity<List<com.hospedaya.backend.application.dto.usuario.UsuarioResponseDTO>> listarUsuarios() {
+        // Igual que en UsuarioController: devolver DTOs planos para evitar ciclos
+        List<Usuario> usuarios = usuarioService.listarUsuarios();
+        List<com.hospedaya.backend.application.dto.usuario.UsuarioResponseDTO> response = usuarios.stream()
+                .map(u -> {
+                    com.hospedaya.backend.application.dto.usuario.UsuarioResponseDTO dto = new com.hospedaya.backend.application.dto.usuario.UsuarioResponseDTO();
+                    dto.setId(u.getId());
+                    dto.setNombre(u.getNombre());
+                    dto.setEmail(u.getEmail());
+                    dto.setTelefono(u.getTelefono());
+                    dto.setFotoPerfilUrl(u.getFotoPerfilUrl());
+                    dto.setRol(u.getRol());
+                    dto.setFechaRegistro(u.getFechaRegistro());
+                    dto.setActivo(u.getActivo());
+                    return dto;
+                })
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/usuarios/{id}/activar")

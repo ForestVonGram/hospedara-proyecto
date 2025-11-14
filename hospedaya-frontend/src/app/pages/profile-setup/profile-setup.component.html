@@ -1,19 +1,33 @@
 <div class="setup-container">
   <h1>Editar perfil</h1>
-  <p>Actualiza tu foto y tu número de teléfono.</p>
+  <p>Actualiza tu foto, tu correo y tu número de teléfono.</p>
 
   <div class="card">
     <div class="avatar-section">
-      <div class="avatar" [style.background-image]="previewUrl ? 'url(' + previewUrl + ')' : 'none'"></div>
-      <label class="btn">
-        Cambiar foto
-        <input type="file" accept="image/*" (change)="onFileChange($event)" hidden />
-      </label>
+      <h3 class="section-title">Foto de perfil</h3>
+      <div class="upload-box">
+        <div class="upload-icon" aria-hidden="true">
+          <!-- icono cámara similar al de alojamientos -->
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 3l-2 2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2h-2l-2-2H9z" stroke="currentColor" stroke-width="1.6" fill="none"/>
+            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6" fill="none"/>
+          </svg>
+        </div>
+        <div class="avatar" [style.background-image]="previewUrl ? 'url(' + previewUrl + ')' : 'none'"></div>
+        <p class="upload-copy">Sube una nueva foto de perfil. Solo imágenes (JPG, PNG, GIF, WEBP) hasta 5MB.</p>
+        <label class="btn">
+          Seleccionar imagen
+          <input type="file" accept="image/*" (change)="onFileChange($event)" hidden />
+        </label>
+      </div>
     </div>
 
     <div class="form-section">
       <label>Nombre</label>
       <input type="text" [(ngModel)]="nombre" placeholder="Tu nombre" />
+
+      <label>Correo</label>
+      <input type="email" [(ngModel)]="email" placeholder="tu@correo.com" />
 
       <label>Teléfono</label>
       <input type="tel" [(ngModel)]="telefono" placeholder="Ej: +57 300 123 4567" />

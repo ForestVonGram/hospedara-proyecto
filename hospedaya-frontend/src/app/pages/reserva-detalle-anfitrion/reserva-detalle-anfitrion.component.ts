@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Reserva, ReservaService } from '../../services/reserva.service';
 import { Alojamiento, AlojamientoService } from '../../services/alojamiento.service';
+import { HeaderComponent } from '../../shared/components/header/header.component';
+import { UsuarioProfile, UsuarioService } from '../../services/usuario.service';
 
 @Component({
   selector: 'app-reserva-detalle-anfitrion',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, HeaderComponent],
   templateUrl: './reserva-detalle-anfitrion.component.html',
   styleUrls: ['./reserva-detalle-anfitrion.component.css']
 })
@@ -16,9 +18,11 @@ export class ReservaDetalleAnfitrionComponent implements OnInit {
   private router = inject(Router);
   private reservaService = inject(ReservaService);
   private alojamientoService = inject(AlojamientoService);
+  private usuarioService = inject(UsuarioService);
 
   reserva?: Reserva;
   alojamiento?: Alojamiento;
+  huesped?: UsuarioProfile;
   cargando = false;
   error = '';
 
@@ -31,9 +35,22 @@ export class ReservaDetalleAnfitrionComponent implements OnInit {
     this.reservaService.obtener(id).subscribe({
       next: (r) => {
         this.reserva = r;
+
+        // Cargar alojamiento
         const aloId = Number(r.alojamientoId);
         if (aloId) {
           this.alojamientoService.obtener(aloId).subscribe(a => this.alojamiento = a);
+        }
+
+        // Cargar datos del huésped
+        const userId = Number(r.usuarioId);
+        if (userId) {
+          this.usuarioService.obtener(userId).subscribe({
+            next: (u) => this.huesped = u,
+            error: () => {
+              // si falla, simplemente dejamos el ID
+            }
+          });
         }
       },
       error: () => this.error = 'No se pudo cargar la reserva',

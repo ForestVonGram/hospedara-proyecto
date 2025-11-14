@@ -70,6 +70,21 @@
   gap: 0.75rem;
 }
 
+.alojamiento-actions {
+  margin-top: 0.5rem;
+}
+
+.alojamiento-actions a {
+  font-size: 0.85rem;
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.alojamiento-actions a:hover {
+  text-decoration: underline;
+}
+
 .alojamiento-card__header {
   display: flex;
   gap: 0.75rem;
@@ -79,6 +94,12 @@
 .alojamiento-main h2 {
   margin: 0;
   font-size: 1rem;
+}
+
+.alojamiento-main .alojamiento-id {
+  margin: 0.1rem 0;
+  font-size: 0.8rem;
+  color: #9ca3af;
 }
 
 .alojamiento-main .direccion {
