@@ -1,34 +1,4 @@
-<header class="site-header">
-  <div class="container header-inner">
-    <a class="brand" href="/"><h1 class="brand-title">Hospeda Ya</h1></a>
-    <nav class="main-nav" aria-label="Main Navigation">
-      <a href="#">Inicio</a>
-      <a href="#">Hospedajes</a>
-      <a href="#">Reservas</a>
-      <a href="#">Comentarios</a>
-    </nav>
-    <div class="header-actions">
-      <ng-container *ngIf="user; else authLinks">
-        <div class="user-menu" [class.open]="showMenu">
-          <div class="avatar" (click)="toggleMenu()" [style.background-image]="avatarUrl() ? 'url(' + (avatarUrl() + '?v=' + (user.fotoPerfilUrl ? '' : '')) + ')' : 'none'"></div>
-          <nav class="dropdown" *ngIf="showMenu">
-            <a routerLink="/">Inicio</a>
-            <a routerLink="/reservas">Mis Reservas</a>
-            <a>Comentarios</a>
-            <a routerLink="/perfil">Configuración</a>
-            <hr />
-            <a (click)="logout()">Cerrar sesión</a>
-          </nav>
-        </div>
-      </ng-container>
-      <ng-template #authLinks>
-        <a class="login" routerLink="/login">Iniciar Sesión</a>
-        <a class="btn btn-outline" routerLink="/register">Registrarse</a>
-      </ng-template>
-    </div>
-  </div>
-</header>
-
+<app-header></app-header>
 <main>
   <!-- Hero Section -->
   <section class="hero">
@@ -138,10 +108,10 @@
     <div>
       <h5>Enlaces rápidos</h5>
       <ul class="links">
-        <li><a href="#">Sobre nosotros</a></li>
-        <li><a href="#">Carreras</a></li>
+        <li><a routerLink="/sobre-nosotros">Sobre nosotros</a></li>
+        <li><a routerLink="/carreras">Carreras</a></li>
         <li><a href="#">Blog</a></li>
-        <li><a href="#">Prensa</a></li>
+        <li><a routerLink="/prensa">Prensa</a></li>
       </ul>
     </div>
     <div>

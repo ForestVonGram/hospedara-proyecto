@@ -2,20 +2,18 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { UsuarioService, UsuarioProfile } from '../../services/usuario.service';
 import { AuthService } from '../../services/auth.service';
+import {HeaderComponent} from '../../shared/components/header/header.component';
 
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, HeaderComponent],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css']
 })
 export class LandingComponent {
   protected readonly year = new Date().getFullYear();
-  user?: UsuarioProfile;
-  showMenu = false;
 
   // Campos de búsqueda
   destino = '';
@@ -23,7 +21,7 @@ export class LandingComponent {
   checkout = '';
   huespedes: number | null = null;
 
-  constructor(private usuarioService: UsuarioService, private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private router: Router) {}
 
   ngOnInit() {
     // Restringe landing si ya está logueado
@@ -65,11 +63,4 @@ export class LandingComponent {
       }
     });
   }
-
-  avatarUrl(): string | null {
-    const u = this.user?.fotoPerfilUrl;
-    return u ? (u.startsWith('http') ? u : `http://localhost:8080${u}`) : null;
-  }
-  toggleMenu(){ this.showMenu = !this.showMenu; }
-  logout(){ this.auth.logout(); this.router.navigate(['/']); }
 }
