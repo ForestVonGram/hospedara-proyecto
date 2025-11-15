@@ -104,9 +104,11 @@ export class AlojamientoService {
     return this.http.put<AlojamientoResponseDTO>(`${this.baseUrl}/${id}`, req);
   }
 
-  // Eliminar por id
-  eliminarAlojamiento(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  // Eliminar por id (requiere contraseña en el backend)
+  eliminarAlojamiento(id: number, password: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`, {
+      body: { password }
+    });
   }
 
   // Listado general para página de resultados (mapea a modelo de UI)

@@ -39,6 +39,7 @@ export class AlojamientoDetalleAdminComponent implements OnInit {
 
   cargando = false;
   guardando = false;
+  eliminando = false;
   error: string | null = null;
   mensaje: string | null = null;
 
@@ -291,6 +292,47 @@ export class AlojamientoDetalleAdminComponent implements OnInit {
     } finally {
       this.guardando = false;
     }
+  }
+
+  eliminarAlojamiento(): void {
+    if (!this.alojamiento || this.eliminando) return;
+    const ok = window.confirm('¿Seguro que deseas eliminar este alojamiento? Esta acción no se puede deshacer.');
+    if (!ok) return;
+
+    const password = prompt('Por seguridad, introduce la contraseña de tu cuenta para confirmar la eliminación:');
+    if (password === null) {
+      return; // usuario canceló
+    }
+    if (!password || password.trim().length === 0) {
+      this.error = 'Debes ingresar tu contraseña para eliminar el alojamiento.';
+      return;
+    }
+
+    this.eliminando = true;
+    this.error = null;
+    this.mensaje = null;
+
+    this.alojamientoService.eliminarAlojamiento(this.alojamiento.id, password).subscribe({
+      next: () => {
+        this.mensaje = 'Alojamiento eliminado correctamente.';
+        this.router.navigate(['/admin/alojamientos']);
+      },
+      error: (err) => {
+        if (err?.status === 409) {
+          this.error = 'No se puede eliminar el alojamiento porque tiene reservas activas.';
+        } else if (typeof err?.error === 'string' && err.error.trim().length > 0) {
+          this.error = err.error;
+        } else if (err?.error?.message) {
+          this.error = err.error.message;
+        } else {
+          this.error = 'No se pudo eliminar el alojamiento. Inténtalo nuevamente.';
+        }
+        this.eliminando = false;
+      },
+      complete: () => {
+        this.eliminando = false;
+      }
+    });
   }
 
   volverListado(): void {

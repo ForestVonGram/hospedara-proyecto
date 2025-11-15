@@ -83,6 +83,41 @@ export class AlojamientosAdminComponent implements OnInit {
       });
   }
 
+  eliminar(a: AlojamientoAdminItem): void {
+    const ok = window.confirm(`¿Seguro que quieres eliminar \"${a.titulo}\"? Esta acción no se puede deshacer.`);
+    if (!ok) return;
+
+    const password = prompt('Por seguridad, introduce la contraseña de tu cuenta para confirmar la eliminación:');
+    if (password === null) {
+      return; // usuario canceló
+    }
+    if (!password || password.trim().length === 0) {
+      this.error = 'Debes ingresar tu contraseña para eliminar el alojamiento.';
+      return;
+    }
+
+    this.cargando = true;
+    this.error = null;
+    this.alojamientoService.eliminarAlojamiento(a.id, password).subscribe({
+      next: () => {
+        // Volver a cargar la lista tras eliminar
+        this.cargarDatos();
+      },
+      error: (err) => {
+        if (err?.status === 409) {
+          this.error = 'No se puede eliminar el alojamiento porque tiene reservas activas.';
+        } else if (typeof err?.error === 'string' && err.error.trim().length > 0) {
+          this.error = err.error;
+        } else if (err?.error?.message) {
+          this.error = err.error.message;
+        } else {
+          this.error = 'No se pudo eliminar el alojamiento. Inténtalo nuevamente.';
+        }
+        this.cargando = false;
+      }
+    });
+  }
+
   private agruparReservasPorAlojamiento(reservas: Reserva[]): Map<number, number> {
     const map = new Map<number, number>();
     for (const r of reservas) {

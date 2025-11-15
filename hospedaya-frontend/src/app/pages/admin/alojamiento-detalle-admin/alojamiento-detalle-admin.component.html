@@ -135,9 +135,14 @@
 
       <!-- Botón de guardado general -->
       <section class="card acciones-guardado">
-        <button type="button" class="btn-primary" (click)="guardarCambios()" [disabled]="guardando">
-          {{ guardando ? 'Guardando…' : 'Guardar cambios' }}
-        </button>
+        <div class="acciones-guardado__buttons">
+          <button type="button" class="btn-primary" (click)="guardarCambios()" [disabled]="guardando || eliminando">
+            {{ guardando ? 'Guardando…' : 'Guardar cambios' }}
+          </button>
+          <button type="button" class="btn-danger" (click)="eliminarAlojamiento()" [disabled]="guardando || eliminando">
+            {{ eliminando ? 'Eliminando…' : 'Eliminar alojamiento' }}
+          </button>
+        </div>
         <span *ngIf="mensaje" class="mensaje-ok">{{ mensaje }}</span>
         <span *ngIf="error" class="mensaje-error">{{ error }}</span>
       </section>

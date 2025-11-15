@@ -3,13 +3,80 @@
 <main class="admin-page">
   <header class="admin-page__header">
     <h1>Gestión de reservas</h1>
-    <p>Consulta y supervisa las reservas y sus estados de pago.</p>
+    <p>Consulta y supervisa todas las reservas de la plataforma.</p>
   </header>
 
   <section class="admin-page__content">
-    <p class="placeholder">
-      Vista base para el listado y filtrado de reservas, estados de pago y posibles
-      acciones administrativas.
-    </p>
+    <div class="toolbar">
+      <input
+        type="text"
+        placeholder="Buscar por ID, huésped o alojamiento..."
+        [(ngModel)]="filtro"
+      />
+    </div>
+
+    <div *ngIf="cargando" class="info">Cargando reservas...</div>
+    <div *ngIf="error" class="info error">{{ error }}</div>
+
+    <div class="table-wrapper" *ngIf="!cargando && !error">
+      <table class="reservas-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Huésped</th>
+            <th>Alojamiento</th>
+            <th>Fecha inicio</th>
+            <th>Fecha fin</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of reservasFiltradas">
+            <td>#{{ r.id }}</td>
+            <td>
+              <div class="cell-main">
+                <div class="cell-title">
+                  {{ r.usuarioNombre || ('Usuario #' + r.usuarioId) }}
+                </div>
+                <div class="cell-sub" *ngIf="r.usuarioEmail">
+                  {{ r.usuarioEmail }}
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="cell-main">
+                <div class="cell-title">
+                  {{ r.alojamientoTitulo || ('Alojamiento #' + r.alojamientoId) }}
+                </div>
+                <div class="cell-sub">
+                  ID #{{ r.alojamientoId }}
+                </div>
+              </div>
+            </td>
+            <td>{{ r.fechaInicio }}</td>
+            <td>{{ r.fechaFin }}</td>
+            <td>
+              <span class="chip" [ngClass]="'estado-' + (r.estado || '').toLowerCase()">
+                {{ r.estado || '—' }}
+              </span>
+            </td>
+            <td>
+              <button
+                type="button"
+                class="btn-link"
+                [disabled]="(r.estado || '').toUpperCase() === 'CANCELADA'"
+                (click)="cancelarReserva(r)"
+              >
+                {{ (r.estado || '').toUpperCase() === 'CANCELADA' ? 'Cancelada' : 'Cancelar' }}
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="reservasFiltradas.length === 0">
+            <td colspan="7" class="empty">No hay reservas que coincidan con el filtro actual.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 </main>

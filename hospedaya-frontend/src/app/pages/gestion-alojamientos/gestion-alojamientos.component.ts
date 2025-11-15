@@ -69,12 +69,24 @@ export class GestionAlojamientosComponent implements OnInit {
   }
 
   eliminar(a: AlojamientoResponseDTO) {
-    if (!confirm(`¿Seguro que quieres eliminar \"${a.titulo}\"? Esta acción no se puede deshacer.`)) {
+    const confirmar = confirm(`¿Seguro que quieres eliminar \"${a.titulo}\"? Esta acción no se puede deshacer.`);
+    if (!confirmar) {
       return;
     }
+
+    const password = prompt('Por seguridad, introduce la contraseña de tu cuenta para confirmar la eliminación:');
+    if (password === null) {
+      // Usuario canceló el prompt
+      return;
+    }
+    if (!password || password.trim().length === 0) {
+      this.toast.show('Debes ingresar tu contraseña para eliminar el alojamiento.', 'warning');
+      return;
+    }
+
     this.cargando = true;
     this.error = '';
-    this.alojamientoService.eliminarAlojamiento(a.id).subscribe({
+    this.alojamientoService.eliminarAlojamiento(a.id, password).subscribe({
       next: () => {
         this.toast.show('Alojamiento eliminado correctamente', 'success');
         if (this.anfitrionId != null) {

@@ -3,6 +3,7 @@ package com.hospedaya.backend.presentation.controller;
 import com.hospedaya.backend.application.dto.alojamiento.AlojamientoRequestDTO;
 import com.hospedaya.backend.application.dto.alojamiento.AlojamientoResponseDTO;
 import com.hospedaya.backend.application.dto.alojamiento.AlojamientoUpdateDTO;
+import com.hospedaya.backend.application.dto.alojamiento.AlojamientoDeleteRequestDTO;
 import com.hospedaya.backend.application.mapper.AlojamientoMapper;
 import com.hospedaya.backend.application.service.base.AlojamientoService;
 import com.hospedaya.backend.application.service.base.UsuarioService;
@@ -16,6 +17,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,13 +33,21 @@ public class AlojamientoController {
     private final UsuarioService usuarioService;
     private final AlojamientoMapper alojamientoMapper;
     private final com.hospedaya.backend.infraestructure.repository.ReservaRepository reservaRepository;
+    private final com.hospedaya.backend.infraestructure.repository.UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AlojamientoController(AlojamientoService alojamientoService, UsuarioService usuarioService, AlojamientoMapper alojamientoMapper,
-                                 com.hospedaya.backend.infraestructure.repository.ReservaRepository reservaRepository) {
+    public AlojamientoController(AlojamientoService alojamientoService,
+                                 UsuarioService usuarioService,
+                                 AlojamientoMapper alojamientoMapper,
+                                 com.hospedaya.backend.infraestructure.repository.ReservaRepository reservaRepository,
+                                 com.hospedaya.backend.infraestructure.repository.UsuarioRepository usuarioRepository,
+                                 PasswordEncoder passwordEncoder) {
         this.alojamientoService = alojamientoService;
         this.usuarioService = usuarioService;
         this.alojamientoMapper = alojamientoMapper;
         this.reservaRepository = reservaRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping 
@@ -157,24 +168,52 @@ public class AlojamientoController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Eliminar alojamiento por ID")
+    @Operation(summary = "Eliminar alojamiento por ID (requiere contraseña del usuario autenticado)")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Alojamiento eliminado correctamente"),
-            @ApiResponse(responseCode = "404", description = "Alojamiento no encontrado")
+            @ApiResponse(responseCode = "400", description = "Contraseña requerida o inválida"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "El alojamiento no pertenece al usuario autenticado"),
+            @ApiResponse(responseCode = "404", description = "Alojamiento no encontrado"),
+            @ApiResponse(responseCode = "409", description = "No se puede eliminar por tener reservas activas")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarAlojamiento(@PathVariable Long id) { // Método RESTful: No Content
+    public ResponseEntity<?> eliminarAlojamiento(@PathVariable Long id,
+                                                 @RequestBody(required = false) AlojamientoDeleteRequestDTO request,
+                                                 Authentication authentication) { // Método RESTful: No Content
         System.out.println("Solicitando eliminación del alojamiento con id = " + id);
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+        }
+        if (request == null || request.getPassword() == null || request.getPassword().isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La contraseña es requerida para eliminar el alojamiento");
+        }
         try {
+            // Buscar usuario autenticado por email (mismo criterio que /usuarios/me)
+            var usuarioOpt = usuarioRepository.findByEmailIgnoreCase(authentication.getName());
+            if (usuarioOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario autenticado no encontrado");
+            }
+            var usuario = usuarioOpt.get();
+            if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Contraseña incorrecta");
+            }
+
+            // Verificar que el alojamiento pertenezca al anfitrión autenticado
+            Alojamiento alojamiento = alojamientoService.obtenerAlojamientoPorId(id);
+            if (alojamiento.getAnfitrion() == null || !usuario.getId().equals(alojamiento.getAnfitrion().getId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permisos para eliminar este alojamiento");
+            }
+
             alojamientoService.eliminarAlojamiento(id);
             System.out.println("Alojamiento eliminado correctamente con id = " + id);
             return ResponseEntity.noContent().build();
         } catch (com.hospedaya.backend.exception.BadRequestException e) {
             // Conflicto de negocio (reservas activas)
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (IllegalArgumentException e) {
+        } catch (com.hospedaya.backend.exception.ResourceNotFoundException e) {
             System.out.println("Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             System.out.println("Error inesperado al eliminar alojamiento: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
