@@ -1,0 +1,128 @@
+.admin-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.admin-page__header {
+  margin-bottom: 1.5rem;
+}
+
+.admin-page__header h1 {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.admin-page__header p {
+  color: #555;
+}
+
+.admin-page__content {
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  padding: 1.5rem;
+}
+
+.news-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.news-form {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.75rem;
+}
+
+.form-field label {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.form-field input,
+.form-field textarea {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  font-size: 0.95rem;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.btn-primary {
+  background: #ff5a5f;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary[disabled] {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.news-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.news-item {
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.news-date {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.news-title {
+  font-size: 1.125rem;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.news-excerpt {
+  margin: 0;
+  color: #4b5563;
+}
+
+.info {
+  margin-top: 1rem;
+  color: #6b7280;
+}
+
+.info.error {
+  color: #b91c1c;
+}
+
+.btn-link {
+  background: transparent;
+  color: #2563eb;
+  padding: 0.25rem 0;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+}

@@ -36,57 +36,31 @@
     </div>
   </section>
 
-  <!-- Último comunicado / Historia principal -->
+  <!-- Noticia destacada -->
   <section class="press-section press-section--highlight">
     <div class="press-section__header">
-      <h2>Comunicado destacado</h2>
-      <p>La información esencial del último anuncio importante de HospedaYa.</p>
+      <h2>Noticia destacada</h2>
+      <p>El comunicado más reciente de HospedaYa.</p>
     </div>
-    <article class="press-article">
+
+    <p *ngIf="cargando" class="press-article__meta">Cargando noticias...</p>
+    <p *ngIf="error" class="press-article__meta">{{ error }}</p>
+
+    <article *ngIf="!cargando && !error && destacada" class="press-article">
       <header>
-        <p class="press-article__meta">Bogotá, Colombia · 15 de noviembre de 2025</p>
-        <h3>HospedaYa lanza una plataforma de reservas más simple y productiva para anfitriones y viajeros en LATAM</h3>
+        <p class="press-article__meta">{{ destacada.fechaCreacion | date: "d 'de' MMMM 'de' y" }}</p>
+        <h3>{{ destacada.titulo }}</h3>
       </header>
       <div class="press-article__body">
         <p>
-          HospedaYa, la plataforma digital de alojamiento pensada para el mercado latinoamericano, anuncia el lanzamiento
-          oficial de su nueva experiencia de reservas, diseñada para que tanto huéspedes como anfitriones gestionen sus
-          estancias de forma más simple, segura y productiva.
-        </p>
-
-        <h4>¿Qué está pasando?</h4>
-        <p>
-          HospedaYa introduce una nueva versión de su plataforma web que permite buscar, comparar y reservar alojamientos
-          en cuestión de minutos, con información clara sobre precios, políticas y servicios incluidos.
-        </p>
-
-        <h4>¿Quiénes están involucrados?</h4>
-        <p>
-          La plataforma está dirigida a dos públicos principales: viajeros que buscan alojamientos flexibles y confiables,
-          y anfitriones que desean publicar y administrar sus propiedades con herramientas modernas y fáciles de usar.
-        </p>
-
-        <h4>¿Cómo funciona?</h4>
-        <p>
-          Los usuarios pueden crear una cuenta, explorar alojamientos por destino y fechas, revisar detalles y comentarios
-          de otros huéspedes, y confirmar su reserva directamente desde la plataforma. Los anfitriones, por su parte,
-          cuentan con un panel para gestionar disponibilidad, precios y solicitudes de reserva desde un solo lugar.
-        </p>
-
-        <h4>¿Cuándo y dónde está disponible?</h4>
-        <p>
-          La nueva versión de HospedaYa está disponible desde noviembre de 2025 para usuarios en Colombia, con un plan
-          de expansión gradual a otros países de Latinoamérica durante 2026.
-        </p>
-
-        <h4>¿Por qué es relevante?</h4>
-        <p>
-          HospedaYa busca resolver necesidades específicas del mercado latinoamericano: transparencia en precios,
-          procesos de reserva claros y una experiencia que prioriza la confianza entre huéspedes y anfitriones.
-          La plataforma integra buenas prácticas de seguridad y un diseño centrado en la productividad de los usuarios.
+          {{ destacada.resumen || (destacada.contenido | slice: 0:260) + '...' }}
         </p>
       </div>
     </article>
+
+    <p *ngIf="!cargando && !error && !destacada" class="press-article__meta">
+      Pronto publicaremos nuestra primera noticia destacada.
+    </p>
   </section>
 
   <!-- Boilerplate de la empresa -->
@@ -164,34 +138,26 @@
     </div>
   </section>
 
-  <!-- Otros comunicados -->
+  <!-- Lista completa de comunicados -->
   <section class="press-section">
     <div class="press-section__header">
-      <h2>Comunicados de prensa adicionales</h2>
+      <h2>Comunicados de prensa</h2>
       <p>Historial de anuncios y actualizaciones relevantes.</p>
     </div>
-    <ul class="press-list">
-      <li>
+
+    <ul class="press-list" *ngIf="!cargando && !error && noticias.length">
+      <li *ngFor="let n of noticias">
         <article>
-          <h3>HospedaYa alcanza su primera meta de 1.000 reservas completadas</h3>
-          <p class="press-list__meta">Bogotá, Colombia · Agosto 2025</p>
-          <p>
-            La plataforma celebra un hito clave en su crecimiento, alcanzando las primeras 1.000 reservas exitosas
-            gestionadas a través de HospedaYa.
-          </p>
-        </article>
-      </li>
-      <li>
-        <article>
-          <h3>HospedaYa presenta nuevas herramientas para anfitriones profesionales</h3>
-          <p class="press-list__meta">Bogotá, Colombia · Junio 2025</p>
-          <p>
-            Nuevas funcionalidades orientadas a propietarios con múltiples alojamientos, como gestión centralizada de
-            calendario y reportes de desempeño.
-          </p>
+          <h3>{{ n.titulo }}</h3>
+          <p class="press-list__meta">{{ n.fechaCreacion | date: "d 'de' MMMM 'de' y" }}</p>
+          <p>{{ n.resumen }}</p>
         </article>
       </li>
     </ul>
+
+    <p *ngIf="!cargando && !error && !noticias.length" class="press-list__meta">
+      Próximamente más comunicados de prensa.
+    </p>
   </section>
 
   <!-- Notas legales / uso correcto de marca -->

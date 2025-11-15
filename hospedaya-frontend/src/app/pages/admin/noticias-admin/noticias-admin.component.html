@@ -1,0 +1,58 @@
+<app-header></app-header>
+
+<main class="admin-page">
+  <header class="admin-page__header">
+    <h1>Gestión de noticias</h1>
+    <p>Listado de todas las noticias creadas.</p>
+  </header>
+
+  <section class="admin-page__content">
+    <div class="news-toolbar">
+      <button class="btn-primary" type="button" (click)="mostrarFormulario = !mostrarFormulario">
+        {{ mostrarFormulario ? 'Cerrar formulario' : 'Crear noticia' }}
+      </button>
+    </div>
+
+    <section *ngIf="mostrarFormulario" class="news-form">
+      <h2>Nueva noticia</h2>
+      <form (ngSubmit)="crearNoticia()">
+        <div class="form-field">
+          <label for="titulo">Título</label>
+          <input id="titulo" name="titulo" type="text" required [(ngModel)]="nueva.titulo" />
+        </div>
+
+        <div class="form-field">
+          <label for="resumen">Resumen</label>
+          <input id="resumen" name="resumen" type="text" [(ngModel)]="nueva.resumen" />
+        </div>
+
+        <div class="form-field">
+          <label for="contenido">Contenido</label>
+          <textarea id="contenido" name="contenido" rows="6" required [(ngModel)]="nueva.contenido"></textarea>
+        </div>
+
+        <button class="btn-primary" type="submit" [disabled]="creando">
+          {{ creando ? 'Guardando...' : 'Guardar noticia' }}
+        </button>
+      </form>
+    </section>
+
+    <div *ngIf="cargando" class="info">Cargando noticias...</div>
+    <div *ngIf="error" class="info error">{{ error }}</div>
+
+    <ul class="news-list" *ngIf="!cargando && noticias.length">
+      <li *ngFor="let n of noticias" class="news-item">
+        <article>
+          <p class="news-date">{{ n.fechaCreacion | date: 'mediumDate' }}</p>
+          <h2 class="news-title">{{ n.titulo }}</h2>
+          <p class="news-excerpt">{{ n.resumen }}</p>
+          <button type="button" class="btn-link" [routerLink]="['/admin/noticias', n.id]">Editar</button>
+        </article>
+      </li>
+    </ul>
+
+    <p *ngIf="!cargando && !noticias.length" class="info">
+      Aún no hay noticias creadas.
+    </p>
+  </section>
+</main>

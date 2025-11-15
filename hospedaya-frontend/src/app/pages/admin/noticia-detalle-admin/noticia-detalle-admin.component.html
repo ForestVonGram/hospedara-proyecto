@@ -1,0 +1,85 @@
+<app-header></app-header>
+
+<main class="admin-page">
+  <section class="admin-page__header">
+    <h1>Detalle de noticia</h1>
+    <p>Consulta y edita el contenido de la noticia.</p>
+  </section>
+
+  <div class="acciones-superiores" *ngIf="!cargando && noticia">
+    <button class="btn-link" (click)="volverListado()">← Volver al listado</button>
+  </div>
+
+  <section class="admin-page__content" *ngIf="!cargando; else loadingTpl">
+    <ng-container *ngIf="noticia as n; else errorTpl">
+      <div class="detalle-meta">
+        <span class="badge">ID: {{ n.id }}</span>
+      </div>
+      <div class="alerta" *ngIf="mensaje">{{ mensaje }}</div>
+      <div class="alerta alerta-error" *ngIf="error">{{ error }}</div>
+      <div class="alerta alerta-error" *ngIf="error">{{ error }}</div>
+
+      <form class="noticia-form" (ngSubmit)="guardarCambios()">
+        <div class="form-field">
+          <label for="titulo">Título</label>
+          <input
+            id="titulo"
+            name="titulo"
+            type="text"
+            [(ngModel)]="n.titulo"
+            required
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="resumen">Resumen</label>
+          <input
+            id="resumen"
+            name="resumen"
+            type="text"
+            [(ngModel)]="n.resumen"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="contenido">Contenido</label>
+          <textarea
+            id="contenido"
+            name="contenido"
+            rows="10"
+            [(ngModel)]="n.contenido"
+            required
+          ></textarea>
+        </div>
+
+        <div class="form-meta">
+          <span>Creada el {{ n.fechaCreacion | date: "d 'de' MMMM 'de' y" }}</span>
+        </div>
+
+        <section class="acciones-guardado">
+          <div class="acciones-guardado__buttons">
+            <button type="submit" class="btn-primary" [disabled]="guardando || eliminando">
+              {{ guardando ? 'Guardando…' : 'Guardar cambios' }}
+            </button>
+            <button type="button" class="btn-danger" (click)="eliminarNoticia()" [disabled]="guardando || eliminando">
+              {{ eliminando ? 'Eliminando…' : 'Eliminar noticia' }}
+            </button>
+          </div>
+        </section>
+      </form>
+    </ng-container>
+  </section>
+</main>
+
+<ng-template #loadingTpl>
+  <section class="admin-page__content">
+    <p>Cargando noticia...</p>
+  </section>
+</ng-template>
+
+<ng-template #errorTpl>
+  <section class="admin-page__content">
+    <p class="alerta alerta-error">{{ error || 'Noticia no encontrada.' }}</p>
+    <button class="btn-link" (click)="volverListado()">Volver al listado</button>
+  </section>
+</ng-template>

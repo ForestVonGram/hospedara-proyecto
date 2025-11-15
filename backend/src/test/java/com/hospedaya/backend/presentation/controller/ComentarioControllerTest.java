@@ -2,6 +2,9 @@ package com.hospedaya.backend.presentation.controller;
 
 import com.hospedaya.backend.application.mapper.ComentarioMapper;
 import com.hospedaya.backend.application.service.base.ComentarioService;
+import com.hospedaya.backend.application.service.base.AlojamientoService;
+import com.hospedaya.backend.application.service.base.UsuarioService;
+import com.hospedaya.backend.application.service.integration.EmailService;
 import com.hospedaya.backend.domain.entity.Comentario;
 import com.hospedaya.backend.exception.GlobalExceptionHandler;
 import com.hospedaya.backend.exception.ResourceNotFoundException;
@@ -49,6 +52,15 @@ class ComentarioControllerTest {
 
     @MockBean
     private com.hospedaya.backend.infraestructure.security.JwtUtil jwtUtil; // mock para evitar cargar seguridad
+
+    @MockBean
+    private EmailService emailService;
+
+    @MockBean
+    private UsuarioService usuarioService;
+
+    @MockBean
+    private AlojamientoService alojamientoService;
 
     @Test
     @DisplayName("Debe responder 404 cuando no hay comentarios para el alojamiento")

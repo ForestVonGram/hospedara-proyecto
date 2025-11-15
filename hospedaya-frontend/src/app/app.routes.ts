@@ -112,6 +112,16 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/admin/reservas-admin/reservas-admin.component').then(m => m.ReservasAdminComponent),
     canActivate: [adminGuard]
   },
+  {
+    path: 'admin/noticias',
+    loadComponent: () => import('./pages/admin/noticias-admin/noticias-admin.component').then(m => m.NoticiasAdminComponent),
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/noticias/:id',
+    loadComponent: () => import('./pages/admin/noticia-detalle-admin/noticia-detalle-admin.component').then(m => m.NoticiaDetalleAdminComponent),
+    canActivate: [adminGuard]
+  },
 
   { path: '**', redirectTo: '' }
 ];
