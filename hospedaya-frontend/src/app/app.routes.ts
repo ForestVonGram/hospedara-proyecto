@@ -12,6 +12,7 @@ export const routes: Routes = [
   { path: 'sobre-nosotros', loadComponent: () => import('./pages/sobre-nosotros/sobre-nosotros.component').then(m => m.SobreNosotrosComponent) },
   { path: 'carreras', loadComponent: () => import('./pages/carreras/carreras.component').then(m => m.CarrerasComponent) },
   { path: 'prensa', loadComponent: () => import('./pages/prensa/prensa.component').then(m => m.PrensaComponent) },
+  { path: 'terminos-de-servicio', loadComponent: () => import('./pages/terminos-de-servicio/terminos-de-servicio.component').then(m => m.TerminosDeServicioComponent) },
   { path: 'register-host', loadComponent: () => import('./pages/register-host/register-host.component').then(m => m.RegisterHostComponent) },
   { path: 'recuperar-password', loadComponent: () => import('./pages/recuperar-password/recuperar-password.component').then(m => m.RecuperarPasswordComponent) },
   { path: 'reset-password', loadComponent: () => import('./pages/reset-password/reset-password.component').then(m => m.ResetPasswordComponent) },
