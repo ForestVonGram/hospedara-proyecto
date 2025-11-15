@@ -1,0 +1,154 @@
+.help {
+  max-width: 1120px;
+  margin: 0 auto 4rem auto;
+  padding: 1.5rem 1.5rem 4rem 1.5rem;
+}
+
+.help-hero {
+  background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.help-hero__content h1 {
+  font-size: 2.25rem;
+  margin-bottom: 0.75rem;
+  color: #111827;
+}
+
+.help-hero__content p {
+  max-width: 640px;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.help-hero__contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1rem;
+  background: white;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  font-size: 0.95rem;
+}
+
+.help-hero__email {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.help-hero__email:hover {
+  text-decoration: underline;
+}
+
+.help-section {
+  margin-bottom: 2.5rem;
+}
+
+.help-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #111827;
+}
+
+.help-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.faq {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e5e7eb;
+}
+
+.faq h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #111827;
+}
+
+.faq p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.help-section--secondary {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 2rem;
+}
+
+.help-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.help-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #374151;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.help-link:hover {
+  background: #e5e7eb;
+}
+
+.help-section--contact {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 2rem;
+}
+
+.help-contact-email {
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+.help-contact-email a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.help-contact-email a:hover {
+  text-decoration: underline;
+}
+
+.help-contact-note {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+@media (max-width: 960px) {
+  .help-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .help {
+    padding-inline: 1rem;
+  }
+
+  .help-hero {
+    padding: 1.75rem 1.5rem;
+  }
+
+  .help-grid {
+    grid-template-columns: 1fr;
+  }
+}
