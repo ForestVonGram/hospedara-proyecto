@@ -15,4 +15,10 @@ public interface UsuarioService {
     Usuario asignarRol(Long idUsuario, Rol nuevoRol);
     Usuario activarUsuario(Long idUsuario);
     Usuario desactivarUsuario(Long idUsuario);
+
+    /**
+     * Cancela todas las reservas del usuario (si aplica) y luego elimina definitivamente la cuenta.
+     * Pensado para el flujo de "eliminar mi cuenta".
+     */
+    void cancelarReservasYEliminarUsuario(Long idUsuario);
 }

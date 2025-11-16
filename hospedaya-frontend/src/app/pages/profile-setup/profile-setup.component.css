@@ -2,6 +2,12 @@
 .setup-container { max-width: 900px; margin: 40px auto; padding: 0 16px; }
 .card { display: grid; grid-template-columns: 280px 1fr; gap: 24px; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
 
+/* Variante de tarjeta de peligro similar a secciones críticas en admin */
+.danger-card {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+}
+
 .section-title {
   font-size: 16px;
   font-weight: 700;
@@ -59,6 +65,18 @@
 .primary { background: #5b6cff; color: white; border: 0; padding: 10px 16px; border-radius: 8px; cursor: pointer; }
 .skip { color: #6b7280; text-decoration: underline; }
 .error { color: #dc2626; margin-top: 10px; }
+
+/* Reutilizar estilo del botón rojo de admin (btn-danger) */
+.btn-danger {
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  border: none;
+  background: #dc2626;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 16px;
+}
 
 @media (max-width: 768px) {
   .card {

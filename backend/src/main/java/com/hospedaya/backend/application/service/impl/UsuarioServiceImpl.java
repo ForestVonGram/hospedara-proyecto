@@ -5,14 +5,19 @@ import com.hospedaya.backend.application.dto.usuario.UsuarioResponseDTO;
 import com.hospedaya.backend.application.dto.usuario.UsuarioUpdateDTO;
 import com.hospedaya.backend.application.mapper.UsuarioMapper;
 import com.hospedaya.backend.application.service.base.UsuarioService;
+import com.hospedaya.backend.domain.entity.Reserva;
 import com.hospedaya.backend.domain.entity.Usuario;
 import com.hospedaya.backend.domain.enums.Rol;
+import com.hospedaya.backend.domain.enums.EstadoReserva;
 import com.hospedaya.backend.exception.ResourceNotFoundException;
+import com.hospedaya.backend.infraestructure.repository.ReservaRepository;
 import com.hospedaya.backend.infraestructure.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,11 +28,16 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ReservaRepository reservaRepository;
 
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper, PasswordEncoder passwordEncoder) {
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository,
+                              UsuarioMapper usuarioMapper,
+                              PasswordEncoder passwordEncoder,
+                              ReservaRepository reservaRepository) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.passwordEncoder = passwordEncoder;
+        this.reservaRepository = reservaRepository;
     }
 
 //    public UsuarioResponseDTO crearUsuarioDesdeDTO(UsuarioRequestDTO requestDTO) {
@@ -141,6 +151,43 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new ResourceNotFoundException("Usuario no encontrado con ID: " + idUsuario);
         }
         usuarioRepository.deleteById(idUsuario);
+    }
+
+    @Override
+    public void cancelarReservasYEliminarUsuario(Long idUsuario) {
+        // Regla de negocio:
+        // - Reservas PENDIENTE / CONFIRMADA / PAGADA con fechaFin futura o en curso
+        //   se consideran "activas" y bloquean el borrado de la cuenta.
+        // - Reservas CANCELADA o FINALIZADA (o reservas históricas en el pasado)
+        //   no deben bloquear; se eliminan junto con la cuenta.
+        List<Reserva> reservas = reservaRepository.findByUsuarioId(idUsuario);
+        if (!reservas.isEmpty()) {
+            LocalDate hoy = LocalDate.now();
+
+            boolean tieneReservasActivas = reservas.stream().anyMatch(reserva -> {
+                EstadoReserva estado = reserva.getEstado();
+                if (estado == null) {
+                    estado = EstadoReserva.PENDIENTE;
+                }
+                boolean esEstadoActivo = estado == EstadoReserva.PENDIENTE
+                        || estado == EstadoReserva.CONFIRMADA
+                        || estado == EstadoReserva.PAGADA;
+                boolean esFuturaOEnCurso = reserva.getFechaFin() != null && !reserva.getFechaFin().isBefore(hoy);
+                return esEstadoActivo && esFuturaOEnCurso;
+            });
+
+            if (tieneReservasActivas) {
+                // Lanzamos explícitamente DataIntegrityViolationException para que el controlador
+                // devuelva el mensaje amigable sobre reservas activas.
+                throw new DataIntegrityViolationException("El usuario tiene reservas activas");
+            }
+
+            // Solo quedan reservas históricas (canceladas o finalizadas). Las eliminamos primero
+            // para que la restricción de integridad no bloquee el borrado del usuario.
+            reservaRepository.deleteAll(reservas);
+        }
+
+        eliminarUsuario(idUsuario);
     }
 
     @Override

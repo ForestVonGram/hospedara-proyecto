@@ -24,6 +24,11 @@ export class ProfileSetupComponent implements OnInit {
   saving = false;
   error = '';
 
+  // Eliminación de cuenta
+  deletePassword: string = '';
+  deleteError: string = '';
+  deleteLoading: boolean = false;
+
   constructor(
     private usuarioService: UsuarioService,
     private auth: AuthService,
@@ -131,6 +136,42 @@ export class ProfileSetupComponent implements OnInit {
         this.saving = false;
         this.error = err?.error?.message || 'Error al subir la imagen a la nube';
       }
+    });
+  }
+
+  eliminarCuenta() {
+    this.deleteError = '';
+    if (!this.deletePassword) {
+      this.deleteError = 'Debes ingresar tu contraseña para eliminar la cuenta.';
+      return;
+    }
+
+    const confirmar = window.confirm(
+      'Esta acción eliminará tu cuenta y no se puede deshacer. ¿Seguro que deseas continuar?'
+    );
+    if (!confirmar) {
+      return;
+    }
+
+    this.deleteLoading = true;
+
+    this.usuarioService.eliminarCuentaPropia(this.deletePassword).subscribe({
+      next: () => {
+        // Cerrar sesión local y redirigir a la página de inicio
+        this.auth.logout();
+        this.deleteLoading = false;
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        this.deleteLoading = false;
+        if (err.status === 401) {
+          this.deleteError = 'Contraseña incorrecta.';
+        } else if (err.status === 400) {
+          this.deleteError = err.error || 'La contraseña es requerida.';
+        } else {
+          this.deleteError = err.error || 'No se pudo eliminar tu cuenta. Inténtalo de nuevo.';
+        }
+      },
     });
   }
 }

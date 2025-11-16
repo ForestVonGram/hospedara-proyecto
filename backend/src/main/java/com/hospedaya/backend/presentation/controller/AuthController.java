@@ -5,6 +5,7 @@ import com.hospedaya.backend.application.dto.login.LoginRequest;
 import com.hospedaya.backend.application.service.integration.EmailService;
 import com.hospedaya.backend.domain.entity.PasswordResetToken;
 import com.hospedaya.backend.domain.entity.Usuario;
+import com.hospedaya.backend.domain.enums.Rol;
 import com.hospedaya.backend.infraestructure.repository.PasswordResetTokenRepository;
 import com.hospedaya.backend.infraestructure.repository.UsuarioRepository;
 import com.hospedaya.backend.infraestructure.security.JwtUtil;
@@ -78,6 +79,7 @@ public class AuthController {
             return ResponseEntity.status(409).body("El email ya está registrado");
         }
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        if (usuario.getRol() == null) usuario.setRol(Rol.USUARIO);
         if (usuario.getActivo() == null) usuario.setActivo(true);
         if (usuario.getFechaRegistro() == null) usuario.setFechaRegistro(java.time.LocalDate.now());
         Usuario saved = usuarioRepository.save(usuario);

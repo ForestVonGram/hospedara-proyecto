@@ -40,4 +40,27 @@
       <div class="error" *ngIf="error">{{ error }}</div>
     </div>
   </div>
+
+  <!-- Sección de eliminación de cuenta -->
+  <div class="card danger-card">
+    <h2>Eliminar cuenta</h2>
+    <p>
+      Esta acción es permanente. Se cerrará tu sesión y tu cuenta dejará de estar disponible.
+    </p>
+    <label for="delete-password">Confirma tu contraseña</label>
+    <input
+      id="delete-password"
+      type="password"
+      [(ngModel)]="deletePassword"
+      placeholder="Ingresa tu contraseña actual"
+    />
+    <button
+      class="btn-danger"
+      (click)="eliminarCuenta()"
+      [disabled]="deleteLoading"
+    >
+      {{ deleteLoading ? 'Eliminando cuenta...' : 'Eliminar mi cuenta definitivamente' }}
+    </button>
+    <div class="error" *ngIf="deleteError">{{ deleteError }}</div>
+  </div>
 </div>

@@ -38,6 +38,8 @@ public class UsuarioController {
     private UsuarioService usuarioService;
     @Autowired
     private UsuarioMapper usuarioMapper;
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     @Operation(summary = "Listar usuarios")
     @ApiResponses({
@@ -174,6 +176,49 @@ public class UsuarioController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al eliminar el usuario: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Elimina la cuenta del usuario autenticado validando su contraseña.
+     * Pensado para ser llamado desde la configuración de perfil ("Mi cuenta").
+     */
+    @DeleteMapping("/me")
+    public ResponseEntity<?> eliminarMiCuenta(
+            org.springframework.security.core.Authentication authentication,
+            @RequestBody(required = false) java.util.Map<String, String> body
+    ) {
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+        }
+
+        String password = body != null ? body.get("password") : null;
+        if (password == null || password.isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("La contraseña es requerida para eliminar la cuenta");
+        }
+
+        String emailNorm = authentication.getName().trim().toLowerCase();
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmailIgnoreCase(emailNorm);
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+        }
+
+        Usuario usuario = usuarioOpt.get();
+        if (!passwordEncoder.matches(password, usuario.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta");
+        }
+
+        try {
+            usuarioService.cancelarReservasYEliminarUsuario(usuario.getId());
+            return ResponseEntity.ok("Cuenta eliminada correctamente");
+        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+            // Caso típico: el usuario tiene reservas asociadas (pendientes o en curso)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Error: tienes reservas activas. Debes cancelar estas reservas o esperar a que pase el tiempo de la reserva en curso para borrar tu cuenta.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar la cuenta: " + e.getMessage());
         }
     }
 

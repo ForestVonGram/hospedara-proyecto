@@ -79,6 +79,14 @@ export class UsuarioService {
     return this.http.delete(`${this.baseUrl}/${id}`, { responseType: 'text' });
   }
 
+  // Eliminar cuenta propia del usuario autenticado (requiere contraseña)
+  eliminarCuentaPropia(password: string): Observable<string> {
+    return this.http.delete(`${this.baseUrl}/me`, {
+      body: { password },
+      responseType: 'text',
+    }) as Observable<string>;
+  }
+
   // Activar usuario (admin)
   activar(id: number): Observable<UsuarioProfile> {
     return this.http.patch<UsuarioProfile>(`${this.adminBaseUrl}/${id}/activar`, {});
