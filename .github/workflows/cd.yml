@@ -38,8 +38,8 @@ jobs:
           file: ./backend/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/hospedaya-backend:latest
-            ghcr.io/${{ github.repository_owner }}/hospedaya-backend:${{ github.sha }}
+            ghcr.io/forestvongram/hospedaya-backend:latest
+            ghcr.io/forestvongram/hospedaya-backend:${{ github.sha }}
 
       - name: Build & push frontend image
         uses: docker/build-push-action@v6
@@ -48,8 +48,8 @@ jobs:
           file: ./hospedaya-frontend/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/hospedaya-frontend:latest
-            ghcr.io/${{ github.repository_owner }}/hospedaya-frontend:${{ github.sha }}
+            ghcr.io/forestvongram/hospedaya-frontend:latest
+            ghcr.io/forestvongram/hospedaya-frontend:${{ github.sha }}
 
       # Aquí podrías añadir pasos específicos de despliegue según tu proveedor
       # (Render, Railway, Fly.io, VM propia, etc.), por ejemplo:
