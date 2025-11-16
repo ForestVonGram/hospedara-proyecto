@@ -24,7 +24,7 @@ export interface Reserva extends ReservaResponseDTO {}
 
 @Injectable({ providedIn: 'root' })
 export class ReservaService {
-  private baseUrl = 'http://localhost:8080/reservas';
+  private baseUrl = 'https://hospedaya-proyecto.onrender.com/reservas';
 
   constructor(private http: HttpClient) {}
 

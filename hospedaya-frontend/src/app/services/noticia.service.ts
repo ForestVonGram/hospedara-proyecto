@@ -13,8 +13,8 @@ export interface Noticia {
 @Injectable({ providedIn: 'root' })
 export class NoticiaService {
   // Ajusta las URLs a los endpoints reales del backend cuando los tengas definidos
-  private adminBaseUrl = 'http://localhost:8080/admin/noticias';
-  private publicBaseUrl = 'http://localhost:8080/noticias';
+  private adminBaseUrl = 'https://hospedaya-proyecto.onrender.com/admin/noticias';
+  private publicBaseUrl = 'https://hospedaya-proyecto.onrender.com/noticias';
 
   constructor(private http: HttpClient) {}
 

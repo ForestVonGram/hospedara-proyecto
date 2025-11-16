@@ -17,7 +17,7 @@ export interface AsignarServicioRequest {
 
 @Injectable({ providedIn: 'root' })
 export class AlojamientoServicioService {
-  private baseUrl = 'http://localhost:8080/alojamiento-servicios';
+  private baseUrl = 'https://hospedaya-proyecto.onrender.com/alojamiento-servicios';
 
   constructor(private http: HttpClient) {}
 

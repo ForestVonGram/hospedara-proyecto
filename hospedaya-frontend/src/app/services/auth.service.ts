@@ -29,8 +29,8 @@ export interface Usuario {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/usuarios';
-  private authUrl = 'http://localhost:8080/auth';
+  private apiUrl = 'https://hospedaya-proyecto.onrender.com/usuarios';
+  private authUrl = 'https://hospedaya-proyecto.onrender.com/auth';
   private tokenKey = 'auth_token';
 
   constructor(private http: HttpClient) {}

@@ -20,7 +20,7 @@ export interface PagoResponseDTO {
 
 @Injectable({ providedIn: 'root' })
 export class PagoService {
-  private baseUrl = 'http://localhost:8080/pagos';
+  private baseUrl = 'https://hospedaya-proyecto.onrender.com/pagos';
 
   constructor(private http: HttpClient) {}
 

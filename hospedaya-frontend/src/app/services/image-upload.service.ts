@@ -13,7 +13,7 @@ export interface ImageUploadResult {
 
 @Injectable({ providedIn: 'root' })
 export class ImageUploadService {
-  private baseUrl = 'http://localhost:8080/imagenes';
+  private baseUrl = 'https://hospedaya-proyecto.onrender.com/imagenes';
 
   constructor(private http: HttpClient) {}
 

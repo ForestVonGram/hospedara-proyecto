@@ -15,7 +15,7 @@ export interface ImagenAlojamientoResponseDTO {
 
 @Injectable({ providedIn: 'root' })
 export class ImagenAlojamientoService {
-  private baseUrl = 'http://localhost:8080/imagenes-alojamiento';
+  private baseUrl = 'https://hospedaya-proyecto.onrender.com/imagenes-alojamiento';
 
   constructor(private http: HttpClient) {}
 

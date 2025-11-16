@@ -90,7 +90,7 @@ function dtoToAlojamiento(dto: AlojamientoResponseDTO): Alojamiento {
 
 @Injectable({ providedIn: 'root' })
 export class AlojamientoService {
-  private baseUrl = 'http://localhost:8080/alojamientos';
+  private baseUrl = 'https://hospedaya-proyecto.onrender.com/alojamientos';
 
   constructor(private http: HttpClient) {}
 

@@ -5,7 +5,7 @@ import { AlojamientoResponseDTO } from './alojamiento.service';
 
 @Injectable({ providedIn: 'root' })
 export class RecomendacionService {
-  private baseUrl = 'http://localhost:8080/recomendaciones';
+  private baseUrl = 'https://hospedaya-proyecto.onrender.com/recomendaciones';
 
   constructor(private http: HttpClient) {}
 

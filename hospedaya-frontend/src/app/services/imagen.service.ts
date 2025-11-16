@@ -17,7 +17,7 @@ export interface MultipleImageUploadResponse {
   providedIn: 'root'
 })
 export class ImagenService {
-  private baseUrl = 'http://localhost:8080/imagenes';
+  private baseUrl = 'https://hospedaya-proyecto.onrender.com/imagenes';
 
   constructor(private http: HttpClient) {}
 

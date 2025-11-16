@@ -27,8 +27,8 @@ export interface UsuarioAdminSummary {
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
-  private baseUrl = 'http://localhost:8080/usuarios';
-  private adminBaseUrl = 'http://localhost:8080/admin/usuarios';
+  private baseUrl = 'https://hospedaya-proyecto.onrender.com/usuarios';
+  private adminBaseUrl = 'https://hospedaya-proyecto.onrender.com/admin/usuarios';
 
   constructor(private http: HttpClient) {}
 

@@ -22,7 +22,7 @@ export interface ComentarioCreateRequest {
 
 @Injectable({ providedIn: 'root' })
 export class ComentarioService {
-  private baseUrl = 'http://localhost:8080/comentarios';
+  private baseUrl = 'https://hospedaya-proyecto.onrender.com/comentarios';
 
   constructor(private http: HttpClient) {}
 
