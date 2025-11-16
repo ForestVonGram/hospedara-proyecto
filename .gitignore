@@ -1,0 +1,16 @@
+# Dependencias de Node
+node_modules/
+
+# Build de Angular
+hospedaya-frontend/dist/
+
+# Archivos de IDE
+.idea/
+.vscode/
+*.iml
+
+# Archivos de sistema
+.DS_Store
+
+# Variables de entorno locales
+.env

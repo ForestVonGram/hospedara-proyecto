@@ -2,10 +2,12 @@ package com.hospedaya.backend.infraestructure.config;
 
 import com.hospedaya.backend.infraestructure.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,6 +23,9 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final CorsConfigurationSource corsConfigurationSource;
 
+    @Value("${security.csp:default-src 'self';}")
+    private String contentSecurityPolicy;
+
     public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, CorsConfigurationSource corsConfigurationSource) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.corsConfigurationSource = corsConfigurationSource;
@@ -31,6 +36,15 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .headers(headers -> headers
+                        .httpStrictTransportSecurity(hsts -> hsts
+                                .includeSubDomains(true)
+                                .maxAgeInSeconds(31536000)
+                        )
+                        .contentTypeOptions(Customizer.withDefaults())
+                        .frameOptions(frame -> frame.deny())
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(contentSecurityPolicy))
+                )
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(

@@ -39,6 +39,9 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     // Cloudinary Java SDK
     implementation 'com.cloudinary:cloudinary-http44:1.39.0'
+    // Migraciones de base de datos (versión compatible con PostgreSQL 15)
+    implementation 'org.flywaydb:flyway-core:10.21.0'
+    implementation 'org.flywaydb:flyway-database-postgresql:10.21.0'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	runtimeOnly 'com.h2database:h2'
