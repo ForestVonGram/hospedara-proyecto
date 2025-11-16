@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Setter
@@ -36,6 +37,13 @@ public class Usuario {
     private LocalDate fechaRegistro;
 
     private Boolean activo = true;
+
+    // Seguridad de login: intentos fallidos y bloqueo temporal
+    private Integer failedLoginAttempts = 0;
+
+    private LocalDateTime lastFailedLoginAt;
+
+    private LocalDateTime accountLockedUntil;
 
     @OneToMany(mappedBy = "usuario")
     private List<Reserva> reservas;

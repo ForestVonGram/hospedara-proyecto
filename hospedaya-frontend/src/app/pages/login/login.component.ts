@@ -87,6 +87,8 @@ export class LoginComponent {
           this.errorMessage = 'Email no encontrado';
         } else if (error.status === 401) {
           this.errorMessage = 'Contraseña incorrecta';
+        } else if (error.status === 423) {
+          this.errorMessage = 'Tu cuenta ha sido bloqueada por múltiples intentos fallidos. Podrás volver a entrar tras 15 minutos de espera.';
         } else {
           this.errorMessage = 'Error al iniciar sesión. Intenta nuevamente.';
         }

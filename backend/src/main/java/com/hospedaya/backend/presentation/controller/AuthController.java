@@ -9,6 +9,7 @@ import com.hospedaya.backend.domain.enums.Rol;
 import com.hospedaya.backend.infraestructure.repository.PasswordResetTokenRepository;
 import com.hospedaya.backend.infraestructure.repository.UsuarioRepository;
 import com.hospedaya.backend.infraestructure.security.JwtUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -25,6 +26,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+
+    private static final int MAX_FAILED_ATTEMPTS = 5;
+    private static final int LOCK_MINUTES = 15;
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
@@ -50,20 +54,58 @@ public class AuthController {
         if (emailNorm == null || emailNorm.isEmpty()) {
             return ResponseEntity.badRequest().body("Email es requerido");
         }
-        // Verificación insensible a mayúsculas/minúsculas
-        if (!usuarioRepository.existsByEmailIgnoreCase(emailNorm)) {
-            return ResponseEntity.status(404).body("Usuario no encontrado");
+
+        // Buscar usuario ignorando mayúsculas/minúsculas
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(emailNorm)
+                .orElse(null);
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
         }
+
+        // Si la cuenta está bloqueada y aún no ha pasado el tiempo, rechazar login
+        if (Boolean.TRUE.equals(usuario.getActivo()) && usuario.getAccountLockedUntil() != null
+                && usuario.getAccountLockedUntil().isAfter(LocalDateTime.now())) {
+            return ResponseEntity.status(HttpStatus.LOCKED)
+                    .body("Cuenta bloqueada por múltiples intentos fallidos. Intenta de nuevo más tarde.");
+        }
+
+        // Si ya pasó el tiempo de bloqueo, resetear estado
+        if (usuario.getAccountLockedUntil() != null
+                && usuario.getAccountLockedUntil().isBefore(LocalDateTime.now())) {
+            usuario.setFailedLoginAttempts(0);
+            usuario.setAccountLockedUntil(null);
+            usuario.setLastFailedLoginAt(null);
+            usuarioRepository.save(usuario);
+        }
+
         try {
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(emailNorm, request.getPassword())
             );
+
+            // Login correcto: resetear contador de intentos fallidos
+            usuario.setFailedLoginAttempts(0);
+            usuario.setAccountLockedUntil(null);
+            usuario.setLastFailedLoginAt(null);
+            usuarioRepository.save(usuario);
+
             Map<String, Object> claims = new HashMap<>();
             claims.put("typ", "access");
             String token = jwtUtil.generateToken(emailNorm, claims);
             return ResponseEntity.ok(new AuthResponse(token));
         } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(401).body("Credenciales inválidas");
+            // Incrementar intentos fallidos y aplicar bloqueo si supera el umbral
+            int intentos = usuario.getFailedLoginAttempts() != null ? usuario.getFailedLoginAttempts() : 0;
+            intentos++;
+            usuario.setFailedLoginAttempts(intentos);
+            usuario.setLastFailedLoginAt(LocalDateTime.now());
+
+            if (intentos >= MAX_FAILED_ATTEMPTS) {
+                usuario.setAccountLockedUntil(LocalDateTime.now().plusMinutes(LOCK_MINUTES));
+            }
+
+            usuarioRepository.save(usuario);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }
     }
 
@@ -141,6 +183,11 @@ public class AuthController {
         token.setUsado(true);
         passwordResetTokenRepository.save(token);
 
-        return ResponseEntity.ok().build();
+        // Regenerar token JWT tras cambio de contraseña
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("typ", "access");
+        String tokenJwt = jwtUtil.generateToken(usuario.getEmail(), claims);
+
+        return ResponseEntity.ok(new AuthResponse(tokenJwt));
     }
 }

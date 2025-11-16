@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,7 +33,11 @@ public class CustomUserDetailsService implements UserDetailsService {
                 new SimpleGrantedAuthority("ROLE_" + (usuario.getRol() != null ? usuario.getRol().name() : "USER"))
         );
 
-        return new User(usuario.getEmail(), usuario.getPassword(), usuario.getActivo() != null ? usuario.getActivo() : true,
-                true, true, true, authorities);
+        boolean enabled = usuario.getActivo() != null ? usuario.getActivo() : true;
+        boolean accountNonLocked = usuario.getAccountLockedUntil() == null
+                || usuario.getAccountLockedUntil().isBefore(LocalDateTime.now());
+
+        return new User(usuario.getEmail(), usuario.getPassword(), enabled,
+                true, true, accountNonLocked, authorities);
     }
 }
