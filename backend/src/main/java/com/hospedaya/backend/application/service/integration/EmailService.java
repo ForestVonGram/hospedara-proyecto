@@ -33,7 +33,7 @@ public class EmailService {
             mailSender.send(message);
             log.info("Correo de bienvenida enviado a: {}", usuario.getEmail());
             
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             log.error("Error al enviar correo de bienvenida a {}: {}", usuario.getEmail(), e.getMessage());
             // No lanzamos excepción para que el registro continúe aunque falle el correo
         }
@@ -139,7 +139,7 @@ public class EmailService {
             helper.setText(html, true);
             mailSender.send(message);
             log.info("Correo de recuperación enviado a: {}", usuario.getEmail());
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             log.error("Error al enviar correo de recuperación a {}: {}", usuario.getEmail(), e.getMessage());
         }
     }
@@ -194,7 +194,7 @@ public class EmailService {
             helper.setText(html, true);
             mailSender.send(message);
             log.info("Correo de nueva reserva enviado a anfitrión {}", anfitrion.getEmail());
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             log.error("Error al enviar correo de nueva reserva a {}: {}", anfitrion.getEmail(), e.getMessage());
         }
     }
@@ -249,7 +249,7 @@ public class EmailService {
             helper.setText(html, true);
             mailSender.send(message);
             log.info("Correo de cancelación enviado a anfitrión {}", anfitrion.getEmail());
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             log.error("Error al enviar correo de cancelación a {}: {}", anfitrion.getEmail(), e.getMessage());
         }
     }
@@ -303,7 +303,7 @@ public class EmailService {
             helper.setText(html, true);
             mailSender.send(message);
             log.info("Correo de nueva reseña enviado a anfitrión {}", anfitrion.getEmail());
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             log.error("Error al enviar correo de nueva reseña a {}: {}", anfitrion.getEmail(), e.getMessage());
         }
     }
